@@ -28,7 +28,7 @@ type Palette = {
 
 const palettes: Palette[] = [
   {
-    name: "Signal",
+    name: "PX Orange",
     foreground: "#F1F0E9",
     background: "#181816",
     shadow: "#FF4E1A",
@@ -53,7 +53,7 @@ const palettes: Palette[] = [
   },
 ];
 
-const sampleWords = ["TINYTYPE", "PIXEL", "SIGNAL", "MODULAR"];
+const sampleWords = ["PXWORD", "PIXEL", "SIGNAL", "MODULAR"];
 
 function PixelMark({ pixels }: { pixels: Pixel[] }) {
   return (
@@ -191,7 +191,7 @@ function svgShape(
 }
 
 export default function PixelStudio() {
-  const [text, setText] = useState("MAKE\nNOISE");
+  const [text, setText] = useState("PXWORD");
   const [letterSpacing, setLetterSpacing] = useState(1);
   const [lineSpacing, setLineSpacing] = useState(2);
   const [pixelGap, setPixelGap] = useState(0.08);
@@ -269,7 +269,7 @@ export default function PixelStudio() {
       .replace(/[^a-zA-Z]+/g, "-")
       .replace(/^-|-$/g, "")
       .toLowerCase();
-    return `${safeName || "tinytype"}.${extension}`;
+    return `${safeName || "pxword"}.${extension}`;
   }
 
   function downloadBlob(blob: Blob, name: string) {
@@ -326,9 +326,9 @@ export default function PixelStudio() {
       <header className="topbar">
         <div className="brand">
           <PixelMark pixels={brandLayout.pixels} />
-          <span>Tinytype</span>
+          <span>PXWORD</span>
         </div>
-        <p className="source-note">Original 3×5 alphabet</p>
+        <p className="source-note">3×5 pixel wordmark studio</p>
         <div className="topbar-actions">
           <button type="button" className="button secondary" onClick={copySvg} disabled={!hasPixels}>
             {copyState === "copied" ? <Check weight="bold" /> : <Copy />}
@@ -466,7 +466,7 @@ export default function PixelStudio() {
           </div>
           <div className="preview-footer">
             <p>Every shape stays vector at any size.</p>
-            <span>A-Z / 3×5 grid / SVG + PNG</span>
+            <span>PXWORD.COM / A-Z / SVG + PNG</span>
           </div>
         </section>
       </main>

@@ -13,8 +13,28 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Tinytype - 3×5 Pixel Wordmark Generator",
-  description: "Create compact pixel wordmarks and export them as SVG or PNG.",
+  metadataBase: new URL("https://pxword.com"),
+  title: "PXWORD - 3×5 Pixel Wordmark Studio",
+  description:
+    "Design compact 3×5 pixel wordmarks, tune every detail, and export crisp SVG or PNG files.",
+  applicationName: "PXWORD",
+  alternates: {
+    canonical: "/",
+  },
+  openGraph: {
+    title: "PXWORD - 3×5 Pixel Wordmark Studio",
+    description:
+      "Design compact 3×5 pixel wordmarks and export crisp SVG or PNG files.",
+    url: "/",
+    siteName: "PXWORD",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "PXWORD - 3×5 Pixel Wordmark Studio",
+    description:
+      "Design compact 3×5 pixel wordmarks and export crisp SVG or PNG files.",
+  },
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {

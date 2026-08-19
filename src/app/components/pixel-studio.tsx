@@ -194,8 +194,8 @@ export default function PixelStudio() {
   const [text, setText] = useState("PXWORD");
   const [letterSpacing, setLetterSpacing] = useState(1);
   const [lineSpacing, setLineSpacing] = useState(2);
-  const [pixelGap, setPixelGap] = useState(0.08);
-  const [depth, setDepth] = useState(1);
+  const [pixelGap, setPixelGap] = useState(0);
+  const [depth, setDepth] = useState(0);
   const [shape, setShape] = useState<PixelShape>("square");
   const [align, setAlign] = useState<TextAlign>("left");
   const [slant, setSlant] = useState(false);
@@ -214,6 +214,9 @@ export default function PixelStudio() {
   const viewWidth = layout.width + depth + slantWidth;
   const viewHeight = layout.height + depth;
   const hasPixels = layout.pixels.length > 0;
+  const shapeRendering = shape === "square" && pixelGap === 0
+    ? "crispEdges"
+    : "geometricPrecision";
 
   function selectPalette(palette: Palette) {
     setForeground(palette.foreground);
@@ -260,7 +263,7 @@ export default function PixelStudio() {
       .map((pixel) => shapeMarkup(pixel, foreground, 0))
       .join("");
 
-    return `<svg xmlns="http://www.w3.org/2000/svg" width="${Math.ceil(viewWidth * exportUnit)}" height="${Math.ceil(viewHeight * exportUnit)}" viewBox="0 0 ${viewWidth} ${viewHeight}" shape-rendering="geometricPrecision">${backgroundMarkup}${shadowMarkup}${foregroundMarkup}</svg>`;
+    return `<svg xmlns="http://www.w3.org/2000/svg" width="${Math.ceil(viewWidth * exportUnit)}" height="${Math.ceil(viewHeight * exportUnit)}" viewBox="0 0 ${viewWidth} ${viewHeight}" shape-rendering="${shapeRendering}">${backgroundMarkup}${shadowMarkup}${foregroundMarkup}</svg>`;
   }
 
   function fileName(extension: string) {
@@ -444,6 +447,7 @@ export default function PixelStudio() {
               <svg
                 className="wordmark-svg"
                 viewBox={`0 0 ${viewWidth} ${viewHeight}`}
+                shapeRendering={shapeRendering}
                 role="img"
                 aria-label={`${text || "Empty"} pixel wordmark preview`}
                 style={transparent ? undefined : { background }}
@@ -466,7 +470,8 @@ export default function PixelStudio() {
           </div>
           <div className="preview-footer">
             <p>Every shape stays vector at any size.</p>
-            <span>PXWORD.COM / A-Z / SVG + PNG</span>
+            <span className="spec-note">PXWORD.COM / A-Z / SVG + PNG</span>
+            <a href="https://gwendall.com" target="_blank" rel="noreferrer">Made by Gwendall</a>
           </div>
         </section>
       </main>

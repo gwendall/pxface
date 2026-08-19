@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 
@@ -35,6 +35,14 @@ export const metadata: Metadata = {
     description:
       "Design compact 3×5 pixel wordmarks and export crisp SVG or PNG files.",
   },
+};
+
+export const viewport: Viewport = {
+  viewportFit: "cover",
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "#f3f1ea" },
+    { media: "(prefers-color-scheme: dark)", color: "#191917" },
+  ],
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {

@@ -16,8 +16,10 @@ import {
   type Pixel,
   type TextAlign,
 } from "@/lib/pixel-font";
+import { shuffledNakedPunksPalette } from "@/lib/naked-punks-palette";
 
 type PixelShape = "square" | "soft" | "dot";
+type ColorMode = "solid" | "punk";
 
 type Palette = {
   name: string;
@@ -54,6 +56,13 @@ const palettes: Palette[] = [
 ];
 
 const sampleWords = ["PXWORD", "PIXEL", "SIGNAL", "MODULAR"];
+const initialPunkSeed = 0x5058574f;
+
+function randomSeed() {
+  const values = new Uint32Array(1);
+  window.crypto.getRandomValues(values);
+  return values[0];
+}
 
 function PixelMark({ pixels }: { pixels: Pixel[] }) {
   return (
@@ -203,11 +212,23 @@ export default function PixelStudio() {
   const [foreground, setForeground] = useState(palettes[0].foreground);
   const [background, setBackground] = useState(palettes[0].background);
   const [shadow, setShadow] = useState(palettes[0].shadow);
+  const [colorMode, setColorMode] = useState<ColorMode>("solid");
+  const [punkSeed, setPunkSeed] = useState(initialPunkSeed);
   const [copyState, setCopyState] = useState<"idle" | "copied" | "error">("idle");
 
   const layout = useMemo(
     () => buildPixelLayout(text, letterSpacing, lineSpacing, align),
     [align, letterSpacing, lineSpacing, text],
+  );
+  const punkPalette = useMemo(
+    () => shuffledNakedPunksPalette(background, punkSeed),
+    [background, punkSeed],
+  );
+  const pixelColors = useMemo(
+    () => layout.pixels.map((_, index) => (
+      colorMode === "punk" ? punkPalette[index % punkPalette.length] : foreground
+    )),
+    [colorMode, foreground, layout.pixels, punkPalette],
   );
   const brandLayout = useMemo(() => buildPixelLayout("PX", 1, 2, "left"), []);
   const slantWidth = slant ? 0.72 : 0;
@@ -219,15 +240,22 @@ export default function PixelStudio() {
     : "geometricPrecision";
 
   function selectPalette(palette: Palette) {
+    setColorMode("solid");
     setForeground(palette.foreground);
     setBackground(palette.background);
     setShadow(palette.shadow);
   }
 
+  function selectPunkPalette() {
+    setColorMode("punk");
+    setPunkSeed(randomSeed());
+  }
+
   function shuffleStyle() {
-    const palette = palettes[Math.floor(Math.random() * palettes.length)];
+    const paletteIndex = Math.floor(Math.random() * (palettes.length + 1));
     const shapes: PixelShape[] = ["square", "soft", "dot"];
-    selectPalette(palette);
+    if (paletteIndex === palettes.length) selectPunkPalette();
+    else selectPalette(palettes[paletteIndex]);
     setShape(shapes[Math.floor(Math.random() * shapes.length)]);
     setDepth(Math.floor(Math.random() * 4));
     setPixelGap([0, 0.08, 0.2][Math.floor(Math.random() * 3)]);
@@ -260,7 +288,7 @@ export default function PixelStudio() {
         .join(""),
     ).join("");
     const foregroundMarkup = layout.pixels
-      .map((pixel) => shapeMarkup(pixel, foreground, 0))
+      .map((pixel, index) => shapeMarkup(pixel, pixelColors[index], 0))
       .join("");
 
     return `<svg xmlns="http://www.w3.org/2000/svg" width="${Math.ceil(viewWidth * exportUnit)}" height="${Math.ceil(viewHeight * exportUnit)}" viewBox="0 0 ${viewWidth} ${viewHeight}" shape-rendering="${shapeRendering}">${backgroundMarkup}${shadowMarkup}${foregroundMarkup}</svg>`;
@@ -394,7 +422,14 @@ export default function PixelStudio() {
           </section>
 
           <section className="control-section color-section">
-            <ColorControl label="Type" value={foreground} onChange={setForeground} />
+            <ColorControl
+              label="Type"
+              value={foreground}
+              onChange={(value) => {
+                setColorMode("solid");
+                setForeground(value);
+              }}
+            />
             <ColorControl label="Canvas" value={background} onChange={setBackground} />
             <ColorControl label="Depth" value={shadow} onChange={setShadow} />
             <div className="palette-row" aria-label="Color palettes">
@@ -412,6 +447,21 @@ export default function PixelStudio() {
                   <span style={{ background: palette.background }} />
                 </button>
               ))}
+              <button
+                type="button"
+                className="palette-button punk-palette-button"
+                data-active={colorMode === "punk"}
+                title="NakedPunks — click again to reshuffle"
+                aria-label="Use NakedPunks colors; press again to reshuffle"
+                aria-pressed={colorMode === "punk"}
+                onClick={selectPunkPalette}
+              >
+                <span style={{ background: "#FFF68E" }} />
+                <span style={{ background: "#28B143" }} />
+                <span style={{ background: "#8119B7" }} />
+                <span style={{ background: "#1A6ED5" }} />
+                <strong>PUNK</strong>
+              </button>
             </div>
           </section>
 
@@ -458,7 +508,7 @@ export default function PixelStudio() {
                   ),
                 )}
                 {layout.pixels.map((pixel, index) =>
-                  svgShape(pixel, index, shape, pixelGap, slant, foreground),
+                  svgShape(pixel, index, shape, pixelGap, slant, pixelColors[index]),
                 )}
               </svg>
             ) : (

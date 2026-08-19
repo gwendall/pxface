@@ -418,12 +418,13 @@ a:focus-visible {
 
 .palette-row {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(5, 1fr);
   gap: 6px;
   margin-top: 14px;
 }
 
 .palette-button {
+  position: relative;
   height: 24px;
   display: flex;
   border: 1px solid var(--line);
@@ -432,8 +433,25 @@ a:focus-visible {
   cursor: pointer;
 }
 
+.palette-button[data-active="true"] {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 1px var(--accent);
+}
+
 .palette-button span {
   flex: 1;
+}
+
+.punk-palette-button strong {
+  position: absolute;
+  inset: 3px;
+  display: grid;
+  place-items: center;
+  background: rgb(0 0 0 / 0.46);
+  color: #fff;
+  font-family: var(--font-geist-mono), monospace;
+  font-size: 6px;
+  letter-spacing: 0.08em;
 }
 
 .switches {

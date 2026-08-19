@@ -26,16 +26,31 @@ Quality checks:
 npm test
 npm run lint
 npm run build
+npm run font:verify
 ```
 
 `npm run fixtures:update` regenerates reviewed SVG/PNG golden files. `npm run
 font:build` regenerates all font formats and requires Python FontTools with
-WOFF support (`fonttools[woff]`). See `docs/architecture.md` before changing a
-render option or glyph so every adapter stays synchronized.
+WOFF support (`fonttools[woff]`). `npm run font:verify` checks font metadata,
+printable ASCII coverage, binary signatures, release hashes, and exact ZIP
+contents. See `docs/architecture.md` before changing a render option or glyph
+so every adapter stays synchronized.
 
 The app lives in `src/app`. The CC0 glyph data lives in `src/lib/pixel-font-data.ts`, with the layout and headless render engine in `src/lib`.
 
 The public render endpoint, OpenAPI contract, agent skill, and installable font are documented at [pxword.com/docs/api](https://pxword.com/docs/api), [pxword.com/openapi.yaml](https://pxword.com/openapi.yaml), [pxword.com/SKILL.md](https://pxword.com/SKILL.md), and [pxword.com/font](https://pxword.com/font).
+
+## Font releases
+
+The font download page leads with a versioned TTF package for the most reliable
+desktop and design-tool installation. It also provides an OTF alternative, a
+WOFF2/WOFF web kit with CSS, individual immutable files, and a complete release
+archive. Do not install both TTF and OTF: they are the same family and style.
+
+`public/fonts/manifest.json` is the machine-readable release index. Each
+complete archive includes the OFL, README, FONTLOG, checksums, and a binary
+manifest. Legacy unversioned files remain available for existing app CSS, while
+public documentation links to the versioned `public/fonts/v1.0.0` artifacts.
 
 This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
 

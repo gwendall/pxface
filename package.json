@@ -9,6 +9,7 @@
     "start": "next start",
     "lint": "eslint",
     "font:build": "python3 scripts/build-fonts.py",
+    "font:verify": "python3 scripts/verify-font-packages.py",
     "fixtures:update": "tsx scripts/update-golden.ts",
     "test": "vitest run",
     "test:watch": "vitest"

@@ -312,7 +312,7 @@ export default function PixelStudio() {
           <PixelMark pixels={brandLayout.pixels} />
           <span>PXWORD</span>
         </div>
-        <p className="source-note">3×5 pixel wordmark studio</p>
+        <p className="source-note"><span>3×5 pixel wordmark studio</span><Link href="/font">Download font</Link></p>
         <div className="topbar-actions">
           <button type="button" className="button secondary" onClick={copySvg} disabled={!hasPixels}>
             {copyState === "copied" ? <Check weight="bold" /> : <Copy />}
@@ -453,6 +453,9 @@ export default function PixelStudio() {
           <button type="button" className="shuffle-button" onClick={shuffleStyle}>
             <Shuffle /> Shuffle style
           </button>
+          <Link className="font-download-link" href="/font">
+            <DownloadSimple /> Download PXWORD font
+          </Link>
         </aside>
 
         <section className="preview-panel" aria-label="Wordmark preview">

@@ -4,7 +4,10 @@
 from __future__ import annotations
 
 import ast
+import hashlib
+import json
 import re
+import zipfile
 from pathlib import Path
 
 try:
@@ -19,6 +22,8 @@ except ModuleNotFoundError as error:
 ROOT = Path(__file__).resolve().parents[1]
 SOURCE = ROOT / "src/lib/pixel-font-data.ts"
 OUTPUT = ROOT / "public/fonts"
+LICENSE = ROOT / "LICENSES/OFL-1.1.txt"
+FONTLOG = ROOT / "FONTLOG.md"
 UNITS_PER_EM = 1000
 PIXEL = 160
 ASCENDER = 800
@@ -26,6 +31,9 @@ DESCENDER = -200
 FONT_NAME = "PXWORD 3x5"
 PS_NAME = "PXWORD-3x5"
 VERSION = "1.0.0"
+FILE_STEM = "PXWORD3x5-Regular"
+RELEASE_STEM = "PXWORD3x5"
+COPYRIGHT = 'Copyright (c) 2026, Gwendall Esnault (https://gwendall.com), with Reserved Font Name "PXWORD".'
 MAC_EPOCH_TIMESTAMP = 3849984000  # 2026-01-01, deterministic.
 
 
@@ -91,6 +99,7 @@ def setup_common(font: FontBuilder, glyph_order: list[str], cmap: dict[int, str]
     font.setupHorizontalMetrics(metrics)
     font.setupHorizontalHeader(ascent=ASCENDER, descent=DESCENDER, lineGap=0)
     font.setupNameTable({
+        "copyright": COPYRIGHT,
         "familyName": FONT_NAME,
         "styleName": "Regular",
         "uniqueFontIdentifier": f"{FONT_NAME} Regular {VERSION}",
@@ -124,6 +133,169 @@ def save_variants(ttf_path: Path):
         font.flavor = flavor
         font.recalcTimestamp = False
         font.save(OUTPUT / f"{PS_NAME}{suffix}")
+
+
+def package_readme(package: str, recommendation: str) -> bytes:
+    return f"""PXWORD 3x5 — Version {VERSION}
+
+A proportional five-pixel-high display font generated from the same glyphs as pxword.com.
+
+PACKAGE
+{package}
+
+RECOMMENDED USE
+{recommendation}
+
+Do not install both the TTF and OTF versions. They represent the same family and
+style, so installing both can create duplicate-family warnings.
+
+WEB
+Copy the web font files and pxword-3x5.css into the same directory, then link the
+stylesheet or copy its @font-face rule. WOFF2 is the recommended browser format;
+WOFF is included only as a legacy fallback.
+
+DESKTOP
+macOS: open PXWORD3x5-Regular.ttf, then choose Install Font in Font Book.
+Windows: right-click PXWORD3x5-Regular.ttf, then choose Install or Install for all users.
+Linux: copy the TTF or OTF to ~/.local/share/fonts and run fc-cache -f.
+
+LICENSE
+Font software is OFL-1.1 with Reserved Font Name PXWORD. Documents and graphics made with the font are not placed under the OFL. See OFL.txt.
+
+The font contains glyph outlines and metrics. Use https://pxword.com for pixel
+gap, depth, random colors, padding, canvas ratios, and editable per-pixel SVG.
+
+Documentation: https://pxword.com/font
+""".encode("utf-8")
+
+
+def write_zip(path: Path, entries: dict[str, bytes]):
+    with zipfile.ZipFile(path, "w", compression=zipfile.ZIP_DEFLATED, compresslevel=9) as archive:
+        for name in sorted(entries):
+            info = zipfile.ZipInfo(name, date_time=(2026, 1, 1, 0, 0, 0))
+            info.compress_type = zipfile.ZIP_DEFLATED
+            info.external_attr = 0o100644 << 16
+            archive.writestr(info, entries[name], compresslevel=9)
+
+
+def build_packages():
+    version_dir = OUTPUT / f"v{VERSION}"
+    version_dir.mkdir(parents=True, exist_ok=True)
+    license_text = LICENSE.read_bytes()
+    css = (OUTPUT / "pxword-3x5.css").read_bytes().replace(f"./v{VERSION}/".encode(), b"./")
+    binaries = {suffix: (OUTPUT / f"{PS_NAME}.{suffix}").read_bytes() for suffix in ("ttf", "otf", "woff", "woff2")}
+    canonical_paths: dict[str, Path] = {}
+    for suffix, data in binaries.items():
+        path = version_dir / f"{FILE_STEM}.{suffix}"
+        path.write_bytes(data)
+        canonical_paths[suffix] = path
+
+    package_names = {
+        "ttf": f"{RELEASE_STEM}-TTF-v{VERSION}.zip",
+        "otf": f"{RELEASE_STEM}-OTF-v{VERSION}.zip",
+        "web": f"{RELEASE_STEM}-Web-v{VERSION}.zip",
+        "all": f"{RELEASE_STEM}-v{VERSION}.zip",
+    }
+    for stale_name in (
+        f"{PS_NAME}-v{VERSION}.zip",
+        f"{PS_NAME}-desktop-v{VERSION}.zip",
+        f"{PS_NAME}-web-v{VERSION}.zip",
+    ):
+        (OUTPUT / stale_name).unlink(missing_ok=True)
+
+    ttf_root = f"{RELEASE_STEM}-TTF-v{VERSION}"
+    write_zip(OUTPUT / package_names["ttf"], {
+        f"{ttf_root}/OFL.txt": license_text,
+        f"{ttf_root}/README.txt": package_readme(
+            "TTF desktop font.",
+            "Install PXWORD3x5-Regular.ttf. TTF is the default choice for desktop apps, Windows, macOS, Linux, Office, Figma, and most design tools.",
+        ),
+        f"{ttf_root}/{FILE_STEM}.ttf": binaries["ttf"],
+    })
+
+    otf_root = f"{RELEASE_STEM}-OTF-v{VERSION}"
+    write_zip(OUTPUT / package_names["otf"], {
+        f"{otf_root}/OFL.txt": license_text,
+        f"{otf_root}/README.txt": package_readme(
+            "OTF desktop font.",
+            "Install PXWORD3x5-Regular.otf only when your workflow specifically prefers OTF. It contains the same family, style, and character set as the TTF.",
+        ),
+        f"{otf_root}/{FILE_STEM}.otf": binaries["otf"],
+    })
+
+    web_root = f"{RELEASE_STEM}-Web-v{VERSION}"
+    write_zip(OUTPUT / package_names["web"], {
+        f"{web_root}/OFL.txt": license_text,
+        f"{web_root}/README.txt": package_readme(
+            "Self-hosted web fonts and CSS.",
+            "Serve PXWORD3x5-Regular.woff2 with pxword-3x5.css. Keep WOFF only if you need a legacy fallback.",
+        ),
+        f"{web_root}/{FILE_STEM}.woff": binaries["woff"],
+        f"{web_root}/{FILE_STEM}.woff2": binaries["woff2"],
+        f"{web_root}/pxword-3x5.css": css,
+    })
+
+    binary_manifest = {
+        f"{FILE_STEM}.{suffix}": {
+            "bytes": len(data),
+            "sha256": hashlib.sha256(data).hexdigest(),
+        }
+        for suffix, data in binaries.items()
+    }
+    sha256sums = "".join(
+        f"{metadata['sha256']}  {name}\n" for name, metadata in sorted(binary_manifest.items())
+    ).encode("utf-8")
+    faq = (
+        "PXWORD uses the SIL Open Font License 1.1.\n\n"
+        "Read the official OFL FAQ at https://openfontlicense.org/ofl-faq/\n"
+        "The license itself is included as OFL.txt.\n"
+    ).encode("utf-8")
+    all_root = f"{RELEASE_STEM}-v{VERSION}"
+    write_zip(OUTPUT / package_names["all"], {
+        f"{all_root}/OFL.txt": license_text,
+        f"{all_root}/OFL-FAQ.txt": faq,
+        f"{all_root}/FONTLOG.md": FONTLOG.read_bytes(),
+        f"{all_root}/README.txt": package_readme(
+            "Complete release: TTF, OTF, WOFF2, WOFF, CSS, checksums, manifest, and license documentation.",
+            "For desktop, install only desktop/ttf/PXWORD3x5-Regular.ttf. For web, use web/PXWORD3x5-Regular.woff2 and web/pxword-3x5.css.",
+        ),
+        f"{all_root}/SHA256SUMS.txt": sha256sums,
+        f"{all_root}/manifest.json": (json.dumps(binary_manifest, indent=2) + "\n").encode("utf-8"),
+        f"{all_root}/desktop/otf/{FILE_STEM}.otf": binaries["otf"],
+        f"{all_root}/desktop/ttf/{FILE_STEM}.ttf": binaries["ttf"],
+        f"{all_root}/web/{FILE_STEM}.woff": binaries["woff"],
+        f"{all_root}/web/{FILE_STEM}.woff2": binaries["woff2"],
+        f"{all_root}/web/pxword-3x5.css": css,
+    })
+
+    artifacts = list(canonical_paths.values()) + [OUTPUT / name for name in package_names.values()]
+    purposes = {
+        f"{FILE_STEM}.ttf": "Recommended desktop font",
+        f"{FILE_STEM}.otf": "Alternative desktop font",
+        f"{FILE_STEM}.woff2": "Recommended web font",
+        f"{FILE_STEM}.woff": "Legacy web fallback",
+        package_names["ttf"]: "Recommended desktop package",
+        package_names["otf"]: "Alternative OTF desktop package",
+        package_names["web"]: "Self-hosted web kit",
+        package_names["all"]: "Complete release package",
+    }
+    manifest = {
+        "family": FONT_NAME,
+        "style": "Regular 400",
+        "version": VERSION,
+        "license": "OFL-1.1",
+        "reservedFontName": "PXWORD",
+        "artifacts": {
+            (f"v{VERSION}/{artifact.name}" if artifact.parent == version_dir else artifact.name): {
+                "bytes": artifact.stat().st_size,
+                "sha256": hashlib.sha256(artifact.read_bytes()).hexdigest(),
+                "url": f"/fonts/{f'v{VERSION}/' if artifact.parent == version_dir else ''}{artifact.name}",
+                "purpose": purposes[artifact.name],
+            }
+            for artifact in artifacts
+        },
+    }
+    (OUTPUT / "manifest.json").write_text(json.dumps(manifest, indent=2) + "\n", encoding="utf-8")
 
 
 def main():
@@ -165,7 +337,9 @@ def main():
     otf.font.recalcTimestamp = False
     otf.save(OUTPUT / f"{PS_NAME}.otf")
 
-    print(f"Built {FONT_NAME} {VERSION}: TTF, OTF, WOFF, WOFF2 ({len(cmap)} cmap entries)")
+    build_packages()
+
+    print(f"Built {FONT_NAME} {VERSION}: TTF, OTF, WOFF, WOFF2, 4 ZIP packages ({len(cmap)} cmap entries)")
 
 
 if __name__ == "__main__":

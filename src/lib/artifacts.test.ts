@@ -36,9 +36,37 @@ describe("published artifacts", () => {
     ["PXWORD-3x5.otf", [...Buffer.from("OTTO")]],
     ["PXWORD-3x5.woff", [...Buffer.from("wOFF")]],
     ["PXWORD-3x5.woff2", [...Buffer.from("wOF2")]],
+    ["v1.0.0/PXWORD3x5-Regular.ttf", [0x00, 0x01, 0x00, 0x00]],
+    ["v1.0.0/PXWORD3x5-Regular.otf", [...Buffer.from("OTTO")]],
+    ["v1.0.0/PXWORD3x5-Regular.woff", [...Buffer.from("wOFF")]],
+    ["v1.0.0/PXWORD3x5-Regular.woff2", [...Buffer.from("wOF2")]],
   ])("ships a valid %s container", (name, signature) => {
     const bytes = readFileSync(join(root, "public/fonts", name));
     expect([...bytes.subarray(0, 4)]).toEqual(signature);
     expect(bytes.length).toBeGreaterThan(1_000);
+  });
+
+  it.each([
+    "PXWORD3x5-TTF-v1.0.0.zip",
+    "PXWORD3x5-OTF-v1.0.0.zip",
+    "PXWORD3x5-Web-v1.0.0.zip",
+    "PXWORD3x5-v1.0.0.zip",
+  ])("ships a valid %s package", (name) => {
+    const bytes = readFileSync(join(root, "public/fonts", name));
+    expect(bytes.subarray(0, 4).toString("binary")).toBe("PK\u0003\u0004");
+    expect(bytes.length).toBeGreaterThan(1_000);
+  });
+
+  it("publishes versioned font URLs and checksums", () => {
+    const manifest = JSON.parse(readFileSync(join(root, "public/fonts/manifest.json"), "utf8")) as {
+      version: string;
+      artifacts: Record<string, { url: string; sha256: string }>;
+    };
+    expect(manifest.version).toBe("1.0.0");
+    expect(Object.keys(manifest.artifacts)).toHaveLength(8);
+    for (const [name, artifact] of Object.entries(manifest.artifacts)) {
+      expect(artifact.url).toBe(`/fonts/${name}`);
+      expect(artifact.sha256).toMatch(/^[0-9a-f]{64}$/);
+    }
   });
 });

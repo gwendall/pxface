@@ -2,8 +2,8 @@
 @font-face {
   font-family: "PXWORD 3x5";
   src:
-    url("./PXWORD-3x5.woff2") format("woff2"),
-    url("./PXWORD-3x5.woff") format("woff");
+    url("./v1.0.0/PXWORD3x5-Regular.woff2") format("woff2"),
+    url("./v1.0.0/PXWORD3x5-Regular.woff") format("woff");
   font-style: normal;
   font-weight: 400;
   font-display: swap;

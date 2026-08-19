@@ -1,0 +1,57 @@
+{
+  "family": "PXWORD 3x5",
+  "style": "Regular 400",
+  "version": "1.0.0",
+  "license": "OFL-1.1",
+  "reservedFontName": "PXWORD",
+  "artifacts": {
+    "v1.0.0/PXWORD3x5-Regular.ttf": {
+      "bytes": 10112,
+      "sha256": "b4600a93f5dbc9cf8a2bc763d8bb694a98b815e3a9b7dccf87fccc1c8f05f406",
+      "url": "/fonts/v1.0.0/PXWORD3x5-Regular.ttf",
+      "purpose": "Recommended desktop font"
+    },
+    "v1.0.0/PXWORD3x5-Regular.otf": {
+      "bytes": 9328,
+      "sha256": "5497be3d7c2adcb421e5078bce80e9b9836233821d8592585fe6461c9b03663b",
+      "url": "/fonts/v1.0.0/PXWORD3x5-Regular.otf",
+      "purpose": "Alternative desktop font"
+    },
+    "v1.0.0/PXWORD3x5-Regular.woff": {
+      "bytes": 2500,
+      "sha256": "0e48e08aa31129d992d04543cffbbcf77fcb0b0ebc4f12ff1987102876cad4ff",
+      "url": "/fonts/v1.0.0/PXWORD3x5-Regular.woff",
+      "purpose": "Legacy web fallback"
+    },
+    "v1.0.0/PXWORD3x5-Regular.woff2": {
+      "bytes": 1612,
+      "sha256": "9fed430f9e20005307242342b44cf02993bcb24bbc4a9c87d82fbacdfa16d826",
+      "url": "/fonts/v1.0.0/PXWORD3x5-Regular.woff2",
+      "purpose": "Recommended web font"
+    },
+    "PXWORD3x5-TTF-v1.0.0.zip": {
+      "bytes": 5473,
+      "sha256": "8f38c8e208bcc480205cef64a40861a7e85712339dcbda1cc95f9288de2a9fab",
+      "url": "/fonts/PXWORD3x5-TTF-v1.0.0.zip",
+      "purpose": "Recommended desktop package"
+    },
+    "PXWORD3x5-OTF-v1.0.0.zip": {
+      "bytes": 5073,
+      "sha256": "35968d35a388e40db65ae6c8b66c3358d97036ae8a92d6a3b919fe0769013e8e",
+      "url": "/fonts/PXWORD3x5-OTF-v1.0.0.zip",
+      "purpose": "Alternative OTF desktop package"
+    },
+    "PXWORD3x5-Web-v1.0.0.zip": {
+      "bytes": 7593,
+      "sha256": "940b7a7b7c0917ed93e46b6038a615530747c01204c36cb465153ee9eb71be02",
+      "url": "/fonts/PXWORD3x5-Web-v1.0.0.zip",
+      "purpose": "Self-hosted web kit"
+    },
+    "PXWORD3x5-v1.0.0.zip": {
+      "bytes": 13799,
+      "sha256": "47995215eea85e1a843f5a7e944711b626449b39e344f58ce179ff789fe73edd",
+      "url": "/fonts/PXWORD3x5-v1.0.0.zip",
+      "purpose": "Complete release package"
+    }
+  }
+}

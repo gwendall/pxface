@@ -6,16 +6,31 @@ implementation.
 
 ## Progress
 
-- Current batch: **None — all tickets complete**
+- Current batch: **Font distribution experience — in progress**
 - Production: verified on [pxword.com](https://pxword.com) from commit `649a6ea`
   on 19 August 2026.
-- QA: 24 automated tests, lint, production build, deterministic font rebuild,
+- QA: 33 automated tests, lint, production build, deterministic font rebuild,
   OpenAPI parse, skill validation, API smoke tests, and desktop/mobile browser
   checks all pass.
 - Completed: licensing, responsive editor, export padding/ratios, palette mode,
   expanded glyph set, default `HELLO\nTHERE`, and pixel-font empty state.
 - Legend: `[ ]` queued, `[~]` in progress, `[x]` complete, `[-]` deliberately
   skipped after evaluation.
+
+## Font distribution experience
+
+- [x] **Create a first-class font download flow**
+  - Lead with one recommended, versioned TTF “Download font” archive.
+  - Offer a separate OTF alternative, web kit, complete release, and individual
+    TTF, OTF, WOFF, and WOFF2 downloads with plain-language format guidance.
+  - Include README, OFL license, web CSS, sizes, versions, and checksums.
+- [x] **Document installation and integration**
+  - Cover macOS, Windows, Linux, Figma/design applications, and self-hosted web.
+  - Explain the boundary between the installable font and PXWORD renderer
+    effects.
+- [~] **Validate the distribution end to end**
+  - Keep archives deterministic and test their contents, signatures, sizes,
+    hashes, download responses, responsive UI, keyboard focus, and copy flow.
 
 ## Now — strengthen the core
 

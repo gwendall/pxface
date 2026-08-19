@@ -453,7 +453,7 @@ a:focus-visible {
   flex: 1;
 }
 
-.punk-palette-button strong {
+.random-palette-button strong {
   position: absolute;
   inset: 3px;
   display: grid;

@@ -19,7 +19,7 @@ import {
 import { shuffledNakedPunksPalette } from "@/lib/naked-punks-palette";
 
 type PixelShape = "square" | "soft" | "dot";
-type ColorMode = "solid" | "punk";
+type ColorMode = "solid" | "random";
 type ExportRatio = "fit" | "square";
 
 type Palette = {
@@ -57,7 +57,7 @@ const palettes: Palette[] = [
 ];
 
 const sampleWords = ["PXWORD", "PIXEL", "SIGNAL", "MODULAR"];
-const initialPunkSeed = 0x5058574f;
+const initialRandomSeed = 0x5058574f;
 
 function randomSeed() {
   const values = new Uint32Array(1);
@@ -216,22 +216,22 @@ export default function PixelStudio() {
   const [background, setBackground] = useState(palettes[0].background);
   const [shadow, setShadow] = useState(palettes[0].shadow);
   const [colorMode, setColorMode] = useState<ColorMode>("solid");
-  const [punkSeed, setPunkSeed] = useState(initialPunkSeed);
+  const [randomPaletteSeed, setRandomPaletteSeed] = useState(initialRandomSeed);
   const [copyState, setCopyState] = useState<"idle" | "copied" | "error">("idle");
 
   const layout = useMemo(
     () => buildPixelLayout(text, letterSpacing, lineSpacing, align),
     [align, letterSpacing, lineSpacing, text],
   );
-  const punkPalette = useMemo(
-    () => shuffledNakedPunksPalette(background, punkSeed),
-    [background, punkSeed],
+  const randomPalette = useMemo(
+    () => shuffledNakedPunksPalette(background, randomPaletteSeed),
+    [background, randomPaletteSeed],
   );
   const pixelColors = useMemo(
     () => layout.pixels.map((_, index) => (
-      colorMode === "punk" ? punkPalette[index % punkPalette.length] : foreground
+      colorMode === "random" ? randomPalette[index % randomPalette.length] : foreground
     )),
-    [colorMode, foreground, layout.pixels, punkPalette],
+    [colorMode, foreground, layout.pixels, randomPalette],
   );
   const brandLayout = useMemo(() => buildPixelLayout("PX", 1, 2, "left"), []);
   const slantWidth = slant ? 0.72 : 0;
@@ -256,15 +256,15 @@ export default function PixelStudio() {
     setShadow(palette.shadow);
   }
 
-  function selectPunkPalette() {
-    setColorMode("punk");
-    setPunkSeed(randomSeed());
+  function selectRandomPalette() {
+    setColorMode("random");
+    setRandomPaletteSeed(randomSeed());
   }
 
   function shuffleStyle() {
     const paletteIndex = Math.floor(Math.random() * (palettes.length + 1));
     const shapes: PixelShape[] = ["square", "soft", "dot"];
-    if (paletteIndex === palettes.length) selectPunkPalette();
+    if (paletteIndex === palettes.length) selectRandomPalette();
     else selectPalette(palettes[paletteIndex]);
     setShape(shapes[Math.floor(Math.random() * shapes.length)]);
     setDepth(Math.floor(Math.random() * 4));
@@ -472,18 +472,18 @@ export default function PixelStudio() {
               ))}
               <button
                 type="button"
-                className="palette-button punk-palette-button"
-                data-active={colorMode === "punk"}
-                title="NakedPunks — click again to reshuffle"
-                aria-label="Use NakedPunks colors; press again to reshuffle"
-                aria-pressed={colorMode === "punk"}
-                onClick={selectPunkPalette}
+                className="palette-button random-palette-button"
+                data-active={colorMode === "random"}
+                title="Random colors — click again to reshuffle"
+                aria-label="Use random colors; press again to reshuffle"
+                aria-pressed={colorMode === "random"}
+                onClick={selectRandomPalette}
               >
                 <span style={{ background: "#FFF68E" }} />
                 <span style={{ background: "#28B143" }} />
                 <span style={{ background: "#8119B7" }} />
                 <span style={{ background: "#1A6ED5" }} />
-                <strong>PUNK</strong>
+                <strong>RANDOM</strong>
               </button>
             </div>
           </section>

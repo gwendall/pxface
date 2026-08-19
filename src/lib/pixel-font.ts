@@ -6,6 +6,9 @@ export type Pixel = {
   x: number;
   y: number;
   row: number;
+  line: number;
+  character: number;
+  value: string;
 };
 
 export type PixelLayout = {
@@ -16,7 +19,8 @@ export type PixelLayout = {
 
 export type TextAlign = "left" | "center" | "right";
 
-function characterWidth(character: string) {
+function characterWidth(character: string, wordSpacing: number) {
+  if (character === " ") return wordSpacing;
   return PIXEL_FONT[character]?.[0].length ?? 3;
 }
 
@@ -32,12 +36,13 @@ export function buildPixelLayout(
   letterSpacing: number,
   lineSpacing: number,
   align: TextAlign,
+  wordSpacing = 3,
 ): PixelLayout {
-  const lines = normalizeForFont(value).split("\n").slice(0, 3);
+  const lines = normalizeForFont(value).split("\n");
   const lineWidths = lines.map((line) => {
     const characters = [...line];
     return characters.length
-      ? characters.reduce((sum, character) => sum + characterWidth(character), 0)
+      ? characters.reduce((sum, character) => sum + characterWidth(character, wordSpacing), 0)
         + (characters.length - 1) * letterSpacing
       : 0;
   });
@@ -56,7 +61,7 @@ export function buildPixelLayout(
 
     let cursorX = offsetX;
 
-    [...line].forEach((character) => {
+    [...line].forEach((character, characterIndex) => {
       const glyph = PIXEL_FONT[character];
       glyph?.forEach((row, y) => {
         [...row].forEach((cell, x) => {
@@ -65,11 +70,14 @@ export function buildPixelLayout(
             x: cursorX + x,
             y: lineIndex * lineAdvance + y,
             row: y,
+            line: lineIndex,
+            character: characterIndex,
+            value: character,
           });
         });
       });
 
-      cursorX += characterWidth(character) + letterSpacing;
+      cursorX += characterWidth(character, wordSpacing) + letterSpacing;
     });
   });
 

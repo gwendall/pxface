@@ -12,16 +12,14 @@ import {
 } from "@phosphor-icons/react";
 import Link from "next/link";
 import { useMemo, useState } from "react";
+import { buildPixelLayout, type Pixel, type TextAlign } from "@/lib/pixel-font";
 import {
-  buildPixelLayout,
-  type Pixel,
-  type TextAlign,
-} from "@/lib/pixel-font";
-import { shuffledNakedPunksPalette } from "@/lib/naked-punks-palette";
-
-type PixelShape = "square" | "soft" | "dot";
-type ColorMode = "solid" | "random";
-type ExportRatio = "fit" | "square";
+  renderWordmark,
+  type ColorMode,
+  type ExportRatio,
+  type PixelShape,
+  wordmarkFileName,
+} from "@/lib/wordmark-renderer";
 
 type Palette = {
   name: string;
@@ -64,10 +62,6 @@ function randomSeed() {
   const values = new Uint32Array(1);
   window.crypto.getRandomValues(values);
   return values[0];
-}
-
-function roundCanvasValue(value: number) {
-  return Number(value.toFixed(4));
 }
 
 function PixelMark({ pixels }: { pixels: Pixel[] }) {
@@ -165,49 +159,10 @@ function ColorControl({
   );
 }
 
-function svgShape(
-  pixel: Pixel,
-  index: number,
-  shape: PixelShape,
-  gap: number,
-  slant: boolean,
-  color: string,
-  offset = 0,
-) {
-  const inset = gap / 2;
-  const size = 1 - gap;
-  const slantOffset = slant ? (4 - pixel.row) * 0.18 : 0;
-  const x = pixel.x + inset + slantOffset + offset;
-  const y = pixel.y + inset + offset;
-
-  if (shape === "dot") {
-    return (
-      <circle
-        key={`${offset}-${index}`}
-        cx={x + size / 2}
-        cy={y + size / 2}
-        r={size / 2}
-        fill={color}
-      />
-    );
-  }
-
-  return (
-    <rect
-      key={`${offset}-${index}`}
-      x={x}
-      y={y}
-      width={size}
-      height={size}
-      rx={shape === "soft" ? Math.min(0.22, size / 3) : 0}
-      fill={color}
-    />
-  );
-}
-
 export default function PixelStudio() {
   const [text, setText] = useState("HELLO\nTHERE");
   const [letterSpacing, setLetterSpacing] = useState(1);
+  const [wordSpacing, setWordSpacing] = useState(3);
   const [lineSpacing, setLineSpacing] = useState(2);
   const [pixelGap, setPixelGap] = useState(0);
   const [depth, setDepth] = useState(0);
@@ -224,36 +179,47 @@ export default function PixelStudio() {
   const [randomPaletteSeed, setRandomPaletteSeed] = useState(initialRandomSeed);
   const [copyState, setCopyState] = useState<"idle" | "copied" | "error">("idle");
 
-  const layout = useMemo(
-    () => buildPixelLayout(text, letterSpacing, lineSpacing, align),
-    [align, letterSpacing, lineSpacing, text],
-  );
-  const randomPalette = useMemo(
-    () => shuffledNakedPunksPalette(background, randomPaletteSeed),
-    [background, randomPaletteSeed],
-  );
-  const pixelColors = useMemo(
-    () => layout.pixels.map((_, index) => (
-      colorMode === "random" ? randomPalette[index % randomPalette.length] : foreground
-    )),
-    [colorMode, foreground, layout.pixels, randomPalette],
-  );
+  const render = useMemo(() => renderWordmark({
+    text,
+    foreground,
+    background,
+    depthColor: shadow,
+    letterSpacing,
+    wordSpacing,
+    lineSpacing,
+    pixelGap,
+    depth,
+    padding: paddingPercent,
+    ratio: exportRatio,
+    align,
+    shape,
+    slant,
+    transparent,
+    colorMode,
+    seed: randomPaletteSeed,
+  }), [
+    align,
+    background,
+    colorMode,
+    depth,
+    exportRatio,
+    foreground,
+    letterSpacing,
+    lineSpacing,
+    paddingPercent,
+    pixelGap,
+    randomPaletteSeed,
+    shadow,
+    shape,
+    slant,
+    text,
+    transparent,
+    wordSpacing,
+  ]);
+  const { layout } = render.scene;
   const brandLayout = useMemo(() => buildPixelLayout("PX", 1, 2, "left"), []);
   const emptyLayout = useMemo(() => buildPixelLayout("ABC", 1, 2, "left"), []);
-  const slantWidth = slant ? 0.72 : 0;
-  const contentWidth = layout.width + depth + slantWidth;
-  const contentHeight = layout.height + depth;
-  const padding = roundCanvasValue(Math.min(contentWidth, contentHeight) * (paddingPercent / 100));
-  const fitWidth = roundCanvasValue(contentWidth + padding * 2);
-  const fitHeight = roundCanvasValue(contentHeight + padding * 2);
-  const viewWidth = roundCanvasValue(exportRatio === "square" ? Math.max(fitWidth, fitHeight) : fitWidth);
-  const viewHeight = exportRatio === "square" ? viewWidth : fitHeight;
-  const viewX = roundCanvasValue(-(viewWidth - contentWidth) / 2);
-  const viewY = roundCanvasValue(-(viewHeight - contentHeight) / 2);
   const hasPixels = layout.pixels.length > 0;
-  const shapeRendering = shape === "square" && pixelGap === 0
-    ? "crispEdges"
-    : "geometricPrecision";
 
   function selectPalette(palette: Palette) {
     setColorMode("solid");
@@ -278,46 +244,8 @@ export default function PixelStudio() {
     setSlant(Math.random() > 0.55);
   }
 
-  function shapeMarkup(pixel: Pixel, color: string, offset: number) {
-    const inset = pixelGap / 2;
-    const size = 1 - pixelGap;
-    const slantOffset = slant ? (4 - pixel.row) * 0.18 : 0;
-    const x = pixel.x + inset + slantOffset + offset;
-    const y = pixel.y + inset + offset;
-
-    if (shape === "dot") {
-      return `<circle cx="${x + size / 2}" cy="${y + size / 2}" r="${size / 2}" fill="${color}"/>`;
-    }
-
-    const radius = shape === "soft" ? Math.min(0.22, size / 3) : 0;
-    return `<rect x="${x}" y="${y}" width="${size}" height="${size}" rx="${radius}" fill="${color}"/>`;
-  }
-
   function getSvgMarkup() {
-    const exportUnit = 48;
-    const licenseMarkup = "<metadata>PXWORD 3x5 glyph shapes are dedicated under CC0-1.0: https://creativecommons.org/publicdomain/zero/1.0/</metadata>";
-    const backgroundMarkup = transparent
-      ? ""
-      : `<rect x="${viewX}" y="${viewY}" width="${viewWidth}" height="${viewHeight}" fill="${background}"/>`;
-    const shadowMarkup = Array.from({ length: depth }, (_, layerIndex) =>
-      layout.pixels
-        .map((pixel) => shapeMarkup(pixel, shadow, layerIndex + 1))
-        .join(""),
-    ).join("");
-    const foregroundMarkup = layout.pixels
-      .map((pixel, index) => shapeMarkup(pixel, pixelColors[index], 0))
-      .join("");
-
-    return `<svg xmlns="http://www.w3.org/2000/svg" width="${Math.ceil(viewWidth * exportUnit)}" height="${Math.ceil(viewHeight * exportUnit)}" viewBox="${viewX} ${viewY} ${viewWidth} ${viewHeight}" shape-rendering="${shapeRendering}">${licenseMarkup}${backgroundMarkup}${shadowMarkup}${foregroundMarkup}</svg>`;
-  }
-
-  function fileName(extension: string) {
-    const safeName = text
-      .replace(/\n/g, "-")
-      .replace(/[^a-zA-Z0-9]+/g, "-")
-      .replace(/^-|-$/g, "")
-      .toLowerCase();
-    return `${safeName || "pxword"}.${extension}`;
+    return render.svg;
   }
 
   function downloadBlob(blob: Blob, name: string) {
@@ -330,7 +258,7 @@ export default function PixelStudio() {
   }
 
   function downloadSvg() {
-    downloadBlob(new Blob([getSvgMarkup()], { type: "image/svg+xml" }), fileName("svg"));
+    downloadBlob(new Blob([getSvgMarkup()], { type: "image/svg+xml" }), wordmarkFileName(text, "svg"));
   }
 
   function downloadPng() {
@@ -346,7 +274,7 @@ export default function PixelStudio() {
       const context = canvas.getContext("2d");
       context?.drawImage(image, 0, 0);
       canvas.toBlob((blob) => {
-        if (blob) downloadBlob(blob, fileName("png"));
+        if (blob) downloadBlob(blob, wordmarkFileName(text, "png"));
         URL.revokeObjectURL(url);
       }, "image/png");
     };
@@ -356,7 +284,15 @@ export default function PixelStudio() {
 
   async function copySvg() {
     try {
-      await navigator.clipboard.writeText(getSvgMarkup());
+      const svg = getSvgMarkup();
+      if (typeof ClipboardItem !== "undefined" && navigator.clipboard.write) {
+        await navigator.clipboard.write([new ClipboardItem({
+          "text/html": new Blob([svg], { type: "text/html" }),
+          "text/plain": new Blob([svg], { type: "text/plain" }),
+        })]);
+      } else {
+        await navigator.clipboard.writeText(svg);
+      }
       setCopyState("copied");
       window.setTimeout(() => setCopyState("idle"), 1600);
     } catch {
@@ -380,10 +316,10 @@ export default function PixelStudio() {
         <div className="topbar-actions">
           <button type="button" className="button secondary" onClick={copySvg} disabled={!hasPixels}>
             {copyState === "copied" ? <Check weight="bold" /> : <Copy />}
-            {copyState === "copied" ? "Copied" : copyState === "error" ? "Copy failed" : "Copy SVG"}
+            {copyState === "copied" ? "Copied" : copyState === "error" ? "Copy failed" : "Copy for Figma"}
           </button>
           <button type="button" className="button secondary" onClick={downloadSvg} disabled={!hasPixels}>
-            <DownloadSimple /> SVG
+            <DownloadSimple /> Editable SVG
           </button>
           <button type="button" className="button primary" onClick={downloadPng} disabled={!hasPixels}>
             <ImageSquare weight="fill" /> PNG
@@ -446,6 +382,7 @@ export default function PixelStudio() {
 
           <section className="control-section sliders">
             <RangeControl label="Letter space" min={0} max={4} value={letterSpacing} onChange={setLetterSpacing} />
+            <RangeControl label="Word space" min={0} max={8} value={wordSpacing} onChange={setWordSpacing} />
             <RangeControl label="Line space" min={0} max={5} value={lineSpacing} onChange={setLineSpacing} />
             <RangeControl label="Pixel gap" min={0} max={0.36} step={0.04} value={pixelGap} onChange={setPixelGap} />
             <RangeControl label="Depth" min={0} max={4} value={depth} onChange={setDepth} />
@@ -525,23 +462,12 @@ export default function PixelStudio() {
           </div>
           <div className={`preview-frame${transparent ? " checkerboard" : ""}`} style={previewStyle}>
             {hasPixels ? (
-              <svg
+              <div
                 className="wordmark-svg"
-                viewBox={`${viewX} ${viewY} ${viewWidth} ${viewHeight}`}
-                shapeRendering={shapeRendering}
                 role="img"
                 aria-label={`${text || "Empty"} pixel wordmark preview`}
-                style={transparent ? undefined : { background }}
-              >
-                {Array.from({ length: depth }, (_, layerIndex) =>
-                  layout.pixels.map((pixel, index) =>
-                    svgShape(pixel, index, shape, pixelGap, slant, shadow, layerIndex + 1),
-                  ),
-                )}
-                {layout.pixels.map((pixel, index) =>
-                  svgShape(pixel, index, shape, pixelGap, slant, pixelColors[index]),
-                )}
-              </svg>
+                dangerouslySetInnerHTML={{ __html: render.svg }}
+              />
             ) : (
               <div className="empty-state">
                 <svg
@@ -559,7 +485,7 @@ export default function PixelStudio() {
             )}
           </div>
           <div className="preview-footer">
-            <p>Every shape stays vector at any size.</p>
+            <Link className="api-link" href="/docs/api">Render API</Link>
             <Link className="spec-note" href="/license">Glyphs CC0 / Code MIT</Link>
             <a href="https://gwendall.com" target="_blank" rel="noreferrer">Made by Gwendall</a>
           </div>

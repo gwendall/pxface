@@ -1,0 +1,10 @@
+/* PXWORD 3x5 font software: OFL-1.1, Reserved Font Name "PXWORD". */
+@font-face {
+  font-family: "PXWORD 3x5";
+  src:
+    url("./PXWORD-3x5.woff2") format("woff2"),
+    url("./PXWORD-3x5.woff") format("woff");
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+}

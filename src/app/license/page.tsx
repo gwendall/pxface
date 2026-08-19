@@ -60,6 +60,17 @@ export default function LicensePage() {
                 the CC0 dedication or MIT License.
               </p>
             </section>
+
+            <section>
+              <span>04 / Font files</span>
+              <h2>OFL 1.1</h2>
+              <p>
+                The installable PXWORD 3×5 font files use the SIL Open Font
+                License. PXWORD is the Reserved Font Name; modified versions
+                must use another name.
+              </p>
+              <Link href="/font">Download the font</Link>
+            </section>
           </div>
 
           <aside className="license-export-note">

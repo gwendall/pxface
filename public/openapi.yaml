@@ -1,0 +1,149 @@
+openapi: 3.1.0
+info:
+  title: PXWORD Render API
+  version: 1.0.0
+  description: Deterministically render editable 3x5 pixel wordmarks as SVG or PNG.
+  license:
+    name: MIT and CC0-1.0
+    url: https://pxword.com/license
+servers:
+  - url: https://pxword.com
+paths:
+  /api/v1/render:
+    get:
+      operationId: renderWordmarkGet
+      summary: Render a cacheable wordmark
+      parameters:
+        - { $ref: '#/components/parameters/format' }
+        - { $ref: '#/components/parameters/download' }
+        - { $ref: '#/components/parameters/text' }
+        - { $ref: '#/components/parameters/foreground' }
+        - { $ref: '#/components/parameters/background' }
+        - { $ref: '#/components/parameters/depthColor' }
+        - { $ref: '#/components/parameters/letterSpacing' }
+        - { $ref: '#/components/parameters/wordSpacing' }
+        - { $ref: '#/components/parameters/lineSpacing' }
+        - { $ref: '#/components/parameters/pixelGap' }
+        - { $ref: '#/components/parameters/depth' }
+        - { $ref: '#/components/parameters/padding' }
+        - { $ref: '#/components/parameters/ratio' }
+        - { $ref: '#/components/parameters/align' }
+        - { $ref: '#/components/parameters/shape' }
+        - { $ref: '#/components/parameters/slant' }
+        - { $ref: '#/components/parameters/transparent' }
+        - { $ref: '#/components/parameters/colorMode' }
+        - { $ref: '#/components/parameters/seed' }
+        - { $ref: '#/components/parameters/scale' }
+      responses:
+        '200': { $ref: '#/components/responses/Asset' }
+        '304': { description: The ETag still matches. }
+        '400': { $ref: '#/components/responses/Invalid' }
+        '429': { $ref: '#/components/responses/RateLimited' }
+    post:
+      operationId: renderWordmarkPost
+      summary: Render a wordmark from JSON
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                format: { $ref: '#/components/schemas/RenderFormat' }
+                download: { type: boolean, default: false }
+                options: { $ref: '#/components/schemas/WordmarkOptions' }
+            examples:
+              randomSquare:
+                value:
+                  format: png
+                  options: { text: "HELLO\nTHERE", ratio: square, colorMode: random, seed: 42 }
+      responses:
+        '200': { $ref: '#/components/responses/Asset' }
+        '400': { $ref: '#/components/responses/Invalid' }
+        '413': { description: JSON body exceeds 16384 bytes. }
+        '429': { $ref: '#/components/responses/RateLimited' }
+    options:
+      operationId: renderWordmarkOptions
+      summary: CORS preflight
+      responses:
+        '204': { description: CORS headers. }
+components:
+  schemas:
+    RenderFormat:
+      type: string
+      enum: [svg, png]
+      default: svg
+    WordmarkOptions:
+      type: object
+      additionalProperties: false
+      properties:
+        text: { type: string, default: "HELLO\nTHERE", maxLength: 160, description: At most 8 lines. }
+        foreground: { type: string, default: '#F1F0E9', pattern: '^#[0-9A-Fa-f]{6}([0-9A-Fa-f]{2})?$' }
+        background: { type: string, default: '#181816', pattern: '^#[0-9A-Fa-f]{6}([0-9A-Fa-f]{2})?$' }
+        depthColor: { type: string, default: '#FF4E1A', pattern: '^#[0-9A-Fa-f]{6}([0-9A-Fa-f]{2})?$' }
+        letterSpacing: { type: number, minimum: 0, maximum: 8, default: 1 }
+        wordSpacing: { type: number, minimum: 0, maximum: 16, default: 3 }
+        lineSpacing: { type: number, minimum: 0, maximum: 12, default: 2 }
+        pixelGap: { type: number, minimum: 0, maximum: 0.8, default: 0 }
+        depth: { type: integer, minimum: 0, maximum: 12, default: 0 }
+        padding: { type: number, minimum: 0, maximum: 200, default: 20, description: Percentage of the shortest content edge. }
+        ratio: { type: string, enum: [fit, square], default: fit }
+        align: { type: string, enum: [left, center, right], default: left }
+        shape: { type: string, enum: [square, soft, dot], default: square }
+        slant: { type: boolean, default: false }
+        transparent: { type: boolean, default: false }
+        colorMode: { type: string, enum: [solid, random], default: solid }
+        seed: { type: integer, minimum: 0, maximum: 4294967295, default: 1347966799 }
+        scale: { type: number, minimum: 1, maximum: 256, default: 48, description: Output pixels per design unit. }
+    Error:
+      type: object
+      required: [error, issues]
+      properties:
+        error: { type: string }
+        issues:
+          type: array
+          items:
+            type: object
+            required: [field, message]
+            properties:
+              field: { type: string }
+              message: { type: string }
+  parameters:
+    format: { name: format, in: query, schema: { $ref: '#/components/schemas/RenderFormat' } }
+    download: { name: download, in: query, schema: { type: boolean, default: false } }
+    text: { name: text, in: query, schema: { type: string, default: "HELLO\nTHERE", maxLength: 160 } }
+    foreground: { name: foreground, in: query, schema: { type: string, default: '#F1F0E9' } }
+    background: { name: background, in: query, schema: { type: string, default: '#181816' } }
+    depthColor: { name: depthColor, in: query, schema: { type: string, default: '#FF4E1A' } }
+    letterSpacing: { name: letterSpacing, in: query, schema: { type: number, minimum: 0, maximum: 8, default: 1 } }
+    wordSpacing: { name: wordSpacing, in: query, schema: { type: number, minimum: 0, maximum: 16, default: 3 } }
+    lineSpacing: { name: lineSpacing, in: query, schema: { type: number, minimum: 0, maximum: 12, default: 2 } }
+    pixelGap: { name: pixelGap, in: query, schema: { type: number, minimum: 0, maximum: 0.8, default: 0 } }
+    depth: { name: depth, in: query, schema: { type: integer, minimum: 0, maximum: 12, default: 0 } }
+    padding: { name: padding, in: query, schema: { type: number, minimum: 0, maximum: 200, default: 20 } }
+    ratio: { name: ratio, in: query, schema: { type: string, enum: [fit, square], default: fit } }
+    align: { name: align, in: query, schema: { type: string, enum: [left, center, right], default: left } }
+    shape: { name: shape, in: query, schema: { type: string, enum: [square, soft, dot], default: square } }
+    slant: { name: slant, in: query, schema: { type: boolean, default: false } }
+    transparent: { name: transparent, in: query, schema: { type: boolean, default: false } }
+    colorMode: { name: colorMode, in: query, schema: { type: string, enum: [solid, random], default: solid } }
+    seed: { name: seed, in: query, schema: { type: integer, minimum: 0, maximum: 4294967295, default: 1347966799 } }
+    scale: { name: scale, in: query, schema: { type: number, minimum: 1, maximum: 256, default: 48 } }
+  responses:
+    Asset:
+      description: Rendered asset. Exact dimensions and renderer version are returned as X-PXWORD headers.
+      headers:
+        X-PXWORD-Width: { schema: { type: integer } }
+        X-PXWORD-Height: { schema: { type: integer } }
+        X-PXWORD-Renderer-Version: { schema: { type: string } }
+      content:
+        image/svg+xml: { schema: { type: string } }
+        image/png: { schema: { type: string, contentEncoding: base64 } }
+    Invalid:
+      description: Invalid render parameters.
+      content:
+        application/json: { schema: { $ref: '#/components/schemas/Error' } }
+    RateLimited:
+      description: More than 60 requests per minute from one IP.
+      content:
+        application/json: { schema: { $ref: '#/components/schemas/Error' } }

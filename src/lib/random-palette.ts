@@ -1,4 +1,4 @@
-export const NAKED_PUNKS_COLORS = [
+export const RANDOM_PIXEL_COLORS = [
   "#fff68eff", "#5c390fff", "#c77514ff", "#d7d7d7ff", "#28b143ff", "#8119b7ff",
   "#b261dcff", "#c9c9c9ff", "#b1b1b1ff", "#1637a4ff", "#1a43c8ff", "#142c7cff",
   "#cd00cbff", "#d60000ff", "#1a6ed5ff", "#ffd926ff", "#ca4e11ff", "#933709ff",
@@ -72,14 +72,14 @@ function seededRandom(seed: number) {
   };
 }
 
-export function shuffledNakedPunksPalette(background: string, seed: number) {
+export function buildRandomPalette(background: string, seed: number) {
   const canvas = parseHex(background);
   const darkCanvas = luminance(canvas) < 0.45;
   const referenceCanvas = darkCanvas
     ? { r: 0, g: 0, b: 0 }
     : { r: 255, g: 255, b: 255 };
   const minimumContrast = darkCanvas ? 3 : 2.5;
-  const contrastingColors: string[] = NAKED_PUNKS_COLORS.filter((color) => {
+  const contrastingColors: string[] = RANDOM_PIXEL_COLORS.filter((color) => {
     const renderedColor = composite(parseHex(color), referenceCanvas);
     return contrastRatio(renderedColor, referenceCanvas) >= minimumContrast;
   });

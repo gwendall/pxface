@@ -1,0 +1,4 @@
+interface:
+  display_name: "PXWORD Render"
+  short_description: "Generate deterministic pixel wordmarks"
+  default_prompt: "Use $pxword-render to generate an editable SVG or PNG pixel wordmark for my text."

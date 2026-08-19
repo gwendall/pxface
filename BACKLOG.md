@@ -4,16 +4,27 @@ Ideas are ordered by dependency. The central constraint is that the editor,
 exports, integrations, and agents must all use the same rendering
 implementation.
 
+## Progress
+
+- Current batch: **Production deploy** — in progress
+- QA: 24 automated tests, lint, production build, deterministic font rebuild,
+  OpenAPI parse, skill validation, API smoke tests, and desktop/mobile browser
+  checks all pass.
+- Completed: licensing, responsive editor, export padding/ratios, palette mode,
+  expanded glyph set, default `HELLO\nTHERE`, and pixel-font empty state.
+- Legend: `[ ]` queued, `[~]` in progress, `[x]` complete, `[-]` deliberately
+  skipped after evaluation.
+
 ## Now — strengthen the core
 
-- [ ] **Add word-space width control**
+- [x] **Add word-space width control**
   - Add a `Word space` range control alongside letter and line spacing.
   - Preserve the current three-unit space as the default.
   - Apply it consistently to line measurement, alignment, preview, SVG, PNG,
     filenames, and future render parameters.
   - Add layout tests for leading, trailing, repeated, and multiline spaces.
 
-- [ ] **Create one headless rendering module**
+- [x] **Create one headless rendering module**
   - Define a small `WordmarkOptions` interface containing every rendering
     choice: text, type/background/depth colors, letter/word/line spacing,
     pixel gap, depth, padding, ratio, alignment, shape, slant, transparency,
@@ -25,7 +36,7 @@ implementation.
   - Keep React preview and download handling as thin adapters over this module.
   - Test all observable behavior through this interface.
 
-- [ ] **Complete printable ASCII coverage**
+- [x] **Complete printable ASCII coverage**
   - Add the 11 remaining glyphs: `"`, `#`, `$`, `&`, `/`, `;`, `<`, `>`, `@`,
     `\`, and `` ` ``.
   - Verify all 95 printable ASCII characters, including SPACE and lowercase
@@ -33,7 +44,7 @@ implementation.
 
 ## Next — rendering for tools and agents
 
-- [ ] **Add a versioned render endpoint**
+- [x] **Add a versioned render endpoint**
   - Add `/api/v1/render` as an adapter over the headless rendering module.
   - Support `image/svg+xml` first and PNG through a server raster adapter;
     never maintain separate browser and server renderers.
@@ -44,14 +55,14 @@ implementation.
   - Define limits for text length, line count, output size, request rate, and
     allowed CORS origins before making the endpoint public.
 
-- [ ] **Publish an OpenAPI contract and API guide**
+- [x] **Publish an OpenAPI contract and API guide**
   - Keep `openapi.yaml` generated from or checked against the same validation
     schema used by the endpoint.
   - Document every parameter, default, enum, response type, and error with
     copy-paste `curl` examples for SVG and PNG.
   - Add a small `/docs/api` page and expose the canonical OpenAPI URL.
 
-- [ ] **Make PXWORD agent-friendly**
+- [x] **Make PXWORD agent-friendly**
   - Publish `/llms.txt` with concise product and render-endpoint instructions.
   - Add a reusable `SKILL.md` showing how an agent creates, previews, and saves
     a PXWORD asset without treating the glyph set as a normal font.
@@ -62,7 +73,7 @@ implementation.
 
 ## Next — editable design exports
 
-- [ ] **Create a Figma-ready SVG mode**
+- [x] **Create a Figma-ready SVG mode**
   - Confirm the simplest flow first: Figma can import or paste SVG, so offer
     `Copy for Figma` and `Download editable SVG` before building a plugin.
   - Name and group the SVG hierarchy by line, character, depth layer, and
@@ -72,14 +83,14 @@ implementation.
   - Test paste/import behavior in Figma, FigJam, Illustrator, Sketch, and
     other tools that consume editable SVG.
 
-- [ ] **Evaluate a native Figma plugin only if needed**
+- [-] **Evaluate a native Figma plugin only if needed**
   - Spike direct insertion, parameter editing, and re-rendering inside Figma.
   - Reuse the public render contract or a bundled headless module.
   - Do not build a plugin if editable SVG already covers the main workflow.
 
 ## Later — distributable font files
 
-- [ ] **Generate a real font package**
+- [x] **Generate a real font package**
   - Build TTF, OTF, WOFF, and WOFF2 artifacts from the canonical glyph data.
   - Define font metrics, proportional advances, SPACE width, naming/versioning,
     and test specimens before choosing a build tool.
@@ -91,8 +102,8 @@ implementation.
 
 ## Quality and operations
 
-- [ ] Add golden SVG and PNG fixtures shared by browser, API, and agent tests.
-- [ ] Version render defaults so old API calls remain reproducible.
-- [ ] Add structured usage metrics before investing in a Figma plugin or MCP.
-- [ ] Document how new glyphs, palettes, and render options enter the canonical
+- [x] Add golden SVG and PNG fixtures shared by browser, API, and agent tests.
+- [x] Version render defaults so old API calls remain reproducible.
+- [x] Add structured usage metrics before investing in a Figma plugin or MCP.
+- [x] Document how new glyphs, palettes, and render options enter the canonical
   schema and propagate to every adapter.

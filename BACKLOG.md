@@ -6,7 +6,9 @@ implementation.
 
 ## Progress
 
-- Current batch: **Production deploy** — in progress
+- Current batch: **None — all tickets complete**
+- Production: verified on [pxword.com](https://pxword.com) from commit `649a6ea`
+  on 19 August 2026.
 - QA: 24 automated tests, lint, production build, deterministic font rebuild,
   OpenAPI parse, skill validation, API smoke tests, and desktop/mobile browser
   checks all pass.

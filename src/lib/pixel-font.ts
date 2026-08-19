@@ -27,6 +27,37 @@ export const PIXEL_FONT: Record<string, Glyph> = {
   X: ["101", "101", "010", "101", "101"],
   Y: ["101", "101", "111", "001", "001"],
   Z: ["111", "001", "010", "100", "111"],
+  "0": ["111", "101", "101", "101", "111"],
+  "1": ["01", "11", "01", "01", "01"],
+  "2": ["111", "001", "111", "100", "111"],
+  "3": ["111", "001", "111", "001", "111"],
+  "4": ["101", "101", "111", "001", "001"],
+  "5": ["111", "100", "111", "001", "111"],
+  "6": ["100", "100", "111", "101", "111"],
+  "7": ["111", "001", "001", "001", "001"],
+  "8": ["111", "101", "111", "101", "111"],
+  "9": ["111", "101", "111", "001", "111"],
+  "!": ["1", "1", "1", "0", "1"],
+  "%": ["101", "001", "010", "100", "101"],
+  "^": ["010", "101", "000", "000", "000"],
+  "*": ["000", "010", "111", "010", "101"],
+  "(": ["01", "10", "10", "10", "01"],
+  ")": ["10", "01", "01", "01", "10"],
+  _: ["000", "000", "000", "000", "111"],
+  "+": ["000", "010", "111", "010", "000"],
+  "-": ["000", "000", "111", "000", "000"],
+  "=": ["000", "111", "000", "111", "000"],
+  "[": ["11", "10", "10", "10", "11"],
+  "]": ["11", "01", "01", "01", "11"],
+  "|": ["1", "1", "1", "1", "1"],
+  ":": ["0", "0", "1", "0", "1"],
+  ",": ["00", "00", "00", "01", "10"],
+  ".": ["0", "0", "0", "0", "1"],
+  "?": ["11", "01", "11", "00", "10"],
+  "{": ["001", "001", "010", "100", "100"],
+  "}": ["100", "100", "010", "001", "001"],
+  "'": ["10", "01", "00", "00", "00"],
+  "~": ["000", "100", "111", "001", "000"],
 };
 
 export type Pixel = {
@@ -43,6 +74,10 @@ export type PixelLayout = {
 
 export type TextAlign = "left" | "center" | "right";
 
+function characterWidth(character: string) {
+  return PIXEL_FONT[character]?.[0].length ?? 3;
+}
+
 export function normalizeForFont(value: string) {
   return value
     .normalize("NFD")
@@ -57,9 +92,13 @@ export function buildPixelLayout(
   align: TextAlign,
 ): PixelLayout {
   const lines = normalizeForFont(value).split("\n").slice(0, 3);
-  const lineWidths = lines.map((line) =>
-    line.length ? line.length * 3 + (line.length - 1) * letterSpacing : 0,
-  );
+  const lineWidths = lines.map((line) => {
+    const characters = [...line];
+    return characters.length
+      ? characters.reduce((sum, character) => sum + characterWidth(character), 0)
+        + (characters.length - 1) * letterSpacing
+      : 0;
+  });
   const width = Math.max(1, ...lineWidths);
   const lineAdvance = 5 + lineSpacing;
   const pixels: Pixel[] = [];
@@ -73,21 +112,22 @@ export function buildPixelLayout(
           ? width - lineWidth
           : 0;
 
-    [...line].forEach((character, characterIndex) => {
-      const glyph = PIXEL_FONT[character];
-      if (!glyph) return;
+    let cursorX = offsetX;
 
-      glyph.forEach((row, y) => {
+    [...line].forEach((character) => {
+      const glyph = PIXEL_FONT[character];
+      glyph?.forEach((row, y) => {
         [...row].forEach((cell, x) => {
-          if (cell === "1") {
-            pixels.push({
-              x: offsetX + characterIndex * (3 + letterSpacing) + x,
-              y: lineIndex * lineAdvance + y,
-              row: y,
-            });
-          }
+          if (cell !== "1") return;
+          pixels.push({
+            x: cursorX + x,
+            y: lineIndex * lineAdvance + y,
+            row: y,
+          });
         });
       });
+
+      cursorX += characterWidth(character) + letterSpacing;
     });
   });
 

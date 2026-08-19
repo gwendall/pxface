@@ -65,6 +65,10 @@ function randomSeed() {
   return values[0];
 }
 
+function roundCanvasValue(value: number) {
+  return Number(value.toFixed(4));
+}
+
 function PixelMark({ pixels }: { pixels: Pixel[] }) {
   return (
     <svg viewBox="0 0 7 5" aria-hidden="true" className="brand-mark">
@@ -237,13 +241,13 @@ export default function PixelStudio() {
   const slantWidth = slant ? 0.72 : 0;
   const contentWidth = layout.width + depth + slantWidth;
   const contentHeight = layout.height + depth;
-  const padding = Math.min(contentWidth, contentHeight) * (paddingPercent / 100);
-  const fitWidth = contentWidth + padding * 2;
-  const fitHeight = contentHeight + padding * 2;
-  const viewWidth = exportRatio === "square" ? Math.max(fitWidth, fitHeight) : fitWidth;
+  const padding = roundCanvasValue(Math.min(contentWidth, contentHeight) * (paddingPercent / 100));
+  const fitWidth = roundCanvasValue(contentWidth + padding * 2);
+  const fitHeight = roundCanvasValue(contentHeight + padding * 2);
+  const viewWidth = roundCanvasValue(exportRatio === "square" ? Math.max(fitWidth, fitHeight) : fitWidth);
   const viewHeight = exportRatio === "square" ? viewWidth : fitHeight;
-  const viewX = -(viewWidth - contentWidth) / 2;
-  const viewY = -(viewHeight - contentHeight) / 2;
+  const viewX = roundCanvasValue(-(viewWidth - contentWidth) / 2);
+  const viewY = roundCanvasValue(-(viewHeight - contentHeight) / 2);
   const hasPixels = layout.pixels.length > 0;
   const shapeRendering = shape === "square" && pixelGap === 0
     ? "crispEdges"
@@ -307,7 +311,7 @@ export default function PixelStudio() {
   function fileName(extension: string) {
     const safeName = text
       .replace(/\n/g, "-")
-      .replace(/[^a-zA-Z]+/g, "-")
+      .replace(/[^a-zA-Z0-9]+/g, "-")
       .replace(/^-|-$/g, "")
       .toLowerCase();
     return `${safeName || "pxword"}.${extension}`;
@@ -537,13 +541,13 @@ export default function PixelStudio() {
             ) : (
               <div className="empty-state">
                 <span>ABC</span>
-                <p>Type A-Z to make a mark.</p>
+                <p>Type A-Z, 0-9 or symbols.</p>
               </div>
             )}
           </div>
           <div className="preview-footer">
             <p>Every shape stays vector at any size.</p>
-            <span className="spec-note">PXWORD.COM / A-Z / SVG + PNG</span>
+            <span className="spec-note">PXWORD.COM / A-Z + 0-9 / SVG + PNG</span>
             <a href="https://gwendall.com" target="_blank" rel="noreferrer">Made by Gwendall</a>
           </div>
         </section>

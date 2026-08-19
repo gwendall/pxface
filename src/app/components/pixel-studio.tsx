@@ -398,6 +398,7 @@ export default function PixelStudio() {
               rows={3}
               maxLength={80}
               spellCheck={false}
+              style={{ textAlign: align }}
               onChange={(event) => setText(event.target.value.toUpperCase().split("\n").slice(0, 3).join("\n"))}
             />
             <div className="sample-row" aria-label="Text examples">

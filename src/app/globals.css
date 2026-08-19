@@ -612,8 +612,12 @@ a:focus-visible {
 }
 
 .wordmark-svg {
+  position: absolute;
+  inset: 0;
+  display: block;
+  margin: auto;
   width: min(82%, 1100px);
-  max-height: 72%;
+  height: 72%;
   overflow: visible;
   filter: drop-shadow(0 18px 32px rgb(0 0 0 / 0.08));
   animation: canvas-in 420ms cubic-bezier(0.16, 1, 0.3, 1) both;

@@ -20,6 +20,7 @@ import { shuffledNakedPunksPalette } from "@/lib/naked-punks-palette";
 
 type PixelShape = "square" | "soft" | "dot";
 type ColorMode = "solid" | "punk";
+type ExportRatio = "fit" | "square";
 
 type Palette = {
   name: string;
@@ -205,6 +206,8 @@ export default function PixelStudio() {
   const [lineSpacing, setLineSpacing] = useState(2);
   const [pixelGap, setPixelGap] = useState(0);
   const [depth, setDepth] = useState(0);
+  const [paddingPercent, setPaddingPercent] = useState(20);
+  const [exportRatio, setExportRatio] = useState<ExportRatio>("fit");
   const [shape, setShape] = useState<PixelShape>("square");
   const [align, setAlign] = useState<TextAlign>("left");
   const [slant, setSlant] = useState(false);
@@ -232,8 +235,15 @@ export default function PixelStudio() {
   );
   const brandLayout = useMemo(() => buildPixelLayout("PX", 1, 2, "left"), []);
   const slantWidth = slant ? 0.72 : 0;
-  const viewWidth = layout.width + depth + slantWidth;
-  const viewHeight = layout.height + depth;
+  const contentWidth = layout.width + depth + slantWidth;
+  const contentHeight = layout.height + depth;
+  const padding = Math.min(contentWidth, contentHeight) * (paddingPercent / 100);
+  const fitWidth = contentWidth + padding * 2;
+  const fitHeight = contentHeight + padding * 2;
+  const viewWidth = exportRatio === "square" ? Math.max(fitWidth, fitHeight) : fitWidth;
+  const viewHeight = exportRatio === "square" ? viewWidth : fitHeight;
+  const viewX = -(viewWidth - contentWidth) / 2;
+  const viewY = -(viewHeight - contentHeight) / 2;
   const hasPixels = layout.pixels.length > 0;
   const shapeRendering = shape === "square" && pixelGap === 0
     ? "crispEdges"
@@ -281,7 +291,7 @@ export default function PixelStudio() {
     const exportUnit = 48;
     const backgroundMarkup = transparent
       ? ""
-      : `<rect width="100%" height="100%" fill="${background}"/>`;
+      : `<rect x="${viewX}" y="${viewY}" width="${viewWidth}" height="${viewHeight}" fill="${background}"/>`;
     const shadowMarkup = Array.from({ length: depth }, (_, layerIndex) =>
       layout.pixels
         .map((pixel) => shapeMarkup(pixel, shadow, layerIndex + 1))
@@ -291,7 +301,7 @@ export default function PixelStudio() {
       .map((pixel, index) => shapeMarkup(pixel, pixelColors[index], 0))
       .join("");
 
-    return `<svg xmlns="http://www.w3.org/2000/svg" width="${Math.ceil(viewWidth * exportUnit)}" height="${Math.ceil(viewHeight * exportUnit)}" viewBox="0 0 ${viewWidth} ${viewHeight}" shape-rendering="${shapeRendering}">${backgroundMarkup}${shadowMarkup}${foregroundMarkup}</svg>`;
+    return `<svg xmlns="http://www.w3.org/2000/svg" width="${Math.ceil(viewWidth * exportUnit)}" height="${Math.ceil(viewHeight * exportUnit)}" viewBox="${viewX} ${viewY} ${viewWidth} ${viewHeight}" shape-rendering="${shapeRendering}">${backgroundMarkup}${shadowMarkup}${foregroundMarkup}</svg>`;
   }
 
   function fileName(extension: string) {
@@ -414,11 +424,24 @@ export default function PixelStudio() {
             </div>
           </section>
 
+          <section className="control-section">
+            <p className="field-label">Export ratio</p>
+            <div className="segmented two">
+              <SegmentButton active={exportRatio === "fit"} label="Fit export to content" onClick={() => setExportRatio("fit")}>
+                <span className="segment-label">FIT</span>
+              </SegmentButton>
+              <SegmentButton active={exportRatio === "square"} label="Use a square export canvas" onClick={() => setExportRatio("square")}>
+                <span className="segment-label">1:1</span>
+              </SegmentButton>
+            </div>
+          </section>
+
           <section className="control-section sliders">
             <RangeControl label="Letter space" min={0} max={4} value={letterSpacing} onChange={setLetterSpacing} />
             <RangeControl label="Line space" min={0} max={5} value={lineSpacing} onChange={setLineSpacing} />
             <RangeControl label="Pixel gap" min={0} max={0.36} step={0.04} value={pixelGap} onChange={setPixelGap} />
             <RangeControl label="Depth" min={0} max={4} value={depth} onChange={setDepth} />
+            <RangeControl label="Padding" min={0} max={100} step={5} value={paddingPercent} suffix="%" onChange={setPaddingPercent} />
           </section>
 
           <section className="control-section color-section">
@@ -496,7 +519,7 @@ export default function PixelStudio() {
             {hasPixels ? (
               <svg
                 className="wordmark-svg"
-                viewBox={`0 0 ${viewWidth} ${viewHeight}`}
+                viewBox={`${viewX} ${viewY} ${viewWidth} ${viewHeight}`}
                 shapeRendering={shapeRendering}
                 role="img"
                 aria-label={`${text || "Empty"} pixel wordmark preview`}

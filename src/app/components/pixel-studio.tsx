@@ -10,6 +10,7 @@ import {
   TextAlignLeft,
   TextAlignRight,
 } from "@phosphor-icons/react";
+import Link from "next/link";
 import { useMemo, useState } from "react";
 import {
   buildPixelLayout,
@@ -205,7 +206,7 @@ function svgShape(
 }
 
 export default function PixelStudio() {
-  const [text, setText] = useState("PXWORD");
+  const [text, setText] = useState("HELLO\nTHERE");
   const [letterSpacing, setLetterSpacing] = useState(1);
   const [lineSpacing, setLineSpacing] = useState(2);
   const [pixelGap, setPixelGap] = useState(0);
@@ -238,6 +239,7 @@ export default function PixelStudio() {
     [colorMode, foreground, layout.pixels, randomPalette],
   );
   const brandLayout = useMemo(() => buildPixelLayout("PX", 1, 2, "left"), []);
+  const emptyLayout = useMemo(() => buildPixelLayout("ABC", 1, 2, "left"), []);
   const slantWidth = slant ? 0.72 : 0;
   const contentWidth = layout.width + depth + slantWidth;
   const contentHeight = layout.height + depth;
@@ -293,6 +295,7 @@ export default function PixelStudio() {
 
   function getSvgMarkup() {
     const exportUnit = 48;
+    const licenseMarkup = "<metadata>PXWORD 3x5 glyph shapes are dedicated under CC0-1.0: https://creativecommons.org/publicdomain/zero/1.0/</metadata>";
     const backgroundMarkup = transparent
       ? ""
       : `<rect x="${viewX}" y="${viewY}" width="${viewWidth}" height="${viewHeight}" fill="${background}"/>`;
@@ -305,7 +308,7 @@ export default function PixelStudio() {
       .map((pixel, index) => shapeMarkup(pixel, pixelColors[index], 0))
       .join("");
 
-    return `<svg xmlns="http://www.w3.org/2000/svg" width="${Math.ceil(viewWidth * exportUnit)}" height="${Math.ceil(viewHeight * exportUnit)}" viewBox="${viewX} ${viewY} ${viewWidth} ${viewHeight}" shape-rendering="${shapeRendering}">${backgroundMarkup}${shadowMarkup}${foregroundMarkup}</svg>`;
+    return `<svg xmlns="http://www.w3.org/2000/svg" width="${Math.ceil(viewWidth * exportUnit)}" height="${Math.ceil(viewHeight * exportUnit)}" viewBox="${viewX} ${viewY} ${viewWidth} ${viewHeight}" shape-rendering="${shapeRendering}">${licenseMarkup}${backgroundMarkup}${shadowMarkup}${foregroundMarkup}</svg>`;
   }
 
   function fileName(extension: string) {
@@ -541,14 +544,23 @@ export default function PixelStudio() {
               </svg>
             ) : (
               <div className="empty-state">
-                <span>ABC</span>
+                <svg
+                  className="empty-state-mark"
+                  viewBox={`0 0 ${emptyLayout.width} ${emptyLayout.height}`}
+                  shapeRendering="crispEdges"
+                  aria-hidden="true"
+                >
+                  {emptyLayout.pixels.map((pixel, index) => (
+                    <rect key={index} x={pixel.x} y={pixel.y} width="1" height="1" />
+                  ))}
+                </svg>
                 <p>Type A-Z, 0-9 or symbols.</p>
               </div>
             )}
           </div>
           <div className="preview-footer">
             <p>Every shape stays vector at any size.</p>
-            <span className="spec-note">PXWORD.COM / A-Z + 0-9 / SVG + PNG</span>
+            <Link className="spec-note" href="/license">Glyphs CC0 / Code MIT</Link>
             <a href="https://gwendall.com" target="_blank" rel="noreferrer">Made by Gwendall</a>
           </div>
         </section>

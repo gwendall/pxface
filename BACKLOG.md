@@ -6,8 +6,8 @@ implementation.
 
 ## Progress
 
-- Current batch: **Font distribution experience — in progress**
-- Production: verified on [pxword.com](https://pxword.com) from commit `649a6ea`
+- Current batch: **None — all tickets complete**
+- Production: verified on [pxword.com](https://pxword.com) from commit `1dd761c`
   on 19 August 2026.
 - QA: 33 automated tests, lint, production build, deterministic font rebuild,
   OpenAPI parse, skill validation, API smoke tests, and desktop/mobile browser
@@ -28,7 +28,7 @@ implementation.
   - Cover macOS, Windows, Linux, Figma/design applications, and self-hosted web.
   - Explain the boundary between the installable font and PXWORD renderer
     effects.
-- [~] **Validate the distribution end to end**
+- [x] **Validate the distribution end to end**
   - Keep archives deterministic and test their contents, signatures, sizes,
     hashes, download responses, responsive UI, keyboard focus, and copy flow.
 

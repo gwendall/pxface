@@ -2,13 +2,15 @@ import { Desktop, DownloadSimple, File, Globe, Package } from "@phosphor-icons/r
 import type { Metadata } from "next";
 import Link from "next/link";
 import manifestJson from "../../../public/fonts/manifest.json";
+import { createPageMetadata } from "@/lib/site-metadata";
 import { CopyCssButton, FontTester } from "./font-tools";
 
-export const metadata: Metadata = {
-  title: "Download PXFACE 3×5 Font",
+export const metadata: Metadata = createPageMetadata({
+  title: "Download the 3×5 Font",
   description: "Download the PXFACE 3×5 pixel font for desktop, design tools, and the web as OTF, TTF, WOFF2, or WOFF.",
-  alternates: { canonical: "/font" },
-};
+  path: "/font",
+  keywords: ["pixel font download", "3×5 font", "TTF pixel font", "WOFF2 pixel font", "Figma pixel font"],
+});
 
 const manifest = manifestJson as {
   family: string;
@@ -77,12 +79,6 @@ export default function FontPage() {
   return (
     <main className="docs-page font-page">
       <div className="docs-shell font-shell">
-        <nav className="docs-nav" aria-label="Font download">
-          <Link href="/">PXFACE</Link>
-          <span>FONT / v{manifest.version}</span>
-          <Link href="/license">OFL 1.1</Link>
-        </nav>
-
         <header className="font-hero">
           <div>
             <p className="license-kicker">PXFACE 3×5 / 95 ASCII CHARACTERS</p>

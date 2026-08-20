@@ -30,8 +30,10 @@ working typographers rather than styled like a game or nostalgic emulator.
 - Display face: PXFACE 3×5
 - Shape rule: square corners and crisp edges
 
-The PX pixel mark remains the compact icon. Pair it with the full PXFACE
-wordmark wherever space permits.
+The PX pixel mark remains the compact icon. In the horizontal signature, the
+orange mark supplies the letters PX and the light pixel lettering supplies
+FACE, so the complete lockup reads PXFACE once. Never place the PX mark beside
+a second full PXFACE wordmark.
 
 ## Voice
 

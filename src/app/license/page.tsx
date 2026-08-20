@@ -1,23 +1,18 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { createPageMetadata } from "@/lib/site-metadata";
 
-export const metadata: Metadata = {
-  title: "License | PXFACE",
+export const metadata: Metadata = createPageMetadata({
+  title: "Licensing",
   description: "Licensing terms for the PXFACE app, 3×5 glyph set, and brand.",
-  alternates: {
-    canonical: "/license",
-  },
-};
+  path: "/license",
+  keywords: ["PXFACE license", "CC0 pixel glyphs", "MIT license", "SIL Open Font License", "OFL pixel font"],
+});
 
 export default function LicensePage() {
   return (
     <main className="license-page">
       <article className="license-sheet">
-        <header className="license-header">
-          <Link href="/">PXFACE</Link>
-          <span>Licensing / 2026</span>
-        </header>
-
         <div className="license-content">
           <section className="license-intro">
             <p className="license-eyebrow">Open glyphs</p>

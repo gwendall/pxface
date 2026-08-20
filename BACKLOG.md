@@ -6,7 +6,11 @@ implementation.
 
 ## Progress
 
-- Current batch: **Shared editorial footer in progress**
+- Current batch: **None - shared editorial footer complete**
+- Shared-footer production verification: deployment
+  `dpl_AE9JrKECNAnQVjMergo5cP4Wrkj4` from merge commit `1b6f2aa` served one
+  shared footer on Font, API, and License; the full-screen studio retained its
+  dedicated compact footer.
 - Production verification: [pxface.com](https://pxface.com) served deployment
   `dpl_DK8kc1ydQxMR3qfE6pWJvauCp9Ly` from merge commit `4b481d1` successfully.
 - Legacy production: [pxword.com](https://pxword.com) redirects to PXFACE while
@@ -29,7 +33,7 @@ implementation.
     server component and one consistent set of links.
   - Keep the compact studio footer separate because it belongs to the fixed,
     full-screen canvas layout.
-- [ ] **Verify and publish the footer consolidation**
+- [x] **Verify and publish the footer consolidation**
   - Test all secondary pages at desktop and mobile sizes in both color schemes,
     then merge and verify the production deployment.
 

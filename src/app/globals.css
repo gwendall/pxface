@@ -1023,6 +1023,138 @@ a:focus-visible {
   font: 11px/1.7 var(--font-geist-mono), monospace;
 }
 
+.docs-parameters {
+  border-bottom: 1px solid var(--line);
+}
+
+.docs-parameters-heading {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 36px;
+  align-items: end;
+  padding: clamp(36px, 6vw, 72px);
+  border-bottom: 1px solid var(--line);
+}
+
+.docs-parameters-heading h2 {
+  margin: 0 0 18px;
+  color: var(--ink);
+  font-size: clamp(28px, 4vw, 48px);
+  letter-spacing: -0.05em;
+}
+
+.docs-parameters-heading p {
+  max-width: 720px;
+  margin: 0;
+  color: var(--muted);
+  font-size: 14px;
+  line-height: 1.65;
+}
+
+.docs-parameters-heading .docs-table-note {
+  display: none;
+}
+
+.docs-parameters-heading a,
+.docs-reference a {
+  color: var(--ink);
+  font-family: var(--font-geist-mono), monospace;
+  font-size: 10px;
+  text-underline-offset: 4px;
+  text-transform: uppercase;
+}
+
+.docs-parameters-heading code,
+.docs-parameter-group code {
+  color: var(--ink);
+  font-family: var(--font-geist-mono), monospace;
+}
+
+.docs-parameter-group {
+  display: grid;
+  grid-template-columns: minmax(180px, 0.32fr) minmax(0, 1fr);
+}
+
+.docs-parameter-group + .docs-parameter-group {
+  border-top: 1px solid var(--line);
+}
+
+.docs-parameter-group > header {
+  padding: 28px 24px;
+  border-right: 1px solid var(--line);
+}
+
+.docs-parameter-group h3 {
+  margin: 0 0 10px;
+  color: var(--ink);
+  font-size: 16px;
+}
+
+.docs-parameter-group header p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.55;
+}
+
+.docs-table-scroll {
+  min-width: 0;
+  overflow-x: auto;
+}
+
+.docs-parameter-group table {
+  width: 100%;
+  min-width: 740px;
+  border-collapse: collapse;
+  table-layout: fixed;
+}
+
+.docs-parameter-group th,
+.docs-parameter-group td {
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--line);
+  text-align: left;
+  vertical-align: top;
+}
+
+.docs-parameter-group tbody tr:last-child > * {
+  border-bottom: 0;
+}
+
+.docs-parameter-group thead th {
+  color: var(--muted);
+  font-family: var(--font-geist-mono), monospace;
+  font-size: 9px;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.docs-parameter-group thead th:nth-child(1) {
+  width: 19%;
+}
+
+.docs-parameter-group thead th:nth-child(2) {
+  width: 25%;
+}
+
+.docs-parameter-group thead th:nth-child(3) {
+  width: 19%;
+}
+
+.docs-parameter-group tbody th,
+.docs-parameter-group tbody td {
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 400;
+  line-height: 1.55;
+}
+
+.docs-parameter-group tbody th code {
+  color: var(--accent);
+  font-weight: 650;
+}
+
 .docs-reference {
   display: grid;
   grid-template-columns: 0.8fr 1.2fr;
@@ -1761,6 +1893,50 @@ a:focus-visible {
     grid-template-columns: repeat(4, auto);
     justify-content: space-between;
     gap: 12px;
+  }
+
+  .docs-parameters-heading {
+    grid-template-columns: 1fr;
+    gap: 24px;
+  }
+
+  .docs-parameters-heading a {
+    justify-self: start;
+  }
+
+  .docs-parameters-heading .docs-table-note {
+    display: block;
+    margin-top: 14px;
+    font-family: var(--font-geist-mono), monospace;
+    font-size: 9px;
+    text-transform: uppercase;
+  }
+
+  .docs-parameter-group {
+    grid-template-columns: 1fr;
+  }
+
+  .docs-parameter-group > header {
+    padding: 22px 18px;
+    border-right: 0;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .docs-table-scroll {
+    overscroll-behavior-x: contain;
+  }
+
+  .docs-parameter-group thead th:first-child,
+  .docs-parameter-group tbody th {
+    position: sticky;
+    left: 0;
+    z-index: 1;
+    background: var(--page);
+    box-shadow: 1px 0 var(--line);
+  }
+
+  .docs-parameter-group thead th:first-child {
+    z-index: 2;
   }
 
   .site-footer > a {

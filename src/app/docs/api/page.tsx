@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import SiteFooter from "../../components/site-footer";
+import { RENDER_PARAMETER_GROUPS } from "@/lib/render-parameter-docs";
 import { createPageMetadata } from "@/lib/site-metadata";
 
 export const metadata: Metadata = createPageMetadata({
@@ -42,17 +43,53 @@ export default function ApiDocsPage() {
             <pre><code>{pngCurl}</code></pre>
           </article>
         </section>
-        <section className="docs-reference">
-          <div>
-            <h2>Everything the studio knows.</h2>
+        <section className="docs-parameters" aria-labelledby="parameter-reference">
+          <div className="docs-parameters-heading">
+            <div>
+              <h2 id="parameter-reference">Parameter reference.</h2>
+              <p>Every studio control is available through the API. GET accepts flat query parameters. POST keeps <code>format</code> and <code>download</code> at the root and puts all render parameters inside <code>options</code>.</p>
+              <p className="docs-table-note">Scroll each table horizontally to see every column.</p>
+            </div>
+            <a href="/openapi.yaml">OpenAPI 3.1</a>
           </div>
-          <p><code>text</code>, three colors, letter/word/line spacing, pixel gap, depth, padding, fit or square ratio, alignment, shape, slant, transparency, solid/random color mode, seed, and output scale.</p>
+          <div className="docs-parameter-groups">
+            {RENDER_PARAMETER_GROUPS.map((group) => (
+              <section className="docs-parameter-group" key={group.title}>
+                <header>
+                  <h3>{group.title}</h3>
+                  <p>{group.description}</p>
+                </header>
+                <div className="docs-table-scroll">
+                  <table aria-label={`${group.title} parameters`}>
+                    <thead>
+                      <tr>
+                        <th scope="col">Parameter</th>
+                        <th scope="col">Type or values</th>
+                        <th scope="col">Default</th>
+                        <th scope="col">Effect</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {group.parameters.map((parameter) => (
+                        <tr key={parameter.name}>
+                          <th scope="row"><code>{parameter.name}</code></th>
+                          <td><code>{parameter.type}</code></td>
+                          <td><code>{parameter.defaultValue}</code></td>
+                          <td>{parameter.description}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </section>
+            ))}
+          </div>
         </section>
         <section className="docs-reference">
           <div>
             <h2>Built for automation.</h2>
           </div>
-          <p>Errors include field-level issues. Output dimensions and renderer version are exposed as headers. Public CORS is enabled; the current limit is 60 requests per minute per IP. Text is capped at 160 characters and 8 lines.</p>
+          <p>Errors include field-level issues. Output dimensions and renderer version are exposed as headers. Public CORS is enabled; the current limit is 60 requests per minute per IP. For agent instructions, read <a href="/SKILL.md">SKILL.md</a>.</p>
         </section>
         <SiteFooter />
       </div>

@@ -6,7 +6,7 @@ implementation.
 
 ## Progress
 
-- Current batch: **None - shared editorial footer complete**
+- Current batch: **API parameter reference in progress**
 - Shared-footer production verification: deployment
   `dpl_AE9JrKECNAnQVjMergo5cP4Wrkj4` from merge commit `1b6f2aa` served one
   shared footer on Font, API, and License; the full-screen studio retained its
@@ -25,6 +25,18 @@ implementation.
   expanded glyph set, default `HELLO\nTHERE`, and pixel-font empty state.
 - Legend: `[ ]` queued, `[~]` in progress, `[x]` complete, `[-]` deliberately
   skipped after evaluation.
+
+## Now - API parameter reference
+
+- [x] **Document every accepted render parameter**
+  - Replace the compact option summary with grouped reference tables covering
+    parameter names, types or accepted values, defaults, constraints, and
+    effects.
+  - Keep the human reference aligned with the renderer option keys through an
+    automated coverage test.
+- [~] **Verify and publish the API documentation**
+  - Test the page at desktop and mobile sizes in both color schemes, run the
+    automated checks, then merge and verify the production deployment.
 
 ## Now - shared editorial footer
 

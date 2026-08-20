@@ -22,7 +22,7 @@ function corsHeaders() {
     "Access-Control-Allow-Origin": "*",
     "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
     "Access-Control-Allow-Headers": "Content-Type, Accept",
-    "Access-Control-Expose-Headers": "Content-Disposition, X-PXWORD-Height, X-PXWORD-Renderer-Version, X-PXWORD-Width, X-RateLimit-Limit, X-RateLimit-Remaining, X-RateLimit-Reset",
+    "Access-Control-Expose-Headers": "Content-Disposition, X-PXFACE-Height, X-PXFACE-Renderer-Version, X-PXFACE-Width, X-PXWORD-Height, X-PXWORD-Renderer-Version, X-PXWORD-Width, X-RateLimit-Limit, X-RateLimit-Remaining, X-RateLimit-Reset",
   };
 }
 
@@ -78,7 +78,7 @@ async function renderResponse(request: Request, parsed: ParsedRenderRequest, cac
     });
   }
   console.info(JSON.stringify({
-    event: "pxword.render",
+    event: "pxface.render",
     version: RENDERER_VERSION,
     format: parsed.format,
     method: request.method,
@@ -98,6 +98,9 @@ async function renderResponse(request: Request, parsed: ParsedRenderRequest, cac
       "Content-Type": mime,
       ETag: etag,
       "X-Content-Type-Options": "nosniff",
+      "X-PXFACE-Height": String(scene.output.height),
+      "X-PXFACE-Renderer-Version": RENDERER_VERSION,
+      "X-PXFACE-Width": String(scene.output.width),
       "X-PXWORD-Height": String(scene.output.height),
       "X-PXWORD-Renderer-Version": RENDERER_VERSION,
       "X-PXWORD-Width": String(scene.output.width),

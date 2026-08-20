@@ -29,7 +29,8 @@ describe("wordmark renderer", () => {
     expect(scene.output).toEqual({ width: 40, height: 60 });
     expect(svg).toContain('id="depth-1-line-1-char-1-pixel-1"');
     expect(svg).toContain('id="type-line-1-char-1-pixel-1"');
-    expect(svg).toContain('data-pxword-renderer="1.0.0"');
+    expect(svg).toContain('data-pxface-renderer="2.0.0"');
+    expect(svg).toContain('data-pxword-renderer="2.0.0"');
   });
 
   it("keeps zero-gap square pixels exactly adjacent", () => {

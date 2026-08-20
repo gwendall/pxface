@@ -1,4 +1,4 @@
-# PXWORD rendering architecture
+# PXFACE rendering architecture
 
 `src/lib/wordmark-renderer.ts` is the single product boundary for every render.
 It owns defaults, validation, layout, deterministic colors, dimensions, the
@@ -28,7 +28,7 @@ canonical TypeScript glyph map. Renderer effects do not enter font outlines.
 - GET renders are deterministic and cacheable with ETags.
 - POST renders are deterministic but returned with `no-store`.
 - Random colors require a seed; the default seed is versioned.
-- Structured `pxword.render` events record format, version, dimensions, text
+- Structured `pxface.render` events record format, version, dimensions, text
   length, and line count without logging the user’s text.
 - The public CORS policy is `*` without credentials. The application also
   applies a best-effort 60 request/minute/IP process-local limit; production

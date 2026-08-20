@@ -1,8 +1,8 @@
 @import "tailwindcss";
 
 @font-face {
-  font-family: "PXWORD 3x5";
-  src: url("/fonts/PXWORD-3x5.woff2") format("woff2");
+  font-family: "PXFACE 3x5";
+  src: url("/fonts/PXFACE-3x5.woff2") format("woff2");
   font-style: normal;
   font-weight: 400;
   font-display: swap;
@@ -118,6 +118,13 @@ a:focus-visible {
   height: 18px;
   fill: var(--accent);
   shape-rendering: crispEdges;
+}
+
+.brand > span {
+  font-family: "PXFACE 3x5", var(--font-geist-mono), monospace;
+  font-size: 15px;
+  font-weight: 400;
+  letter-spacing: 0.12em;
 }
 
 .source-note {
@@ -796,7 +803,7 @@ a:focus-visible {
 }
 
 .license-grid h2 {
-  margin: 30px 0 18px;
+  margin: 0 0 18px;
   font-family: var(--font-geist-mono), monospace;
   font-size: 24px;
   letter-spacing: -0.04em;
@@ -1185,7 +1192,7 @@ a:focus-visible {
   align-items: center;
   margin: 0;
   padding: clamp(28px, 6vw, 72px);
-  font-family: "PXWORD 3x5", monospace;
+  font-family: "PXFACE 3x5", monospace;
   font-weight: 400;
   line-height: 1.2;
   overflow-wrap: anywhere;

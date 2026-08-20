@@ -30,7 +30,7 @@ type Palette = {
 
 const palettes: Palette[] = [
   {
-    name: "PX Orange",
+    name: "Signal",
     foreground: "#F1F0E9",
     background: "#181816",
     shadow: "#FF4E1A",
@@ -55,8 +55,8 @@ const palettes: Palette[] = [
   },
 ];
 
-const sampleWords = ["PXWORD", "PIXEL", "SIGNAL", "MODULAR"];
-const initialRandomSeed = 0x5058574f;
+const sampleWords = ["PXFACE", "TYPE", "GLYPH", "MODULAR"];
+const initialRandomSeed = 0x50584641;
 
 function randomSeed() {
   const values = new Uint32Array(1);
@@ -310,9 +310,9 @@ export default function PixelStudio() {
       <header className="topbar">
         <div className="brand">
           <PixelMark pixels={brandLayout.pixels} />
-          <span>PXWORD</span>
+          <span>PXFACE</span>
         </div>
-        <p className="source-note"><span>3×5 pixel wordmark studio</span><Link href="/font">Download font</Link></p>
+        <p className="source-note"><span>Pixel type, made tangible.</span><Link href="/font">Download font</Link></p>
         <div className="topbar-actions">
           <button type="button" className="button secondary" onClick={copySvg} disabled={!hasPixels}>
             {copyState === "copied" ? <Check weight="bold" /> : <Copy />}
@@ -419,7 +419,7 @@ export default function PixelStudio() {
                 type="button"
                 className="palette-button random-palette-button"
                 data-active={colorMode === "random"}
-                title="Random colors — click again to reshuffle"
+                title="Random colors: click again to reshuffle"
                 aria-label="Use random colors; press again to reshuffle"
                 aria-pressed={colorMode === "random"}
                 onClick={selectRandomPalette}
@@ -454,7 +454,7 @@ export default function PixelStudio() {
             <Shuffle /> Shuffle style
           </button>
           <Link className="font-download-link" href="/font">
-            <DownloadSimple /> Download PXWORD font
+            <DownloadSimple /> Download PXFACE font
           </Link>
         </aside>
 

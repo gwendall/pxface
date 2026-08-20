@@ -1,16 +1,16 @@
-PXWORD — 3×5 pixel wordmark renderer
+PXFACE - 3×5 pixel wordmark renderer
 
-PXWORD generates deterministic, editable pixel typography as SVG or PNG. It is a renderer, not a conventional font service.
+PXFACE generates deterministic, editable pixel typography as SVG or PNG. It is a renderer, not a conventional font service.
 
-Studio: https://pxword.com/
-API guide: https://pxword.com/docs/api
-OpenAPI 3.1 contract: https://pxword.com/openapi.yaml
-Agent skill: https://pxword.com/SKILL.md
-License: https://pxword.com/license
+Studio: https://pxface.com/
+API guide: https://pxface.com/docs/api
+OpenAPI 3.1 contract: https://pxface.com/openapi.yaml
+Agent skill: https://pxface.com/SKILL.md
+License: https://pxface.com/license
 
-Render endpoint: GET or POST https://pxword.com/api/v1/render
+Render endpoint: GET or POST https://pxface.com/api/v1/render
 Formats: svg (default), png
 Determinism: pass colorMode=random and an integer seed
 Limits: 160 characters, 8 lines, 60 requests/minute/IP, 16384px/edge, 64 million pixels
 
-The 3×5 glyph shapes are CC0-1.0 with no attribution required. App source is MIT. PXWORD name and logo are excluded.
+The 3×5 glyph shapes are CC0-1.0 with no attribution required. App source is MIT. PXFACE name and logo are excluded.

@@ -1,11 +1,11 @@
 ---
-name: pxword-render
-description: Generate deterministic 3×5 pixel wordmark assets through the PXWORD HTTP API. Use when an agent needs to create or save editable SVG or PNG text art, logos, wordmarks, social assets, or pixel typography with controlled spacing, colors, shape, depth, padding, alignment, and canvas ratio.
+name: pxface-render
+description: Generate deterministic 3×5 pixel wordmark assets through the PXFACE HTTP API. Use when an agent needs to create or save editable SVG or PNG text art, logos, wordmarks, social assets, or pixel typography with controlled spacing, colors, shape, depth, padding, alignment, and canvas ratio.
 ---
 
-# PXWORD Render
+# PXFACE Render
 
-Generate an asset through `https://pxword.com/api/v1/render`. Treat PXWORD as a renderer, not as an installed font.
+Generate an asset through `https://pxface.com/api/v1/render`. Treat PXFACE as a renderer, not as an installed font.
 
 ## Render an asset
 
@@ -13,10 +13,10 @@ Generate an asset through `https://pxword.com/api/v1/render`. Treat PXWORD as a 
 2. Prefer a GET request for a cacheable deterministic URL. Use POST JSON for long or structured calls.
 3. Always set `text`. Set `seed` whenever `colorMode=random` so the result can be reproduced.
 4. Check the HTTP status and `Content-Type` before saving the body.
-5. Read `X-PXWORD-Width`, `X-PXWORD-Height`, and `X-PXWORD-Renderer-Version` when exact metadata matters.
+5. Read `X-PXFACE-Width`, `X-PXFACE-Height`, and `X-PXFACE-Renderer-Version` when exact metadata matters.
 
 ```bash
-curl --get 'https://pxword.com/api/v1/render' \
+curl --get 'https://pxface.com/api/v1/render' \
   --data-urlencode 'text=HELLO
 THERE' \
   --data 'format=svg' \
@@ -25,7 +25,7 @@ THERE' \
 ```
 
 ```bash
-curl 'https://pxword.com/api/v1/render' \
+curl 'https://pxface.com/api/v1/render' \
   --header 'Content-Type: application/json' \
   --data '{"format":"png","options":{"text":"HELLO\\nTHERE","ratio":"square","colorMode":"random","seed":42}}' \
   --output hello-there.png
@@ -35,7 +35,7 @@ curl 'https://pxword.com/api/v1/render' \
 
 Pass any subset of these options: `text`, `foreground`, `background`, `depthColor`, `letterSpacing`, `wordSpacing`, `lineSpacing`, `pixelGap`, `depth`, `padding`, `ratio`, `align`, `shape`, `slant`, `transparent`, `colorMode`, `seed`, and `scale`.
 
-Read the canonical defaults, ranges, enums, errors, and response schema at `https://pxword.com/openapi.yaml`. Human documentation is at `https://pxword.com/docs/api`.
+Read the canonical defaults, ranges, enums, errors, and response schema at `https://pxface.com/openapi.yaml`. Human documentation is at `https://pxface.com/docs/api`.
 
 ## Preserve editability
 
@@ -47,5 +47,5 @@ Treat non-2xx bodies as JSON errors. Correct each entry in `issues` and retry. S
 
 ## Licensing
 
-The 3×5 glyph shapes are CC0-1.0 with no attribution required. The app code is MIT. The PXWORD name and logo are excluded. Do not claim that a user's complete export is CC0; its text, layout, and styling belong to their respective rights holders.
+The 3×5 glyph shapes are CC0-1.0 with no attribution required. The app code is MIT. The PXFACE name and logo are excluded. Do not claim that a user's complete export is CC0; its text, layout, and styling belong to their respective rights holders.
 

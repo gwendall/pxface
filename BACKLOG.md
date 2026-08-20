@@ -1,4 +1,4 @@
-# PXWORD Backlog
+# PXFACE Backlog
 
 Ideas are ordered by dependency. The central constraint is that the editor,
 exports, integrations, and agents must all use the same rendering
@@ -6,9 +6,9 @@ implementation.
 
 ## Progress
 
-- Current batch: **None — all tickets complete**
-- Production: verified on [pxword.com](https://pxword.com) from commit `1dd761c`
-  on 19 August 2026.
+- Current batch: **PXFACE brand migration in progress**
+- Legacy production: [pxword.com](https://pxword.com) remains live while
+  [pxface.com](https://pxface.com) is connected and verified.
 - QA: 33 automated tests, lint, production build, deterministic font rebuild,
   OpenAPI parse, skill validation, API smoke tests, and desktop/mobile browser
   checks all pass.
@@ -16,6 +16,32 @@ implementation.
   expanded glyph set, default `HELLO\nTHERE`, and pixel-font empty state.
 - Legend: `[ ]` queued, `[~]` in progress, `[x]` complete, `[-]` deliberately
   skipped after evaluation.
+
+## Now - PXFACE brand migration
+
+- [x] **Secure the canonical domain**
+  - Register `pxface.com` through Domani.
+  - Confirm auto-renew, WHOIS privacy, and registrar lock.
+- [x] **Replace the product identity end to end**
+  - Apply PXFACE to the studio, logo treatment, copy, metadata, social cards,
+    legal pages, and default download names.
+  - Keep the existing dark, functional 3×5 visual language and accessibility.
+- [x] **Publish PXFACE 3×5 font release**
+  - Rename the family, binaries, CSS, manifests, archives, and Reserved Font
+    Name, then rebuild and verify all formats deterministically.
+  - Preserve documented redirects for old public PXWORD download URLs.
+- [x] **Migrate developer surfaces**
+  - Rename the API identity, OpenAPI contract, agent skill, `llms.txt`, event
+    names, renderer metadata, and documentation.
+  - Keep deprecated PXWORD response headers during the migration window.
+- [~] **Migrate repositories and production**
+  - Rename the private GitHub repository and Vercel project to `pxface`.
+  - Deploy the new brand, attach `pxface.com`, and redirect `pxword.com` while
+    preserving paths.
+- [~] **Verify and close the migration**
+  - Run unit tests, lint, production build, deterministic font verification,
+    OpenAPI/skill checks, API smoke tests, and desktop/mobile browser QA.
+  - Record the deployed commit and production verification here.
 
 ## Font distribution experience
 
@@ -26,7 +52,7 @@ implementation.
   - Include README, OFL license, web CSS, sizes, versions, and checksums.
 - [x] **Document installation and integration**
   - Cover macOS, Windows, Linux, Figma/design applications, and self-hosted web.
-  - Explain the boundary between the installable font and PXWORD renderer
+  - Explain the boundary between the installable font and PXFACE renderer
     effects.
 - [x] **Validate the distribution end to end**
   - Keep archives deterministic and test their contents, signatures, sizes,
@@ -79,10 +105,10 @@ implementation.
     copy-paste `curl` examples for SVG and PNG.
   - Add a small `/docs/api` page and expose the canonical OpenAPI URL.
 
-- [x] **Make PXWORD agent-friendly**
+- [x] **Make PXFACE agent-friendly**
   - Publish `/llms.txt` with concise product and render-endpoint instructions.
   - Add a reusable `SKILL.md` showing how an agent creates, previews, and saves
-    a PXWORD asset without treating the glyph set as a normal font.
+    a PXFACE asset without treating the glyph set as a normal font.
   - Include deterministic examples, parameter discovery, MIME handling, and
     attribution/licensing notes.
   - Evaluate an MCP adapter only after the HTTP interface is stable; it should
@@ -112,7 +138,7 @@ implementation.
   - Define font metrics, proportional advances, SPACE width, naming/versioning,
     and test specimens before choosing a build tool.
   - Keep effects such as depth, random colors, pixel gap, padding, and canvas
-    ratio in PXWORD; those are renderer features, not font features.
+    ratio in PXFACE; those are renderer features, not font features.
   - Decide whether generated font binaries remain CC0 or use OFL-1.1, then
     document the scope without changing the existing CC0 glyph dedication.
   - Publish CSS and design-tool installation examples if the files ship.

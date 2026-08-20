@@ -13,27 +13,27 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://pxword.com"),
-  title: "PXWORD - 3×5 Pixel Wordmark Studio",
+  metadataBase: new URL("https://pxface.com"),
+  title: "PXFACE - 3×5 Pixel Type Studio",
   description:
-    "Design compact 3×5 pixel wordmarks, tune every detail, and export crisp SVG or PNG files.",
-  applicationName: "PXWORD",
+    "Design 3×5 pixel wordmarks, tune every detail, and export editable SVG, PNG, or the font.",
+  applicationName: "PXFACE",
   alternates: {
     canonical: "/",
   },
   openGraph: {
-    title: "PXWORD - 3×5 Pixel Wordmark Studio",
+    title: "PXFACE - 3×5 Pixel Type Studio",
     description:
-      "Design compact 3×5 pixel wordmarks and export crisp SVG or PNG files.",
+      "Design 3×5 pixel wordmarks and export editable SVG, PNG, or the font.",
     url: "/",
-    siteName: "PXWORD",
+    siteName: "PXFACE",
     type: "website",
   },
   twitter: {
     card: "summary_large_image",
-    title: "PXWORD - 3×5 Pixel Wordmark Studio",
+    title: "PXFACE - 3×5 Pixel Type Studio",
     description:
-      "Design compact 3×5 pixel wordmarks and export crisp SVG or PNG files.",
+      "Design 3×5 pixel wordmarks and export editable SVG, PNG, or the font.",
   },
 };
 

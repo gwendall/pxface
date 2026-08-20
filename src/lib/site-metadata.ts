@@ -1,11 +1,18 @@
 import type { Metadata } from "next";
 
 const siteName = "PXFACE";
-const socialImage = {
+export const SOCIAL_IMAGE_ALT =
+  "PXFACE rendered in a minimal 3×5 pixel alphabet with full pixel control";
+
+const openGraphImage = {
   url: "/opengraph-image",
   width: 1200,
   height: 630,
-  alt: "PXFACE 3×5 pixel type studio",
+  alt: SOCIAL_IMAGE_ALT,
+};
+const twitterImage = {
+  url: "/twitter-image",
+  alt: SOCIAL_IMAGE_ALT,
 };
 
 type PageMetadataOptions = {
@@ -41,13 +48,13 @@ export function createPageMetadata({
       url: path,
       siteName,
       type: "website",
-      images: [socialImage],
+      images: [openGraphImage],
     },
     twitter: {
       card: "summary_large_image",
       title: socialTitle,
       description,
-      images: [socialImage.url],
+      images: [twitterImage],
     },
   };
 }

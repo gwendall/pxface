@@ -6,7 +6,7 @@ implementation.
 
 ## Progress
 
-- Current batch: **None - agent resource discovery complete**
+- Current batch: **Social preview artifact in progress**
 - Agent-resource production verification: deployment
   `dpl_3h43fwpttHMsYBRGaznFvv8UvUMm` from merge commit `4f634b4` served the
   visible `llms.txt`, `SKILL.md`, and `openapi.yaml` resource links plus three
@@ -33,6 +33,22 @@ implementation.
   expanded glyph set, default `HELLO\nTHERE`, and pixel-font empty state.
 - Legend: `[ ]` queued, `[~]` in progress, `[x]` complete, `[-]` deliberately
   skipped after evaluation.
+
+## Now - social preview artifact
+
+- [x] **Turn the social image into the product poster**
+  - Make the PXFACE glyph artwork dominate the 1200×630 frame and remain
+    instantly legible in a mobile feed.
+  - Preserve the dark, off-white, and orange brand system without adding a
+    second visual identity or generic marketing decoration.
+- [x] **Guarantee Open Graph and X discovery**
+  - Publish explicit large-image metadata, dimensions, and accessible alt text
+    for every route through the shared metadata implementation.
+  - Verify the public image response with normal and X crawler user agents.
+- [~] **Compare, test, publish, and verify**
+  - Inspect multiple rendered iterations at full size and feed-preview size.
+  - Run metadata tests, lint, the production build, browser QA, and production
+    verification before closing the batch.
 
 ## Now - agent resource discovery
 

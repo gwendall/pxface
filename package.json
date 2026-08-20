@@ -19,8 +19,8 @@
     "font:build": "python3 scripts/build-fonts.py",
     "font:verify": "python3 scripts/verify-font-packages.py",
     "fixtures:update": "tsx scripts/update-golden.ts",
-    "test": "vitest run",
-    "test:watch": "vitest"
+    "test": "npm run package:build && vitest run",
+    "test:watch": "npm run package:build && vitest"
   },
   "dependencies": {
     "@phosphor-icons/react": "^2.1.10",

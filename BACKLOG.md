@@ -6,7 +6,11 @@ implementation.
 
 ## Progress
 
-- Current batch: **Social preview artifact in progress**
+- Current batch: **None - social preview artifact verified**
+- Social-preview production verification: deployment
+  `dpl_CutNhMGzbKUPxfnfRWnNGdZ3LM82` from merge commit `1409cbd` served the
+  dedicated Open Graph and X images, large-card metadata, and accessible image
+  alt text successfully on every public page.
 - Agent-resource production verification: deployment
   `dpl_3h43fwpttHMsYBRGaznFvv8UvUMm` from merge commit `4f634b4` served the
   visible `llms.txt`, `SKILL.md`, and `openapi.yaml` resource links plus three
@@ -26,7 +30,7 @@ implementation.
 - Shared-shell production verification: deployment
   `dpl_3SzVNdh3FZPt7SjJ8fF6p33cVBb5` from merge commit `9856217` served the
   shared navigation and route metadata successfully.
-- QA: 35 automated tests, lint, production build, deterministic font rebuild,
+- QA: 37 automated tests, lint, production build, deterministic font rebuild,
   OpenAPI parse, skill validation, API smoke tests, and desktop/mobile browser
   checks all pass.
 - Completed: licensing, responsive editor, export padding/ratios, palette mode,
@@ -45,7 +49,7 @@ implementation.
   - Publish explicit large-image metadata, dimensions, and accessible alt text
     for every route through the shared metadata implementation.
   - Verify the public image response with normal and X crawler user agents.
-- [~] **Compare, test, publish, and verify**
+- [x] **Compare, test, publish, and verify**
   - Inspect multiple rendered iterations at full size and feed-preview size.
   - Run metadata tests, lint, the production build, browser QA, and production
     verification before closing the batch.

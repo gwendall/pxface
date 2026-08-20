@@ -6,7 +6,11 @@ implementation.
 
 ## Progress
 
-- Current batch: **Agent resource discovery in progress**
+- Current batch: **None - agent resource discovery complete**
+- Agent-resource production verification: deployment
+  `dpl_3h43fwpttHMsYBRGaznFvv8UvUMm` from merge commit `4f634b4` served the
+  visible `llms.txt`, `SKILL.md`, and `openapi.yaml` resource links plus three
+  matching typed alternates.
 - API-reference production verification: deployment
   `dpl_GJ7qEyhYpHpgQcAECjtgS7xgTF88` from merge commit `5ea8671` served 20
   documented parameters across 4 accessible tables, with the OpenAPI and agent
@@ -37,7 +41,7 @@ implementation.
     resource block on the API guide.
   - Publish typed alternate links in the page metadata so tools can discover
     the files without parsing the full guide.
-- [~] **Verify and publish agent discovery**
+- [x] **Verify and publish agent discovery**
   - Test all three resources, their MIME types, page metadata, responsive
     presentation, and the production deployment.
 

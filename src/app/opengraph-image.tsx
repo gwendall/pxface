@@ -1,14 +1,14 @@
 import { ImageResponse } from "next/og";
 import { buildPixelLayout } from "@/lib/pixel-font";
 
-export const alt = "PXWORD 3×5 pixel wordmark studio";
+export const alt = "PXFACE 3×5 pixel type studio";
 export const size = {
   width: 1200,
   height: 630,
 };
 export const contentType = "image/png";
 
-const wordmark = buildPixelLayout("PXWORD", 1, 2, "left");
+const wordmark = buildPixelLayout("PXFACE", 1, 2, "left");
 
 export default function OpenGraphImage() {
   const unit = 34;
@@ -60,8 +60,8 @@ export default function OpenGraphImage() {
             letterSpacing: "0.08em",
           }}
         >
-          <span>3×5 PIXEL WORDMARK STUDIO</span>
-          <span>PXWORD.COM</span>
+          <span>3×5 PIXEL TYPE STUDIO</span>
+          <span>PXFACE.COM</span>
         </div>
       </div>
     ),

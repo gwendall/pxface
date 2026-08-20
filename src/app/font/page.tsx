@@ -5,8 +5,8 @@ import manifestJson from "../../../public/fonts/manifest.json";
 import { CopyCssButton, FontTester } from "./font-tools";
 
 export const metadata: Metadata = {
-  title: "Download PXWORD 3×5 Font",
-  description: "Download the PXWORD 3×5 pixel font for desktop, design tools, and the web as OTF, TTF, WOFF2, or WOFF.",
+  title: "Download PXFACE 3×5 Font",
+  description: "Download the PXFACE 3×5 pixel font for desktop, design tools, and the web as OTF, TTF, WOFF2, or WOFF.",
   alternates: { canonical: "/font" },
 };
 
@@ -18,23 +18,23 @@ const manifest = manifestJson as {
   artifacts: Record<string, { bytes: number; sha256: string; url: string; purpose: string }>;
 };
 
-const ttfZip = `PXWORD3x5-TTF-v${manifest.version}.zip`;
-const otfZip = `PXWORD3x5-OTF-v${manifest.version}.zip`;
-const webZip = `PXWORD3x5-Web-v${manifest.version}.zip`;
-const allZip = `PXWORD3x5-v${manifest.version}.zip`;
+const ttfZip = `PXFACE3x5-TTF-v${manifest.version}.zip`;
+const otfZip = `PXFACE3x5-OTF-v${manifest.version}.zip`;
+const webZip = `PXFACE3x5-Web-v${manifest.version}.zip`;
+const allZip = `PXFACE3x5-v${manifest.version}.zip`;
 const versionPath = `v${manifest.version}`;
-const fileStem = "PXWORD3x5-Regular";
+const fileStem = "PXFACE3x5-Regular";
 
 const cssExample = `@font-face {
-  font-family: "PXWORD 3x5";
-  src: url("./PXWORD3x5-Regular.woff2") format("woff2");
+  font-family: "PXFACE 3x5";
+  src: url("./PXFACE3x5-Regular.woff2") format("woff2");
   font-style: normal;
   font-weight: 400;
   font-display: swap;
 }
 
 .pixel-type {
-  font-family: "PXWORD 3x5", monospace;
+  font-family: "PXFACE 3x5", monospace;
 }`;
 
 function size(name: string) {
@@ -78,20 +78,20 @@ export default function FontPage() {
     <main className="docs-page font-page">
       <div className="docs-shell font-shell">
         <nav className="docs-nav" aria-label="Font download">
-          <Link href="/">PXWORD</Link>
+          <Link href="/">PXFACE</Link>
           <span>FONT / v{manifest.version}</span>
           <Link href="/license">OFL 1.1</Link>
         </nav>
 
         <header className="font-hero">
           <div>
-            <p className="license-kicker">INSTALLABLE TYPE / 95 ASCII CHARACTERS</p>
+            <p className="license-kicker">PXFACE 3×5 / 95 ASCII CHARACTERS</p>
             <h1>Five pixels tall.<br />Ready anywhere.</h1>
-            <p className="font-hero-copy">A proportional display font built from the same canonical glyphs as the PXWORD studio and render API.</p>
+            <p className="font-hero-copy">A proportional display font built from the same canonical glyphs as the PXFACE studio and render API.</p>
             <div className="font-hero-actions">
               <a className="font-primary-download" href={`/fonts/${ttfZip}`} download={ttfZip}>
                 <DownloadSimple weight="bold" />
-                <span>Download font<small>TTF · ZIP · {size(ttfZip)}</small></span>
+                <span>Download font<small>TTF / ZIP / {size(ttfZip)}</small></span>
               </a>
               <a className="font-secondary-action" href="#web">Use on the web</a>
               <a className="font-tertiary-action" href="#formats">Other formats</a>
@@ -109,7 +109,7 @@ export default function FontPage() {
 
         <section className="font-download-section" id="packages" aria-labelledby="packages-title">
           <div className="font-section-heading">
-            <div><p className="license-kicker">DOWNLOAD</p><h2 id="packages-title">Choose what you need.</h2></div>
+            <div><h2 id="packages-title">Choose what you need.</h2></div>
             <p>Not sure? Download the TTF package. It is the simplest choice for most desktop and design workflows.</p>
           </div>
           <div className="font-package-grid">
@@ -134,7 +134,7 @@ export default function FontPage() {
 
         <section className="font-format-section" id="formats" aria-labelledby="formats-title">
           <div className="font-section-heading compact">
-            <div><p className="license-kicker">INDIVIDUAL FILES</p><h2 id="formats-title">Pick a format.</h2></div>
+            <div><h2 id="formats-title">Pick a format.</h2></div>
             <p>Every file contains the same Regular style and complete printable ASCII set.</p>
           </div>
           <div className="font-format-list">
@@ -152,7 +152,6 @@ export default function FontPage() {
 
         <section className="font-web-section" id="web" aria-labelledby="web-title">
           <div className="font-web-copy">
-            <p className="license-kicker">SELF-HOST ON THE WEB</p>
             <h2 id="web-title">Copy, paste, ship.</h2>
             <p>Download the web kit, keep the CSS beside the files, and update the relative URL if you move them. WOFF2 covers modern browsers; WOFF is included only as an optional legacy fallback.</p>
             <a href={`/fonts/${webZip}`} download={webZip}><DownloadSimple /> Download web kit</a>
@@ -165,23 +164,23 @@ export default function FontPage() {
 
         <section className="font-install-section" aria-labelledby="install-title">
           <div className="font-section-heading compact">
-            <div><p className="license-kicker">INSTALL</p><h2 id="install-title">From ZIP to font menu.</h2></div>
-            <p>Install either OTF or TTF—not both—to avoid duplicate-family warnings.</p>
+            <div><h2 id="install-title">From ZIP to font menu.</h2></div>
+            <p>Install either OTF or TTF - not both - to avoid duplicate-family warnings.</p>
           </div>
           <div className="font-install-grid">
             <details open>
               <summary>macOS</summary>
-              <ol><li>Download and unzip the TTF package.</li><li>Double-click <code>PXWORD3x5-Regular.ttf</code>.</li><li>Choose <strong>Install Font</strong> in Font Book.</li></ol>
+              <ol><li>Download and unzip the TTF package.</li><li>Double-click <code>PXFACE3x5-Regular.ttf</code>.</li><li>Choose <strong>Install Font</strong> in Font Book.</li></ol>
               <a href="https://support.apple.com/guide/font-book/install-and-validate-fonts-fntbk1000/mac" target="_blank" rel="noreferrer">Apple instructions ↗</a>
             </details>
             <details>
               <summary>Windows</summary>
-              <ol><li>Download and unzip the TTF package.</li><li>Right-click <code>PXWORD3x5-Regular.ttf</code>.</li><li>Choose <strong>Install</strong> or <strong>Install for all users</strong>.</li></ol>
+              <ol><li>Download and unzip the TTF package.</li><li>Right-click <code>PXFACE3x5-Regular.ttf</code>.</li><li>Choose <strong>Install</strong> or <strong>Install for all users</strong>.</li></ol>
               <a href="https://support.microsoft.com/en-us/office/add-a-font-b7c5f17c-4426-4b53-967f-455339c564c1" target="_blank" rel="noreferrer">Microsoft instructions ↗</a>
             </details>
             <details>
               <summary>Figma & design apps</summary>
-              <ol><li>Install the TTF on macOS or Windows.</li><li>Restart the desktop app, or reload Figma after installing its Font Installer.</li><li>Search for <strong>PXWORD 3x5</strong>.</li></ol>
+              <ol><li>Install the TTF on macOS or Windows.</li><li>Restart the desktop app, or reload Figma after installing its Font Installer.</li><li>Search for <strong>PXFACE 3x5</strong>.</li></ol>
               <p>Figma currently supports local OTF/TTF on macOS and Windows; Linux and ChromeOS cannot add local fonts.</p>
               <a href="https://help.figma.com/hc/en-us/articles/360039956894-Add-a-font-to-Figma" target="_blank" rel="noreferrer">Figma instructions ↗</a>
             </details>
@@ -193,10 +192,10 @@ export default function FontPage() {
         </section>
 
         <section className="font-license-note">
-          <div><p className="license-kicker">CLEAR TO USE</p><h2>OFL 1.1, with the paperwork included.</h2></div>
+          <div><h2>OFL 1.1, with the paperwork included.</h2></div>
           <div>
-            <p>Use the font in personal or commercial work, apps, sites, print, logos, and documents. Every ZIP contains the full license. “PXWORD” is the Reserved Font Name; modified font versions must use another name.</p>
-            <p>Your documents, images, and exports do not become OFL. Renderer-only effects—depth, random palettes, gaps, padding, ratios, and selectable pixels—stay in the <Link href="/">studio</Link>.</p>
+            <p>Use the font in personal or commercial work, apps, sites, print, logos, and documents. Every ZIP contains the full license. “PXFACE” is the Reserved Font Name; modified font versions must use another name.</p>
+            <p>Your documents, images, and exports do not become OFL. Renderer-only effects - depth, random palettes, gaps, padding, ratios, and selectable pixels - stay in the <Link href="/">studio</Link>.</p>
             <a href="/fonts/manifest.json">Version, sizes & SHA-256 checksums ↗</a>
             <a href={`/fonts/${otfZip}`} download={otfZip}>Download the OTF package ↗</a>
           </div>

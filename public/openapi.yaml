@@ -1,13 +1,13 @@
 openapi: 3.1.0
 info:
-  title: PXWORD Render API
-  version: 1.0.0
+  title: PXFACE Render API
+  version: 2.0.0
   description: Deterministically render editable 3x5 pixel wordmarks as SVG or PNG.
   license:
     name: MIT and CC0-1.0
-    url: https://pxword.com/license
+    url: https://pxface.com/license
 servers:
-  - url: https://pxword.com
+  - url: https://pxface.com
 paths:
   /api/v1/render:
     get:
@@ -93,7 +93,7 @@ components:
         slant: { type: boolean, default: false }
         transparent: { type: boolean, default: false }
         colorMode: { type: string, enum: [solid, random], default: solid }
-        seed: { type: integer, minimum: 0, maximum: 4294967295, default: 1347966799 }
+        seed: { type: integer, minimum: 0, maximum: 4294967295, default: 1347962433 }
         scale: { type: number, minimum: 1, maximum: 256, default: 48, description: Output pixels per design unit. }
     Error:
       type: object
@@ -127,15 +127,18 @@ components:
     slant: { name: slant, in: query, schema: { type: boolean, default: false } }
     transparent: { name: transparent, in: query, schema: { type: boolean, default: false } }
     colorMode: { name: colorMode, in: query, schema: { type: string, enum: [solid, random], default: solid } }
-    seed: { name: seed, in: query, schema: { type: integer, minimum: 0, maximum: 4294967295, default: 1347966799 } }
+    seed: { name: seed, in: query, schema: { type: integer, minimum: 0, maximum: 4294967295, default: 1347962433 } }
     scale: { name: scale, in: query, schema: { type: number, minimum: 1, maximum: 256, default: 48 } }
   responses:
     Asset:
-      description: Rendered asset. Exact dimensions and renderer version are returned as X-PXWORD headers.
+      description: Rendered asset. Exact dimensions and renderer version are returned as X-PXFACE headers.
       headers:
-        X-PXWORD-Width: { schema: { type: integer } }
-        X-PXWORD-Height: { schema: { type: integer } }
-        X-PXWORD-Renderer-Version: { schema: { type: string } }
+        X-PXFACE-Width: { schema: { type: integer } }
+        X-PXFACE-Height: { schema: { type: integer } }
+        X-PXFACE-Renderer-Version: { schema: { type: string } }
+        X-PXWORD-Width: { deprecated: true, description: Legacy PXWORD alias retained for compatibility., schema: { type: integer } }
+        X-PXWORD-Height: { deprecated: true, description: Legacy PXWORD alias retained for compatibility., schema: { type: integer } }
+        X-PXWORD-Renderer-Version: { deprecated: true, description: Legacy PXWORD alias retained for compatibility., schema: { type: string } }
       content:
         image/svg+xml: { schema: { type: string } }
         image/png: { schema: { type: string, contentEncoding: base64 } }

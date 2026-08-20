@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Build deterministic PXWORD font binaries from the canonical TypeScript glyph map."""
+"""Build deterministic PXFACE font binaries from the canonical TypeScript glyph map."""
 
 from __future__ import annotations
 
@@ -28,12 +28,12 @@ UNITS_PER_EM = 1000
 PIXEL = 160
 ASCENDER = 800
 DESCENDER = -200
-FONT_NAME = "PXWORD 3x5"
-PS_NAME = "PXWORD-3x5"
-VERSION = "1.0.0"
-FILE_STEM = "PXWORD3x5-Regular"
-RELEASE_STEM = "PXWORD3x5"
-COPYRIGHT = 'Copyright (c) 2026, Gwendall Esnault (https://gwendall.com), with Reserved Font Name "PXWORD".'
+FONT_NAME = "PXFACE 3x5"
+PS_NAME = "PXFACE-3x5"
+VERSION = "2.0.0"
+FILE_STEM = "PXFACE3x5-Regular"
+RELEASE_STEM = "PXFACE3x5"
+COPYRIGHT = 'Copyright (c) 2026, Gwendall Esnault (https://gwendall.com), with Reserved Font Name "PXFACE".'
 MAC_EPOCH_TIMESTAMP = 3849984000  # 2026-01-01, deterministic.
 
 
@@ -108,8 +108,8 @@ def setup_common(font: FontBuilder, glyph_order: list[str], cmap: dict[int, str]
         "version": f"Version {VERSION}",
         "manufacturer": "Gwendall Esnault",
         "designer": "Gwendall Esnault",
-        "description": "A proportional 3x5 pixel display font generated from the PXWORD CC0 glyph set.",
-        "licenseDescription": "Licensed under the SIL Open Font License, Version 1.1, with Reserved Font Name PXWORD.",
+        "description": "A proportional 3x5 pixel display font generated from the PXFACE CC0 glyph set.",
+        "licenseDescription": "Licensed under the SIL Open Font License, Version 1.1, with Reserved Font Name PXFACE.",
         "licenseInfoURL": "https://openfontlicense.org",
     })
     font.setupOS2(
@@ -121,7 +121,7 @@ def setup_common(font: FontBuilder, glyph_order: list[str], cmap: dict[int, str]
         sxHeight=ASCENDER,
         sCapHeight=ASCENDER,
         fsType=0,
-        achVendID="PXWD",
+        achVendID="PXFC",
     )
     font.setupPost(italicAngle=0, underlinePosition=-120, underlineThickness=80)
     font.setupHead(created=MAC_EPOCH_TIMESTAMP, modified=MAC_EPOCH_TIMESTAMP)
@@ -136,9 +136,9 @@ def save_variants(ttf_path: Path):
 
 
 def package_readme(package: str, recommendation: str) -> bytes:
-    return f"""PXWORD 3x5 — Version {VERSION}
+    return f"""PXFACE 3x5 — Version {VERSION}
 
-A proportional five-pixel-high display font generated from the same glyphs as pxword.com.
+A proportional five-pixel-high display font generated from the same glyphs as pxface.com.
 
 PACKAGE
 {package}
@@ -150,22 +150,22 @@ Do not install both the TTF and OTF versions. They represent the same family and
 style, so installing both can create duplicate-family warnings.
 
 WEB
-Copy the web font files and pxword-3x5.css into the same directory, then link the
+Copy the web font files and pxface-3x5.css into the same directory, then link the
 stylesheet or copy its @font-face rule. WOFF2 is the recommended browser format;
 WOFF is included only as a legacy fallback.
 
 DESKTOP
-macOS: open PXWORD3x5-Regular.ttf, then choose Install Font in Font Book.
-Windows: right-click PXWORD3x5-Regular.ttf, then choose Install or Install for all users.
+macOS: open PXFACE3x5-Regular.ttf, then choose Install Font in Font Book.
+Windows: right-click PXFACE3x5-Regular.ttf, then choose Install or Install for all users.
 Linux: copy the TTF or OTF to ~/.local/share/fonts and run fc-cache -f.
 
 LICENSE
-Font software is OFL-1.1 with Reserved Font Name PXWORD. Documents and graphics made with the font are not placed under the OFL. See OFL.txt.
+Font software is OFL-1.1 with Reserved Font Name PXFACE. Documents and graphics made with the font are not placed under the OFL. See OFL.txt.
 
-The font contains glyph outlines and metrics. Use https://pxword.com for pixel
+The font contains glyph outlines and metrics. Use https://pxface.com for pixel
 gap, depth, random colors, padding, canvas ratios, and editable per-pixel SVG.
 
-Documentation: https://pxword.com/font
+Documentation: https://pxface.com/font
 """.encode("utf-8")
 
 
@@ -182,7 +182,7 @@ def build_packages():
     version_dir = OUTPUT / f"v{VERSION}"
     version_dir.mkdir(parents=True, exist_ok=True)
     license_text = LICENSE.read_bytes()
-    css = (OUTPUT / "pxword-3x5.css").read_bytes().replace(f"./v{VERSION}/".encode(), b"./")
+    css = (OUTPUT / "pxface-3x5.css").read_bytes().replace(f"./v{VERSION}/".encode(), b"./")
     binaries = {suffix: (OUTPUT / f"{PS_NAME}.{suffix}").read_bytes() for suffix in ("ttf", "otf", "woff", "woff2")}
     canonical_paths: dict[str, Path] = {}
     for suffix, data in binaries.items():
@@ -208,7 +208,7 @@ def build_packages():
         f"{ttf_root}/OFL.txt": license_text,
         f"{ttf_root}/README.txt": package_readme(
             "TTF desktop font.",
-            "Install PXWORD3x5-Regular.ttf. TTF is the default choice for desktop apps, Windows, macOS, Linux, Office, Figma, and most design tools.",
+            "Install PXFACE3x5-Regular.ttf. TTF is the default choice for desktop apps, Windows, macOS, Linux, Office, Figma, and most design tools.",
         ),
         f"{ttf_root}/{FILE_STEM}.ttf": binaries["ttf"],
     })
@@ -218,7 +218,7 @@ def build_packages():
         f"{otf_root}/OFL.txt": license_text,
         f"{otf_root}/README.txt": package_readme(
             "OTF desktop font.",
-            "Install PXWORD3x5-Regular.otf only when your workflow specifically prefers OTF. It contains the same family, style, and character set as the TTF.",
+            "Install PXFACE3x5-Regular.otf only when your workflow specifically prefers OTF. It contains the same family, style, and character set as the TTF.",
         ),
         f"{otf_root}/{FILE_STEM}.otf": binaries["otf"],
     })
@@ -228,11 +228,11 @@ def build_packages():
         f"{web_root}/OFL.txt": license_text,
         f"{web_root}/README.txt": package_readme(
             "Self-hosted web fonts and CSS.",
-            "Serve PXWORD3x5-Regular.woff2 with pxword-3x5.css. Keep WOFF only if you need a legacy fallback.",
+            "Serve PXFACE3x5-Regular.woff2 with pxface-3x5.css. Keep WOFF only if you need a legacy fallback.",
         ),
         f"{web_root}/{FILE_STEM}.woff": binaries["woff"],
         f"{web_root}/{FILE_STEM}.woff2": binaries["woff2"],
-        f"{web_root}/pxword-3x5.css": css,
+        f"{web_root}/pxface-3x5.css": css,
     })
 
     binary_manifest = {
@@ -246,7 +246,7 @@ def build_packages():
         f"{metadata['sha256']}  {name}\n" for name, metadata in sorted(binary_manifest.items())
     ).encode("utf-8")
     faq = (
-        "PXWORD uses the SIL Open Font License 1.1.\n\n"
+        "PXFACE uses the SIL Open Font License 1.1.\n\n"
         "Read the official OFL FAQ at https://openfontlicense.org/ofl-faq/\n"
         "The license itself is included as OFL.txt.\n"
     ).encode("utf-8")
@@ -257,7 +257,7 @@ def build_packages():
         f"{all_root}/FONTLOG.md": FONTLOG.read_bytes(),
         f"{all_root}/README.txt": package_readme(
             "Complete release: TTF, OTF, WOFF2, WOFF, CSS, checksums, manifest, and license documentation.",
-            "For desktop, install only desktop/ttf/PXWORD3x5-Regular.ttf. For web, use web/PXWORD3x5-Regular.woff2 and web/pxword-3x5.css.",
+            "For desktop, install only desktop/ttf/PXFACE3x5-Regular.ttf. For web, use web/PXFACE3x5-Regular.woff2 and web/pxface-3x5.css.",
         ),
         f"{all_root}/SHA256SUMS.txt": sha256sums,
         f"{all_root}/manifest.json": (json.dumps(binary_manifest, indent=2) + "\n").encode("utf-8"),
@@ -265,7 +265,7 @@ def build_packages():
         f"{all_root}/desktop/ttf/{FILE_STEM}.ttf": binaries["ttf"],
         f"{all_root}/web/{FILE_STEM}.woff": binaries["woff"],
         f"{all_root}/web/{FILE_STEM}.woff2": binaries["woff2"],
-        f"{all_root}/web/pxword-3x5.css": css,
+        f"{all_root}/web/pxface-3x5.css": css,
     })
 
     artifacts = list(canonical_paths.values()) + [OUTPUT / name for name in package_names.values()]
@@ -284,7 +284,7 @@ def build_packages():
         "style": "Regular 400",
         "version": VERSION,
         "license": "OFL-1.1",
-        "reservedFontName": "PXWORD",
+        "reservedFontName": "PXFACE",
         "artifacts": {
             (f"v{VERSION}/{artifact.name}" if artifact.parent == version_dir else artifact.name): {
                 "bytes": artifact.stat().st_size,

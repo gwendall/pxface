@@ -1,0 +1,4 @@
+interface:
+  display_name: "PXFACE Render"
+  short_description: "Generate deterministic pixel wordmarks"
+  default_prompt: "Use $pxface-render to generate an editable SVG or PNG pixel wordmark for my text."

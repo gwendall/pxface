@@ -1,7 +1,7 @@
 import { buildPixelLayout, type Pixel, type PixelLayout, type TextAlign } from "./pixel-font";
 import { buildRandomPalette } from "./random-palette";
 
-export const RENDERER_VERSION = "1.0.0";
+export const RENDERER_VERSION = "2.0.0";
 export const MAX_TEXT_LENGTH = 160;
 export const MAX_LINE_COUNT = 8;
 export const MAX_OUTPUT_DIMENSION = 16_384;
@@ -70,7 +70,7 @@ export const WORDMARK_DEFAULTS: Readonly<WordmarkOptions> = Object.freeze({
   slant: false,
   transparent: false,
   colorMode: "solid",
-  seed: 0x5058574f,
+  seed: 0x50584641,
   scale: 48,
 });
 
@@ -329,7 +329,7 @@ export function sceneToSvg(scene: WordmarkScene) {
     groupedPixels(pixels, options, `depth-${index + 1}`, index + 1, options.depthColor),
   ).join("");
   const foreground = groupedPixels(pixels, options, "type", 0);
-  return `<svg xmlns="http://www.w3.org/2000/svg" width="${output.width}" height="${output.height}" viewBox="${viewBox.x} ${viewBox.y} ${viewBox.width} ${viewBox.height}" shape-rendering="${scene.shapeRendering}" data-pxword-renderer="${scene.version}"><title>${xml(options.text || "PXWORD wordmark")}</title><metadata>PXWORD 3x5 glyph shapes are dedicated under CC0-1.0: https://creativecommons.org/publicdomain/zero/1.0/</metadata>${background}${depth}${foreground}</svg>`;
+  return `<svg xmlns="http://www.w3.org/2000/svg" width="${output.width}" height="${output.height}" viewBox="${viewBox.x} ${viewBox.y} ${viewBox.width} ${viewBox.height}" shape-rendering="${scene.shapeRendering}" data-pxface-renderer="${scene.version}" data-pxword-renderer="${scene.version}"><title>${xml(options.text || "PXFACE wordmark")}</title><metadata>PXFACE 3x5 glyph shapes are dedicated under CC0-1.0: https://creativecommons.org/publicdomain/zero/1.0/</metadata>${background}${depth}${foreground}</svg>`;
 }
 
 export function renderWordmark(input: UnknownOptions = {}): WordmarkRender {
@@ -343,5 +343,5 @@ export function wordmarkFileName(text: string, extension: "svg" | "png") {
     .replace(/[^a-zA-Z0-9]+/g, "-")
     .replace(/^-|-$/g, "")
     .toLowerCase();
-  return `${safeName || "pxword"}.${extension}`;
+  return `${safeName || "pxface"}.${extension}`;
 }

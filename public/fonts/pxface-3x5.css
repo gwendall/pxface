@@ -1,0 +1,10 @@
+/* PXFACE 3x5 font software: OFL-1.1, Reserved Font Name "PXFACE". */
+@font-face {
+  font-family: "PXFACE 3x5";
+  src:
+    url("./v2.0.0/PXFACE3x5-Regular.woff2") format("woff2"),
+    url("./v2.0.0/PXFACE3x5-Regular.woff") format("woff");
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+}

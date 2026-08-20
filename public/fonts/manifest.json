@@ -1,56 +1,56 @@
 {
-  "family": "PXWORD 3x5",
+  "family": "PXFACE 3x5",
   "style": "Regular 400",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "license": "OFL-1.1",
-  "reservedFontName": "PXWORD",
+  "reservedFontName": "PXFACE",
   "artifacts": {
-    "v1.0.0/PXWORD3x5-Regular.ttf": {
+    "v2.0.0/PXFACE3x5-Regular.ttf": {
       "bytes": 10112,
-      "sha256": "b4600a93f5dbc9cf8a2bc763d8bb694a98b815e3a9b7dccf87fccc1c8f05f406",
-      "url": "/fonts/v1.0.0/PXWORD3x5-Regular.ttf",
+      "sha256": "b61a248161e623b04260a50591634e285f1f154884d903436dea94ac82c35431",
+      "url": "/fonts/v2.0.0/PXFACE3x5-Regular.ttf",
       "purpose": "Recommended desktop font"
     },
-    "v1.0.0/PXWORD3x5-Regular.otf": {
+    "v2.0.0/PXFACE3x5-Regular.otf": {
       "bytes": 9328,
-      "sha256": "5497be3d7c2adcb421e5078bce80e9b9836233821d8592585fe6461c9b03663b",
-      "url": "/fonts/v1.0.0/PXWORD3x5-Regular.otf",
+      "sha256": "6d84933af8175522a382eafa0ba678a8568de6f86b76eaa8215964e29bf52523",
+      "url": "/fonts/v2.0.0/PXFACE3x5-Regular.otf",
       "purpose": "Alternative desktop font"
     },
-    "v1.0.0/PXWORD3x5-Regular.woff": {
-      "bytes": 2500,
-      "sha256": "0e48e08aa31129d992d04543cffbbcf77fcb0b0ebc4f12ff1987102876cad4ff",
-      "url": "/fonts/v1.0.0/PXWORD3x5-Regular.woff",
+    "v2.0.0/PXFACE3x5-Regular.woff": {
+      "bytes": 2504,
+      "sha256": "9e448f372548fe0a02466765be471dadc3573b01913b60ee424b2a06ddb3acc5",
+      "url": "/fonts/v2.0.0/PXFACE3x5-Regular.woff",
       "purpose": "Legacy web fallback"
     },
-    "v1.0.0/PXWORD3x5-Regular.woff2": {
-      "bytes": 1612,
-      "sha256": "9fed430f9e20005307242342b44cf02993bcb24bbc4a9c87d82fbacdfa16d826",
-      "url": "/fonts/v1.0.0/PXWORD3x5-Regular.woff2",
+    "v2.0.0/PXFACE3x5-Regular.woff2": {
+      "bytes": 1632,
+      "sha256": "64adabd2b3dd3f9c88fed195f6335e48b501156726ed5cf25d6e35f7376243c9",
+      "url": "/fonts/v2.0.0/PXFACE3x5-Regular.woff2",
       "purpose": "Recommended web font"
     },
-    "PXWORD3x5-TTF-v1.0.0.zip": {
-      "bytes": 5473,
-      "sha256": "8f38c8e208bcc480205cef64a40861a7e85712339dcbda1cc95f9288de2a9fab",
-      "url": "/fonts/PXWORD3x5-TTF-v1.0.0.zip",
+    "PXFACE3x5-TTF-v2.0.0.zip": {
+      "bytes": 5476,
+      "sha256": "41749d09dea61dedfaa53608473a2f7685f8639412505509a2affd6b2f4b698a",
+      "url": "/fonts/PXFACE3x5-TTF-v2.0.0.zip",
       "purpose": "Recommended desktop package"
     },
-    "PXWORD3x5-OTF-v1.0.0.zip": {
-      "bytes": 5073,
-      "sha256": "35968d35a388e40db65ae6c8b66c3358d97036ae8a92d6a3b919fe0769013e8e",
-      "url": "/fonts/PXWORD3x5-OTF-v1.0.0.zip",
+    "PXFACE3x5-OTF-v2.0.0.zip": {
+      "bytes": 5085,
+      "sha256": "1390bad999fd2b9c5afa65d28a63434446f5aded4a092b99d1701d8df48228e0",
+      "url": "/fonts/PXFACE3x5-OTF-v2.0.0.zip",
       "purpose": "Alternative OTF desktop package"
     },
-    "PXWORD3x5-Web-v1.0.0.zip": {
-      "bytes": 7593,
-      "sha256": "940b7a7b7c0917ed93e46b6038a615530747c01204c36cb465153ee9eb71be02",
-      "url": "/fonts/PXWORD3x5-Web-v1.0.0.zip",
+    "PXFACE3x5-Web-v2.0.0.zip": {
+      "bytes": 7619,
+      "sha256": "835cd5fa28ae3ff7dcf815afe5980819d44e7bad652d40bc3471706ee224b70d",
+      "url": "/fonts/PXFACE3x5-Web-v2.0.0.zip",
       "purpose": "Self-hosted web kit"
     },
-    "PXWORD3x5-v1.0.0.zip": {
-      "bytes": 13799,
-      "sha256": "47995215eea85e1a843f5a7e944711b626449b39e344f58ce179ff789fe73edd",
-      "url": "/fonts/PXWORD3x5-v1.0.0.zip",
+    "PXFACE3x5-v2.0.0.zip": {
+      "bytes": 13965,
+      "sha256": "ff7e5dcd46c55e45a8585a8e5e51a31d3c36575a61b67d2a8194fbf92a1d8918",
+      "url": "/fonts/PXFACE3x5-v2.0.0.zip",
       "purpose": "Complete release package"
     }
   }

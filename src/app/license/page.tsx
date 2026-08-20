@@ -2,8 +2,8 @@ import type { Metadata } from "next";
 import Link from "next/link";
 
 export const metadata: Metadata = {
-  title: "License — PXWORD",
-  description: "Licensing terms for the PXWORD app, 3×5 glyph set, and brand.",
+  title: "License | PXFACE",
+  description: "Licensing terms for the PXFACE app, 3×5 glyph set, and brand.",
   alternates: {
     canonical: "/license",
   },
@@ -14,7 +14,7 @@ export default function LicensePage() {
     <main className="license-page">
       <article className="license-sheet">
         <header className="license-header">
-          <Link href="/">PXWORD</Link>
+          <Link href="/">PXFACE</Link>
           <span>Licensing / 2026</span>
         </header>
 
@@ -23,15 +23,14 @@ export default function LicensePage() {
             <p className="license-eyebrow">Open glyphs</p>
             <h1>Use the pixels.<br />Make them yours.</h1>
             <p>
-              PXWORD separates the reusable 3×5 glyph set from the app that
+              PXFACE separates the reusable 3×5 glyph set from the app that
               turns it into wordmarks.
             </p>
           </section>
 
           <div className="license-grid">
             <section>
-              <span>01 / Glyphs</span>
-              <h2>CC0 1.0</h2>
+              <h2>Glyphs: CC0 1.0</h2>
               <p>
                 The glyph matrices are dedicated to the public domain. Use,
                 modify, and redistribute them for any purpose, including
@@ -43,30 +42,27 @@ export default function LicensePage() {
             </section>
 
             <section>
-              <span>02 / App code</span>
-              <h2>MIT</h2>
+              <h2>Code: MIT</h2>
               <p>
-                The PXWORD application code is available under the MIT
+                The PXFACE application code is available under the MIT
                 License. Copies of the code must keep its copyright and
                 license notice.
               </p>
             </section>
 
             <section>
-              <span>03 / Brand</span>
-              <h2>Excluded</h2>
+              <h2>Brand: Excluded</h2>
               <p>
-                The PXWORD name, logo, and brand identity are not included in
+                The PXFACE name, logo, and brand identity are not included in
                 the CC0 dedication or MIT License.
               </p>
             </section>
 
             <section>
-              <span>04 / Font files</span>
-              <h2>OFL 1.1</h2>
+              <h2>Font: OFL 1.1</h2>
               <p>
-                The installable PXWORD 3×5 font files use the SIL Open Font
-                License. PXWORD is the Reserved Font Name; modified versions
+                The installable PXFACE 3×5 font files use the SIL Open Font
+                License. PXFACE is the Reserved Font Name; modified versions
                 must use another name.
               </p>
               <Link href="/font">Download the font</Link>

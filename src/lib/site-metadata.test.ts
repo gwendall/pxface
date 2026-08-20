@@ -20,6 +20,12 @@ describe("createPageMetadata", () => {
     expect(metadata.twitter).toMatchObject({
       card: "summary_large_image",
       title: "Render API | PXFACE",
+      images: [
+        {
+          url: "/twitter-image",
+          alt: "PXFACE rendered in a minimal 3×5 pixel alphabet with full pixel control",
+        },
+      ],
     });
   });
 

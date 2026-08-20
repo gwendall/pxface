@@ -2,13 +2,14 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { buildPixelLayout } from "@/lib/pixel-font";
+import { buildPixelLayout } from "pxface";
 
 const mark = buildPixelLayout("PX", 1, 2, "left");
 
 const navigation = [
   { href: "/", label: "Studio" },
   { href: "/font", label: "Font" },
+  { href: "/docs/javascript", label: "JS" },
   { href: "/docs/api", label: "API" },
   { href: "/license", label: "License" },
 ] as const;

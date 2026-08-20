@@ -1,7 +1,7 @@
 import {
   WORDMARK_DEFAULTS,
   type WordmarkOptions,
-} from "./wordmark-renderer";
+} from "pxface";
 
 export type RenderParameterDoc = {
   name: string;

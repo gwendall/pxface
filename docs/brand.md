@@ -10,7 +10,8 @@ idea is concise: pixel type you can shape, export, install, and automate.
 - Signature: **Pixel type, made tangible.**
 - Canonical domain: `pxface.com`
 - Type family: **PXFACE 3×5**
-- Developer surfaces: **PXFACE Render API** and `pxface-render`
+- Developer surfaces: the `pxface` package, **PXFACE Render API**, and
+  `pxface-render` agent skill
 
 Use PXFACE as one word in uppercase. Use `pxface` for package names, event
 names, paths, and other machine identifiers. Do not abbreviate the public brand

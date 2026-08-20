@@ -6,7 +6,7 @@ import {
   RENDERER_VERSION,
   WordmarkValidationError,
   wordmarkFileName,
-} from "@/lib/wordmark-renderer";
+} from "pxface";
 
 export const runtime = "nodejs";
 

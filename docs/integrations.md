@@ -1,5 +1,18 @@
 # PXFACE integration decisions
 
+## JavaScript and React
+
+The `pxface` npm package is the canonical local integration. Its root export
+contains the framework-agnostic renderer and serializable scene; the optional
+`pxface/react` subpath is a server-renderable adapter over that exact module.
+The Next.js studio resolves those same public imports in the workspace, so a
+change cannot silently diverge between product and package.
+
+The package ships ESM, CommonJS, TypeScript declarations, source maps, and a
+React peer dependency that remains optional for core callers. The hosted HTTP
+endpoint remains the adapter for agents, other languages, and callers that
+need a PNG response rather than local rendering.
+
 ## Editable design tools
 
 PXFACE SVGs keep a named hierarchy of canvas, depth layer, line, character,
@@ -18,7 +31,7 @@ The editable SVG flow covers insertion and pixel-level manipulation without
 installation, authentication, review, or a second UI. A plugin is deliberately
 deferred until usage events or interviews show repeated demand for editing
 PXFACE parameters after insertion. If built, it must call the public render
-contract or bundle the headless renderer.
+contract or bundle `pxface`.
 
 ## MCP adapter — not built
 

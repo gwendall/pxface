@@ -1,15 +1,16 @@
 import {
   WORDMARK_OPTION_KEYS,
+  type WordmarkInput,
   type WordmarkOptions,
   WordmarkValidationError,
-} from "./wordmark-renderer";
+} from "pxface";
 
 export type RenderFormat = "svg" | "png";
 
 export type ParsedRenderRequest = {
   format: RenderFormat;
   download: boolean;
-  options: Partial<Record<keyof WordmarkOptions, unknown>>;
+  options: WordmarkInput;
 };
 
 function parseFormat(value: unknown): RenderFormat {
@@ -33,7 +34,7 @@ export function parseRenderSearchParams(searchParams: URLSearchParams): ParsedRe
   return {
     format: parseFormat(searchParams.get("format")),
     download: parseDownload(searchParams.get("download")),
-    options,
+    options: options as WordmarkInput,
   };
 }
 
@@ -52,6 +53,6 @@ export function parseRenderJson(value: unknown): ParsedRenderRequest {
   return {
     format: parseFormat(record.format),
     download: parseDownload(record.download),
-    options,
+    options: options as WordmarkInput,
   };
 }

@@ -7,6 +7,12 @@ description: Generate deterministic 3×5 pixel wordmark assets through the PXFAC
 
 Generate an asset through `https://pxface.com/api/v1/render`. Treat PXFACE as a renderer, not as an installed font.
 
+When working inside a JavaScript or React project, prefer the local `pxface`
+package so rendering does not require a network request. Import
+`renderWordmark` from `pxface`, or `Pxface` from `pxface/react`. Installation
+and SSR examples are at `https://pxface.com/docs/javascript`. Use the hosted
+endpoint for other languages, remote tools, and image-file responses.
+
 ## Render an asset
 
 1. Choose SVG when pixels must remain editable or PNG when the caller needs a bitmap.
@@ -48,4 +54,3 @@ Treat non-2xx bodies as JSON errors. Correct each entry in `issues` and retry. S
 ## Licensing
 
 The 3×5 glyph shapes are CC0-1.0 with no attribution required. The app code is MIT. The PXFACE name and logo are excluded. Do not claim that a user's complete export is CC0; its text, layout, and styling belong to their respective rights holders.
-

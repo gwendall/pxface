@@ -20,7 +20,7 @@ except ModuleNotFoundError as error:
 
 
 ROOT = Path(__file__).resolve().parents[1]
-SOURCE = ROOT / "src/lib/pixel-font-data.ts"
+SOURCE = ROOT / "packages/pxface/src/pixel-font-data.ts"
 OUTPUT = ROOT / "public/fonts"
 LICENSE = ROOT / "LICENSES/OFL-1.1.txt"
 FONTLOG = ROOT / "FONTLOG.md"

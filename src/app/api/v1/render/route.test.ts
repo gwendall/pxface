@@ -1,7 +1,7 @@
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import { describe, expect, it } from "vitest";
-import { WORDMARK_OPTION_KEYS } from "@/lib/wordmark-renderer";
+import { WORDMARK_OPTION_KEYS } from "pxface";
 import { GET, OPTIONS, POST } from "./route";
 
 describe("render API", () => {

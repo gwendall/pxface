@@ -19,7 +19,9 @@
       }
     ],
     "paths": {
-      "@/*": ["./src/*"]
+      "@/*": ["./src/*"],
+      "pxface": ["./packages/pxface/src/index.ts"],
+      "pxface/react": ["./packages/pxface/src/react.tsx"]
     }
   },
   "include": [

@@ -6,7 +6,7 @@ implementation.
 
 ## Progress
 
-- Current batch: **None - social preview legibility verified**
+- Current batch: **JavaScript library and public-source release**
 - Final social-preview verification: deployment
   `dpl_JDGVzULMkWddfjaP1hH6BDA9oTvg` from merge commit `34680e9` served the
   unified 30 px supporting type and overlay-safe URL placement successfully to
@@ -34,13 +34,40 @@ implementation.
 - Shared-shell production verification: deployment
   `dpl_3SzVNdh3FZPt7SjJ8fF6p33cVBb5` from merge commit `9856217` served the
   shared navigation and route metadata successfully.
-- QA: 37 automated tests, lint, production build, deterministic font rebuild,
+- QA: 39 automated tests, lint, production build, deterministic font rebuild,
   OpenAPI parse, skill validation, API smoke tests, and desktop/mobile browser
   checks all pass.
 - Completed: licensing, responsive editor, export padding/ratios, palette mode,
   expanded glyph set, default `HELLO\nTHERE`, and pixel-font empty state.
 - Legend: `[ ]` queued, `[~]` in progress, `[x]` complete, `[-]` deliberately
   skipped after evaluation.
+
+## Now - JavaScript library and public-source release
+
+- [x] **Open the canonical renderer as a package**
+  - Keep the Next.js app at the repository root and add a lightweight npm
+    workspace instead of moving a working product into an `apps/` hierarchy.
+  - Publish one framework-agnostic `pxface` interface with a `pxface/react`
+    adapter, zero renderer duplication, complete TypeScript declarations, ESM
+    and CommonJS output, and explicit licensing for code, glyphs, and brand.
+  - Make the studio, server endpoint, scripts, and tests consume that same
+    package seam.
+- [x] **Create a first-class frontend integration experience**
+  - Document installation, direct SVG generation, serializable scenes, React,
+    SSR and React Server Components, responsive styling, editable pixels, and
+    the relationship with the hosted render endpoint.
+  - Link the library from the shared navigation, footer, README, `llms.txt`,
+    agent skill, and route metadata so humans and agents can find it.
+- [x] **Verify the package as a real consumer**
+  - Test the public package interface and React server rendering, build both
+    module formats and declarations, inspect the packed tarball, and run the
+    full app, font, OpenAPI, and production-build checks once the batch lands.
+- [~] **Publish the source and package**
+  - Scan the complete Git history for secrets before changing visibility.
+  - Merge the implementation, publish the available `pxface` npm name, make
+    `gwendall/pxface` public, deploy production, and verify every public URL.
+  - Full-history `gitleaks` scan: 31 commits and 0 findings before opening the
+    repository. Production dependencies and the full workspace audit clean.
 
 ## Now - social preview artifact
 

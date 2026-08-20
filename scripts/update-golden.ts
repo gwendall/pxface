@@ -1,7 +1,7 @@
 import { mkdir, writeFile } from "node:fs/promises";
 import { join } from "node:path";
 import sharp from "sharp";
-import { renderWordmark } from "../src/lib/wordmark-renderer";
+import { renderWordmark } from "pxface";
 
 async function main() {
   const output = join(process.cwd(), "test/fixtures/golden");

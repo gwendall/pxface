@@ -6,7 +6,7 @@ implementation.
 
 ## Progress
 
-- Current batch: **None - shared navigation and page identity complete**
+- Current batch: **Shared editorial footer in progress**
 - Production verification: [pxface.com](https://pxface.com) served deployment
   `dpl_DK8kc1ydQxMR3qfE6pWJvauCp9Ly` from merge commit `4b481d1` successfully.
 - Legacy production: [pxword.com](https://pxword.com) redirects to PXFACE while
@@ -21,6 +21,17 @@ implementation.
   expanded glyph set, default `HELLO\nTHERE`, and pixel-font empty state.
 - Legend: `[ ]` queued, `[~]` in progress, `[x]` complete, `[-]` deliberately
   skipped after evaluation.
+
+## Now - shared editorial footer
+
+- [x] **Consolidate secondary-page footers**
+  - Replace the separate Font, API, and License footer markup with one shared
+    server component and one consistent set of links.
+  - Keep the compact studio footer separate because it belongs to the fixed,
+    full-screen canvas layout.
+- [ ] **Verify and publish the footer consolidation**
+  - Test all secondary pages at desktop and mobile sizes in both color schemes,
+    then merge and verify the production deployment.
 
 ## Now - shared site shell
 

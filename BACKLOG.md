@@ -6,12 +6,15 @@ implementation.
 
 ## Progress
 
-- Current batch: **Shared navigation and page identity in progress**
+- Current batch: **None - shared navigation and page identity complete**
 - Production verification: [pxface.com](https://pxface.com) served deployment
   `dpl_DK8kc1ydQxMR3qfE6pWJvauCp9Ly` from merge commit `4b481d1` successfully.
 - Legacy production: [pxword.com](https://pxword.com) redirects to PXFACE while
   preserving the requested path.
-- QA: 33 automated tests, lint, production build, deterministic font rebuild,
+- Shared-shell production verification: deployment
+  `dpl_3SzVNdh3FZPt7SjJ8fF6p33cVBb5` from merge commit `9856217` served the
+  shared navigation and route metadata successfully.
+- QA: 35 automated tests, lint, production build, deterministic font rebuild,
   OpenAPI parse, skill validation, API smoke tests, and desktop/mobile browser
   checks all pass.
 - Completed: licensing, responsive editor, export padding/ratios, palette mode,
@@ -27,7 +30,7 @@ implementation.
 - [x] **Add complete route metadata**
   - Give every page its own title, description, canonical URL, Open Graph, and
     Twitter card metadata through one shared Next.js metadata helper.
-- [~] **Verify and publish the shared shell**
+- [x] **Verify and publish the shared shell**
   - Test desktop/mobile layout, both color schemes, metadata output, routes,
     automated checks, and the production deployment.
 

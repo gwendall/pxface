@@ -84,7 +84,7 @@ export function SocialImage() {
             bottom: 58,
             display: "flex",
             color: "#9B9B94",
-            fontSize: 26,
+            fontSize: 30,
             letterSpacing: "0.08em",
           }}
         >
@@ -101,7 +101,7 @@ export function SocialImage() {
             bottom: 54,
             display: "flex",
             alignItems: "center",
-            fontSize: 32,
+            fontSize: 30,
             letterSpacing: "0.04em",
           }}
         >

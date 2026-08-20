@@ -40,4 +40,27 @@ describe("createPageMetadata", () => {
       url: "/",
     });
   });
+
+  it("publishes typed alternate resources when provided", () => {
+    const metadata = createPageMetadata({
+      title: "Render API",
+      description: "Generate pixel wordmarks.",
+      path: "/docs/api",
+      keywords: ["pixel API"],
+      alternateTypes: {
+        "text/plain": "/llms.txt",
+        "text/markdown": "/SKILL.md",
+        "text/yaml": "/openapi.yaml",
+      },
+    });
+
+    expect(metadata.alternates).toEqual({
+      canonical: "/docs/api",
+      types: {
+        "text/plain": "/llms.txt",
+        "text/markdown": "/SKILL.md",
+        "text/yaml": "/openapi.yaml",
+      },
+    });
+  });
 });

@@ -12,7 +12,7 @@ import {
 } from "@phosphor-icons/react";
 import Link from "next/link";
 import { useMemo, useState } from "react";
-import { buildPixelLayout, type Pixel, type TextAlign } from "@/lib/pixel-font";
+import { buildPixelLayout, type TextAlign } from "@/lib/pixel-font";
 import {
   renderWordmark,
   type ColorMode,
@@ -62,16 +62,6 @@ function randomSeed() {
   const values = new Uint32Array(1);
   window.crypto.getRandomValues(values);
   return values[0];
-}
-
-function PixelMark({ pixels }: { pixels: Pixel[] }) {
-  return (
-    <svg viewBox="0 0 7 5" aria-hidden="true" className="brand-mark">
-      {pixels.map((pixel, index) => (
-        <rect key={index} x={pixel.x} y={pixel.y} width="1" height="1" />
-      ))}
-    </svg>
-  );
 }
 
 function SegmentButton({
@@ -217,7 +207,6 @@ export default function PixelStudio() {
     wordSpacing,
   ]);
   const { layout } = render.scene;
-  const brandLayout = useMemo(() => buildPixelLayout("PX", 1, 2, "left"), []);
   const emptyLayout = useMemo(() => buildPixelLayout("ABC", 1, 2, "left"), []);
   const hasPixels = layout.pixels.length > 0;
 
@@ -307,12 +296,8 @@ export default function PixelStudio() {
 
   return (
     <div className="app-shell">
-      <header className="topbar">
-        <div className="brand">
-          <PixelMark pixels={brandLayout.pixels} />
-          <span>PXFACE</span>
-        </div>
-        <p className="source-note"><span>Pixel type, made tangible.</span><Link href="/font">Download font</Link></p>
+      <div className="studio-toolbar" aria-label="Studio export controls">
+        <p className="source-note"><span>Studio exports</span><Link href="/font">Download font</Link></p>
         <div className="topbar-actions">
           <button type="button" className="button secondary" onClick={copySvg} disabled={!hasPixels}>
             {copyState === "copied" ? <Check weight="bold" /> : <Copy />}
@@ -325,7 +310,7 @@ export default function PixelStudio() {
             <ImageSquare weight="fill" /> PNG
           </button>
         </div>
-      </header>
+      </div>
 
       <main className="studio-grid">
         <aside className="control-panel" aria-label="Typography controls">

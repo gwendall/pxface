@@ -6,7 +6,7 @@ implementation.
 
 ## Progress
 
-- Current batch: **None - PXFACE brand migration complete**
+- Current batch: **Shared navigation and page identity in progress**
 - Production verification: [pxface.com](https://pxface.com) served deployment
   `dpl_DK8kc1ydQxMR3qfE6pWJvauCp9Ly` from merge commit `4b481d1` successfully.
 - Legacy production: [pxword.com](https://pxword.com) redirects to PXFACE while
@@ -18,6 +18,18 @@ implementation.
   expanded glyph set, default `HELLO\nTHERE`, and pixel-font empty state.
 - Legend: `[ ]` queued, `[~]` in progress, `[x]` complete, `[-]` deliberately
   skipped after evaluation.
+
+## Now - shared site shell
+
+- [x] **Unify the PXFACE signature and navigation**
+  - Treat the orange PX mark and FACE suffix as one readable PXFACE lockup.
+  - Use the same Studio, Font, API, and License navigation on every route.
+- [x] **Add complete route metadata**
+  - Give every page its own title, description, canonical URL, Open Graph, and
+    Twitter card metadata through one shared Next.js metadata helper.
+- [~] **Verify and publish the shared shell**
+  - Test desktop/mobile layout, both color schemes, metadata output, routes,
+    automated checks, and the production deployment.
 
 ## Now - PXFACE brand migration
 

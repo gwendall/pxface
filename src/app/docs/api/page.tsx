@@ -1,11 +1,13 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { createPageMetadata } from "@/lib/site-metadata";
 
-export const metadata: Metadata = {
-  title: "Render API | PXFACE",
-  description: "Generate deterministic 3×5 pixel wordmarks as editable SVG or PNG.",
-  alternates: { canonical: "/docs/api" },
-};
+export const metadata: Metadata = createPageMetadata({
+  title: "Render API",
+  description: "Generate deterministic PXFACE 3×5 pixel wordmarks as editable SVG or production-ready PNG.",
+  path: "/docs/api",
+  keywords: ["pixel text API", "SVG generator API", "PNG render API", "OpenAPI pixel art", "headless typography"],
+});
 
 const svgCurl = `curl --get 'https://pxface.com/api/v1/render' \\
   --data-urlencode 'text=HELLO\nTHERE' \\
@@ -22,11 +24,6 @@ export default function ApiDocsPage() {
   return (
     <main className="docs-page">
       <div className="docs-shell">
-        <nav className="docs-nav" aria-label="API documentation">
-          <Link href="/">PXFACE</Link>
-          <span>API v1</span>
-          <a href="/openapi.yaml">OpenAPI</a>
-        </nav>
         <header className="docs-hero">
           <p className="license-kicker">HEADLESS RENDERER / V1</p>
           <h1>Pixels on demand.</h1>

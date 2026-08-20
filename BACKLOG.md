@@ -7,8 +7,8 @@ implementation.
 ## Progress
 
 - Current batch: **None - PXFACE brand migration complete**
-- Production: [pxface.com](https://pxface.com) serves deployment
-  `dpl_8EBsGHSiGcWVbocP1JLHf6m1v8Zc` from source commit `e4f5826`.
+- Production verification: [pxface.com](https://pxface.com) served deployment
+  `dpl_DK8kc1ydQxMR3qfE6pWJvauCp9Ly` from merge commit `4b481d1` successfully.
 - Legacy production: [pxword.com](https://pxword.com) redirects to PXFACE while
   preserving the requested path.
 - QA: 33 automated tests, lint, production build, deterministic font rebuild,

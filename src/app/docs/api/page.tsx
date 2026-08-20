@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import Link from "next/link";
+import SiteFooter from "../../components/site-footer";
 import { createPageMetadata } from "@/lib/site-metadata";
 
 export const metadata: Metadata = createPageMetadata({
@@ -54,11 +54,7 @@ export default function ApiDocsPage() {
           </div>
           <p>Errors include field-level issues. Output dimensions and renderer version are exposed as headers. Public CORS is enabled; the current limit is 60 requests per minute per IP. Text is capped at 160 characters and 8 lines.</p>
         </section>
-        <footer className="license-footer">
-          <Link href="/">← Open the studio</Link>
-          <a href="/openapi.yaml">Download OpenAPI</a>
-          <a href="https://gwendall.com" target="_blank" rel="noreferrer">Made by Gwendall</a>
-        </footer>
+        <SiteFooter />
       </div>
     </main>
   );

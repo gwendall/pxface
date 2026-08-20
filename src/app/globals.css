@@ -794,21 +794,50 @@ a:focus-visible {
   min-height: calc(100% - 36px);
   margin: 0 auto;
   display: grid;
-  grid-template-rows: 1fr 64px;
+  grid-template-rows: 1fr auto;
   border: 1px solid var(--line-strong);
   background: var(--panel);
 }
 
-.license-footer {
-  display: flex;
+.site-footer {
+  min-height: 64px;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto auto;
   align-items: center;
-  justify-content: space-between;
-  gap: 20px;
+  gap: 28px;
   padding: 0 24px;
+  border-top: 1px solid var(--line);
   font-family: var(--font-geist-mono), monospace;
   font-size: 10px;
   letter-spacing: 0.08em;
   text-transform: uppercase;
+}
+
+.site-footer p {
+  margin: 0;
+  color: var(--muted);
+}
+
+.site-footer nav {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.site-footer a {
+  color: inherit;
+  text-decoration-color: transparent;
+  text-underline-offset: 4px;
+  transition: color 140ms ease, text-decoration-color 140ms ease;
+}
+
+.site-footer a:hover {
+  color: var(--accent);
+  text-decoration-color: currentColor;
+}
+
+.site-footer > a {
+  white-space: nowrap;
 }
 
 .license-content {
@@ -877,8 +906,7 @@ a:focus-visible {
   line-height: 1.6;
 }
 
-.license-grid a,
-.license-footer a {
+.license-grid a {
   color: inherit;
   text-underline-offset: 4px;
 }
@@ -899,10 +927,6 @@ a:focus-visible {
   padding: 24px;
   border: 1px solid var(--line-strong);
   background: var(--panel-strong);
-}
-
-.license-footer {
-  border-top: 1px solid var(--line);
 }
 
 .docs-page {
@@ -1672,10 +1696,6 @@ a:focus-visible {
     border: 0;
   }
 
-  .license-footer {
-    padding-inline: 16px;
-  }
-
   .license-content {
     padding: 40px 16px;
   }
@@ -1725,6 +1745,28 @@ a:focus-visible {
 }
 
 @media (max-width: 700px) {
+  .site-footer {
+    min-height: 0;
+    grid-template-columns: 1fr;
+    gap: 16px;
+    padding: 20px 16px max(20px, env(safe-area-inset-bottom));
+  }
+
+  .site-footer p {
+    display: none;
+  }
+
+  .site-footer nav {
+    display: grid;
+    grid-template-columns: repeat(4, auto);
+    justify-content: space-between;
+    gap: 12px;
+  }
+
+  .site-footer > a {
+    width: fit-content;
+  }
+
   .docs-page {
     padding: max(10px, env(safe-area-inset-top)) max(10px, env(safe-area-inset-right)) max(10px, env(safe-area-inset-bottom)) max(10px, env(safe-area-inset-left));
   }

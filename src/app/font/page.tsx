@@ -2,6 +2,7 @@ import { Desktop, DownloadSimple, File, Globe, Package } from "@phosphor-icons/r
 import type { Metadata } from "next";
 import Link from "next/link";
 import manifestJson from "../../../public/fonts/manifest.json";
+import SiteFooter from "../components/site-footer";
 import { createPageMetadata } from "@/lib/site-metadata";
 import { CopyCssButton, FontTester } from "./font-tools";
 
@@ -197,11 +198,7 @@ export default function FontPage() {
           </div>
         </section>
 
-        <footer className="license-footer">
-          <Link href="/">← Open the studio</Link>
-          <Link href="/docs/api">Render API</Link>
-          <a href="https://gwendall.com" target="_blank" rel="noreferrer">Made by Gwendall</a>
-        </footer>
+        <SiteFooter />
       </div>
     </main>
   );

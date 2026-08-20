@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import SiteFooter from "../components/site-footer";
 import { createPageMetadata } from "@/lib/site-metadata";
 
 export const metadata: Metadata = createPageMetadata({
@@ -74,10 +75,7 @@ export default function LicensePage() {
           </aside>
         </div>
 
-        <footer className="license-footer">
-          <Link href="/">Back to studio</Link>
-          <a href="https://gwendall.com" target="_blank" rel="noreferrer">Made by Gwendall</a>
-        </footer>
+        <SiteFooter />
       </article>
     </main>
   );

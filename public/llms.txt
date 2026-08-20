@@ -4,6 +4,9 @@ PXFACE generates deterministic, editable pixel typography as SVG or PNG. It is a
 
 Studio: https://pxface.com/
 API guide: https://pxface.com/docs/api
+JavaScript and React: https://pxface.com/docs/javascript
+NPM package: https://www.npmjs.com/package/pxface
+Source: https://github.com/gwendall/pxface
 OpenAPI 3.1 contract: https://pxface.com/openapi.yaml
 Agent skill: https://pxface.com/SKILL.md
 License: https://pxface.com/license
@@ -12,5 +15,7 @@ Render endpoint: GET or POST https://pxface.com/api/v1/render
 Formats: svg (default), png
 Determinism: pass colorMode=random and an integer seed
 Limits: 160 characters, 8 lines, 60 requests/minute/IP, 16384px/edge, 64 million pixels
+
+For JavaScript, TypeScript, Node, React, SSR, or React Server Components, install `pxface`. Import the pure renderer from `pxface` or the optional server-compatible component from `pxface/react`. Both use the same canonical implementation as the hosted endpoint.
 
 The 3×5 glyph shapes are CC0-1.0 with no attribution required. App source is MIT. PXFACE name and logo are excluded.

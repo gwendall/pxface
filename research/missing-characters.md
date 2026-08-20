@@ -1,6 +1,6 @@
 # PXWORD — audit des caractères ASCII manquants
 
-_Audit effectué le 19 août 2026 à partir de `src/lib/pixel-font.ts` et des données officielles Unicode 17.0._
+_Audit effectué le 19 août 2026 à partir du module désormais situé dans `packages/pxface/src/pixel-font.ts` et des données officielles Unicode 17.0._
 
 > Statut d’implémentation : les 11 glyphes identifiés ci-dessous ont été
 > ajoutés. PXWORD couvre désormais les 95 caractères ASCII imprimables.

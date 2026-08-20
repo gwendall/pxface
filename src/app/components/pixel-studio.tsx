@@ -12,14 +12,15 @@ import {
 } from "@phosphor-icons/react";
 import Link from "next/link";
 import { useMemo, useState } from "react";
-import { buildPixelLayout, type TextAlign } from "@/lib/pixel-font";
 import {
+  buildPixelLayout,
   renderWordmark,
   type ColorMode,
   type ExportRatio,
   type PixelShape,
+  type TextAlign,
   wordmarkFileName,
-} from "@/lib/wordmark-renderer";
+} from "pxface";
 
 type Palette = {
   name: string;

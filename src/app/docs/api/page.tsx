@@ -131,7 +131,7 @@ export default function ApiDocsPage() {
           <div>
             <h2>Built for automation.</h2>
           </div>
-          <p>Errors include field-level issues. Output dimensions and renderer version are exposed as headers. Public CORS is enabled; the current limit is 60 requests per minute per IP. GET responses include an ETag for cache validation.</p>
+          <p>Errors include field-level issues. Output dimensions and renderer version are exposed as headers. Public CORS is enabled; the current limit is 60 requests per minute per IP. GET responses include an ETag for cache validation. Building a JavaScript frontend? <a href="/docs/javascript">Use the local package</a> instead of making a network request.</p>
         </section>
         <SiteFooter />
       </div>

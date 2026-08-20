@@ -2,7 +2,7 @@ import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import sharp from "sharp";
 import { describe, expect, it } from "vitest";
-import { renderWordmark } from "./wordmark-renderer";
+import { renderWordmark } from "pxface";
 
 const root = process.cwd();
 const goldenOptions = {

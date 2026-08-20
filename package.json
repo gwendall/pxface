@@ -1,13 +1,21 @@
 {
-  "name": "pxface",
+  "name": "pxface-repository",
   "version": "2.0.0",
   "private": true,
   "license": "MIT",
+  "workspaces": [
+    "packages/*"
+  ],
+  "overrides": {
+    "esbuild": "^0.28.2"
+  },
   "scripts": {
-    "dev": "next dev",
-    "build": "next build",
+    "dev": "npm run package:build && next dev",
+    "build": "npm run package:build && next build",
     "start": "next start",
     "lint": "eslint",
+    "package:build": "npm run build --workspace pxface",
+    "package:verify": "npm run package:build && node scripts/verify-package.mjs && npm pack --workspace pxface --dry-run",
     "font:build": "python3 scripts/build-fonts.py",
     "font:verify": "python3 scripts/verify-font-packages.py",
     "fixtures:update": "tsx scripts/update-golden.ts",
@@ -29,6 +37,7 @@
     "eslint": "^9",
     "eslint-config-next": "16.3.1",
     "tailwindcss": "^4",
+    "tsup": "^8.5.0",
     "tsx": "^4.23.12",
     "typescript": "^5",
     "vitest": "^4.1.11"

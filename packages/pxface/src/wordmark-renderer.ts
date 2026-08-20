@@ -32,6 +32,9 @@ export type WordmarkOptions = {
   scale: number;
 };
 
+/** Any subset of renderer options. Missing values use versioned defaults. */
+export type WordmarkInput = Partial<WordmarkOptions>;
+
 export const WORDMARK_OPTION_KEYS = [
   "text",
   "foreground",
@@ -111,8 +114,6 @@ export type WordmarkRender = {
   svg: string;
 };
 
-type UnknownOptions = Partial<Record<keyof WordmarkOptions, unknown>>;
-
 function round(value: number) {
   return Number(value.toFixed(4));
 }
@@ -156,7 +157,7 @@ function addRangeIssue(
   }
 }
 
-export function normalizeWordmarkOptions(input: UnknownOptions = {}): WordmarkOptions {
+export function normalizeWordmarkOptions(input: WordmarkInput = {}): WordmarkOptions {
   const issues: ValidationIssue[] = [];
   const text = input.text === undefined ? WORDMARK_DEFAULTS.text : input.text;
   if (typeof text !== "string") issues.push({ field: "text", message: "Must be a string." });
@@ -273,7 +274,7 @@ function groupedPixels(pixels: RenderPixel[], options: WordmarkOptions, layer: s
   return `<g id="${layer}">${lineMarkup}</g>`;
 }
 
-export function createWordmarkScene(optionsInput: UnknownOptions = {}): WordmarkScene {
+export function createWordmarkScene(optionsInput: WordmarkInput = {}): WordmarkScene {
   const options = normalizeWordmarkOptions(optionsInput);
   const layout = buildPixelLayout(
     options.text,
@@ -332,7 +333,7 @@ export function sceneToSvg(scene: WordmarkScene) {
   return `<svg xmlns="http://www.w3.org/2000/svg" width="${output.width}" height="${output.height}" viewBox="${viewBox.x} ${viewBox.y} ${viewBox.width} ${viewBox.height}" shape-rendering="${scene.shapeRendering}" data-pxface-renderer="${scene.version}" data-pxword-renderer="${scene.version}"><title>${xml(options.text || "PXFACE wordmark")}</title><metadata>PXFACE 3x5 glyph shapes are dedicated under CC0-1.0: https://creativecommons.org/publicdomain/zero/1.0/</metadata>${background}${depth}${foreground}</svg>`;
 }
 
-export function renderWordmark(input: UnknownOptions = {}): WordmarkRender {
+export function renderWordmark(input: WordmarkInput = {}): WordmarkRender {
   const scene = createWordmarkScene(input);
   return { scene, svg: sceneToSvg(scene) };
 }

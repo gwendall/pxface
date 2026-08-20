@@ -1,0 +1,65 @@
+{
+  "name": "pxface",
+  "version": "1.0.0",
+  "description": "Framework-agnostic 3×5 pixel type renderer with an optional React adapter.",
+  "type": "module",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    },
+    "./react": {
+      "types": "./dist/react.d.ts",
+      "import": "./dist/react.js",
+      "require": "./dist/react.cjs"
+    },
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "dist",
+    "LICENSE",
+    "CC0-1.0.txt",
+    "LICENSES.md",
+    "CHANGELOG.md",
+    "README.md"
+  ],
+  "sideEffects": false,
+  "license": "MIT",
+  "author": "Gwendall Esnault (https://gwendall.com)",
+  "homepage": "https://pxface.com/docs/javascript",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/gwendall/pxface.git",
+    "directory": "packages/pxface"
+  },
+  "bugs": "https://github.com/gwendall/pxface/issues",
+  "engines": {
+    "node": ">=18"
+  },
+  "keywords": [
+    "pixel-font",
+    "pixel-art",
+    "typography",
+    "wordmark",
+    "svg",
+    "react"
+  ],
+  "peerDependencies": {
+    "react": ">=18"
+  },
+  "peerDependenciesMeta": {
+    "react": {
+      "optional": true
+    }
+  },
+  "scripts": {
+    "build": "tsup"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}

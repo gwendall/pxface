@@ -44,6 +44,9 @@ export default function LicensePage() {
                 License. Copies of the code must keep its copyright and
                 license notice.
               </p>
+              <a href="https://github.com/gwendall/pxface" target="_blank" rel="noreferrer">
+                Browse the source
+              </a>
             </section>
 
             <section>

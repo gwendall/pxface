@@ -1,9 +1,10 @@
 # PXFACE rendering architecture
 
-`src/lib/wordmark-renderer.ts` is the single product boundary for every render.
+`packages/pxface/src/wordmark-renderer.ts` is the single product seam for every render.
 It owns defaults, validation, layout, deterministic colors, dimensions, the
-serializable scene, and editable SVG markup. The studio and `/api/v1/render`
-are thin adapters over it; PNG is always rasterized from its SVG.
+serializable scene, and editable SVG markup. The published `pxface` package,
+studio, React export, and `/api/v1/render` all use that interface; PNG is
+always rasterized from its SVG.
 
 ## Change propagation
 
@@ -22,6 +23,16 @@ When adding a glyph, palette, or render option:
 
 Font binaries are generated mechanically by `scripts/build-fonts.py` from the
 canonical TypeScript glyph map. Renderer effects do not enter font outlines.
+
+## Package surface
+
+- `pxface` exports the pure renderer, layout, glyph data, palette utility,
+  versioned defaults, validation error, and public types.
+- `pxface/react` is the only framework adapter. It renders the canonical SVG
+  without hooks, browser globals, or another layout implementation.
+- The repository root is a private npm workspace only to prevent accidental
+  publication of the Next.js application. It is not a statement about GitHub
+  visibility or the code license.
 
 ## Operational contract
 

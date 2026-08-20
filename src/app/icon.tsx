@@ -1,5 +1,5 @@
 import { ImageResponse } from "next/og";
-import { buildPixelLayout } from "@/lib/pixel-font";
+import { buildPixelLayout } from "pxface";
 
 export const size = {
   width: 64,

@@ -5,6 +5,35 @@ PXFACE is a browser-based 3×5 pixel wordmark studio. Type a mark, adjust its sp
 **Pixel type, made tangible.**
 
 Production: [pxface.com](https://pxface.com)
+Source: [github.com/gwendall/pxface](https://github.com/gwendall/pxface)
+
+## JavaScript package
+
+Install the same framework-agnostic renderer used by the studio and hosted
+endpoint:
+
+```bash
+npm install pxface
+```
+
+```ts
+import { renderWordmark } from "pxface";
+
+const { svg, scene } = renderWordmark({ text: "HELLO\nTHERE" });
+```
+
+React is an optional adapter rather than a second renderer:
+
+```tsx
+import { Pxface } from "pxface/react";
+
+export function Logo() {
+  return <Pxface text="HELLO" depth={1} />;
+}
+```
+
+The package supports ESM, CommonJS, TypeScript, React SSR, and React Server
+Components. Full documentation: [pxface.com/docs/javascript](https://pxface.com/docs/javascript).
 
 ## Getting Started
 
@@ -28,6 +57,7 @@ Quality checks:
 npm test
 npm run lint
 npm run build
+npm run package:verify
 npm run font:verify
 ```
 
@@ -38,9 +68,18 @@ printable ASCII coverage, binary signatures, release hashes, and exact ZIP
 contents. See `docs/architecture.md` before changing a render option or glyph
 so every adapter stays synchronized.
 
-The app lives in `src/app`. The CC0 glyph data lives in `src/lib/pixel-font-data.ts`, with the layout and headless render engine in `src/lib`.
+The Next.js app lives in `src/app`. The publishable renderer, React adapter,
+and CC0 glyph data live in `packages/pxface`. The root workspace stays private
+only to prevent accidental npm publication; the `pxface` workspace is the
+public package.
 
-The public render endpoint, OpenAPI contract, agent skill, and installable font are documented at [pxface.com/docs/api](https://pxface.com/docs/api), [pxface.com/openapi.yaml](https://pxface.com/openapi.yaml), [pxface.com/SKILL.md](https://pxface.com/SKILL.md), and [pxface.com/font](https://pxface.com/font).
+The JavaScript library, public render endpoint, OpenAPI contract, agent skill,
+and installable font are documented at
+[pxface.com/docs/javascript](https://pxface.com/docs/javascript),
+[pxface.com/docs/api](https://pxface.com/docs/api),
+[pxface.com/openapi.yaml](https://pxface.com/openapi.yaml),
+[pxface.com/SKILL.md](https://pxface.com/SKILL.md), and
+[pxface.com/font](https://pxface.com/font).
 
 ## Font releases
 
@@ -72,7 +111,7 @@ PXFACE uses separate terms for its code, glyphs, and brand:
 | Material | Terms |
 | --- | --- |
 | Application code | [MIT License](LICENSE) |
-| 3×5 glyph matrices in `src/lib/pixel-font-data.ts` | [CC0 1.0 Universal](LICENSES/CC0-1.0.txt) — no attribution required |
+| 3×5 glyph matrices in `packages/pxface/src/pixel-font-data.ts` | [CC0 1.0 Universal](LICENSES/CC0-1.0.txt) — no attribution required |
 | Installable font binaries in `public/fonts` | [SIL Open Font License 1.1](LICENSES/OFL-1.1.txt), Reserved Font Name “PXFACE” |
 | PXFACE name, logo, and brand identity | Excluded; all rights reserved |
 

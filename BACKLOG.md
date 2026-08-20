@@ -6,7 +6,11 @@ implementation.
 
 ## Progress
 
-- Current batch: **Social preview legibility adjustment in progress**
+- Current batch: **None - social preview legibility verified**
+- Social-preview legibility verification: deployment
+  `dpl_8vZgPTbXWvTnZg9nZzeQXfRV9cnB` from merge commit `29f40fe` served the
+  enlarged supporting type and overlay-safe URL placement successfully to the
+  public Open Graph and X image routes.
 - Social-preview production verification: deployment
   `dpl_CutNhMGzbKUPxfnfRWnNGdZ3LM82` from merge commit `1409cbd` served the
   dedicated Open Graph and X images, large-card metadata, and accessible image
@@ -40,7 +44,7 @@ implementation.
 
 ## Now - social preview artifact
 
-- [~] **Keep supporting copy readable in real link previews**
+- [x] **Keep supporting copy readable in real link previews**
   - Increase the supporting type after the Telegram preview exposed text that
     was technically present but too small to read comfortably.
   - Move the URL away from the top-right media overlay used by Telegram and

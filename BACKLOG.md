@@ -6,7 +6,11 @@ implementation.
 
 ## Progress
 
-- Current batch: **API parameter reference in progress**
+- Current batch: **None - API parameter reference complete**
+- API-reference production verification: deployment
+  `dpl_GJ7qEyhYpHpgQcAECjtgS7xgTF88` from merge commit `5ea8671` served 20
+  documented parameters across 4 accessible tables, with the OpenAPI and agent
+  guide links available.
 - Shared-footer production verification: deployment
   `dpl_AE9JrKECNAnQVjMergo5cP4Wrkj4` from merge commit `1b6f2aa` served one
   shared footer on Font, API, and License; the full-screen studio retained its
@@ -34,7 +38,7 @@ implementation.
     effects.
   - Keep the human reference aligned with the renderer option keys through an
     automated coverage test.
-- [~] **Verify and publish the API documentation**
+- [x] **Verify and publish the API documentation**
   - Test the page at desktop and mobile sizes in both color schemes, run the
     automated checks, then merge and verify the production deployment.
 

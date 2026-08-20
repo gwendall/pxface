@@ -6,7 +6,7 @@ implementation.
 
 ## Progress
 
-- Current batch: **JavaScript library and public-source release**
+- Current batch: **None - JavaScript library release verified**
 - JavaScript-library production verification: deployment
   `dpl_98nVZf4D3n4AAP4TonNZF842U3TD` from merge commit `05c4ce7` serves the
   library guide, package-rendered hero, discovery links, and unchanged SVG/PNG
@@ -14,6 +14,10 @@ implementation.
 - Public-source verification: `github.com/gwendall/pxface` is public, reports
   MIT as its repository license, and ships CI, contribution docs, and enabled
   private vulnerability reporting after a 0-finding history scan.
+- npm verification: `pxface@1.0.0` is the public `latest` release with registry
+  integrity `sha512-oJx8z9Z16/EPsAkw2B0ceBCqGRwVA9sCPKcYxNikAn3muNkMRMcGqmvglrJ00ZbJewEZXmoP9e+FJwde+90/0w==`.
+  Fresh registry installs passed ESM, CommonJS, and React SSR smoke tests; the
+  matching immutable source release is tagged `js-v1.0.0` on GitHub.
 - Final social-preview verification: deployment
   `dpl_JDGVzULMkWddfjaP1hH6BDA9oTvg` from merge commit `34680e9` served the
   unified 30 px supporting type and overlay-safe URL placement successfully to
@@ -69,14 +73,15 @@ implementation.
   - Test the public package interface and React server rendering, build both
     module formats and declarations, inspect the packed tarball, and run the
     full app, font, OpenAPI, and production-build checks once the batch lands.
-- [~] **Publish the source and package**
+- [x] **Publish the source and package**
   - Scan the complete Git history for secrets before changing visibility.
   - Merge the implementation, publish the available `pxface` npm name, make
     `gwendall/pxface` public, deploy production, and verify every public URL.
   - Full-history `gitleaks` scan: 31 commits and 0 findings before opening the
     repository. Production dependencies and the full workspace audit clean.
-  - GitHub and Vercel are complete. The first npm publication is waiting only
-    for the maintainer to finish npm's browser login; `pxface` remains free.
+  - GitHub, Vercel, and npm are public and verified. The first release reserved
+    `pxface`, published version `1.0.0` as `latest`, and attached the matching
+    GitHub source release.
 
 ## Now - social preview artifact
 

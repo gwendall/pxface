@@ -6,9 +6,11 @@ implementation.
 
 ## Progress
 
-- Current batch: **PXFACE brand migration in progress**
-- Legacy production: [pxword.com](https://pxword.com) remains live while
-  [pxface.com](https://pxface.com) is connected and verified.
+- Current batch: **None - PXFACE brand migration complete**
+- Production: [pxface.com](https://pxface.com) serves deployment
+  `dpl_8EBsGHSiGcWVbocP1JLHf6m1v8Zc` from source commit `e4f5826`.
+- Legacy production: [pxword.com](https://pxword.com) redirects to PXFACE while
+  preserving the requested path.
 - QA: 33 automated tests, lint, production build, deterministic font rebuild,
   OpenAPI parse, skill validation, API smoke tests, and desktop/mobile browser
   checks all pass.
@@ -34,11 +36,11 @@ implementation.
   - Rename the API identity, OpenAPI contract, agent skill, `llms.txt`, event
     names, renderer metadata, and documentation.
   - Keep deprecated PXWORD response headers during the migration window.
-- [~] **Migrate repositories and production**
+- [x] **Migrate repositories and production**
   - Rename the private GitHub repository and Vercel project to `pxface`.
   - Deploy the new brand, attach `pxface.com`, and redirect `pxword.com` while
     preserving paths.
-- [~] **Verify and close the migration**
+- [x] **Verify and close the migration**
   - Run unit tests, lint, production build, deterministic font verification,
     OpenAPI/skill checks, API smoke tests, and desktop/mobile browser QA.
   - Record the deployed commit and production verification here.

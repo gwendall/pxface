@@ -14,6 +14,7 @@ type PageMetadataOptions = {
   path: `/${string}` | "/";
   keywords: string[];
   absoluteTitle?: boolean;
+  alternateTypes?: Record<string, string>;
 };
 
 export function createPageMetadata({
@@ -22,6 +23,7 @@ export function createPageMetadata({
   path,
   keywords,
   absoluteTitle = false,
+  alternateTypes,
 }: PageMetadataOptions): Metadata {
   const socialTitle = absoluteTitle ? title : `${title} | ${siteName}`;
 
@@ -29,7 +31,10 @@ export function createPageMetadata({
     title: absoluteTitle ? { absolute: title } : title,
     description,
     keywords,
-    alternates: { canonical: path },
+    alternates: {
+      canonical: path,
+      ...(alternateTypes ? { types: alternateTypes } : {}),
+    },
     openGraph: {
       title: socialTitle,
       description,

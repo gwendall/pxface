@@ -6,7 +6,7 @@ implementation.
 
 ## Progress
 
-- Current batch: **None - API parameter reference complete**
+- Current batch: **Agent resource discovery in progress**
 - API-reference production verification: deployment
   `dpl_GJ7qEyhYpHpgQcAECjtgS7xgTF88` from merge commit `5ea8671` served 20
   documented parameters across 4 accessible tables, with the OpenAPI and agent
@@ -29,6 +29,17 @@ implementation.
   expanded glyph set, default `HELLO\nTHERE`, and pixel-font empty state.
 - Legend: `[ ]` queued, `[~]` in progress, `[x]` complete, `[-]` deliberately
   skipped after evaluation.
+
+## Now - agent resource discovery
+
+- [x] **Surface the machine-readable resources**
+  - Give `llms.txt`, `SKILL.md`, and `openapi.yaml` a dedicated, human-readable
+    resource block on the API guide.
+  - Publish typed alternate links in the page metadata so tools can discover
+    the files without parsing the full guide.
+- [~] **Verify and publish agent discovery**
+  - Test all three resources, their MIME types, page metadata, responsive
+    presentation, and the production deployment.
 
 ## Now - API parameter reference
 

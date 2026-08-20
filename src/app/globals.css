@@ -1155,6 +1155,84 @@ a:focus-visible {
   font-weight: 650;
 }
 
+.docs-agent-resources {
+  border-bottom: 1px solid var(--line);
+}
+
+.docs-agent-resources > header {
+  display: grid;
+  grid-template-columns: minmax(220px, 0.8fr) minmax(0, 1.2fr);
+  gap: clamp(32px, 8vw, 100px);
+  align-items: end;
+  padding: clamp(36px, 6vw, 72px);
+  border-bottom: 1px solid var(--line);
+}
+
+.docs-agent-resources h2 {
+  margin: 0;
+  color: var(--ink);
+  font-size: clamp(28px, 4vw, 48px);
+  letter-spacing: -0.05em;
+}
+
+.docs-agent-resources header p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 14px;
+  line-height: 1.65;
+}
+
+.docs-resource-list a {
+  display: grid;
+  grid-template-columns: minmax(130px, 0.25fr) minmax(0, 1fr) 130px auto;
+  gap: 24px;
+  align-items: center;
+  min-height: 84px;
+  padding: 18px clamp(24px, 6vw, 72px);
+  color: var(--ink);
+  text-decoration: none;
+  transition: background-color 140ms ease;
+}
+
+.docs-resource-list a + a {
+  border-top: 1px solid var(--line);
+}
+
+.docs-resource-list a:hover {
+  background: var(--panel-strong);
+}
+
+.docs-resource-list strong,
+.docs-resource-list code,
+.docs-resource-list span {
+  font-family: var(--font-geist-mono), monospace;
+}
+
+.docs-resource-list strong {
+  color: var(--accent);
+  font-size: 13px;
+}
+
+.docs-resource-list p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.55;
+}
+
+.docs-resource-list code,
+.docs-resource-list span {
+  color: var(--muted);
+  font-size: 9px;
+}
+
+.docs-resource-list span {
+  color: var(--ink);
+  font-weight: 650;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
 .docs-reference {
   display: grid;
   grid-template-columns: 0.8fr 1.2fr;
@@ -1937,6 +2015,28 @@ a:focus-visible {
 
   .docs-parameter-group thead th:first-child {
     z-index: 2;
+  }
+
+  .docs-agent-resources > header {
+    grid-template-columns: 1fr;
+    gap: 18px;
+  }
+
+  .docs-resource-list a {
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 10px 20px;
+    min-height: 0;
+    padding: 20px 18px;
+  }
+
+  .docs-resource-list p,
+  .docs-resource-list code {
+    grid-column: 1 / -1;
+  }
+
+  .docs-resource-list span {
+    grid-column: 2;
+    grid-row: 1;
   }
 
   .site-footer > a {

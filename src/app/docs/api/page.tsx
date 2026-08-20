@@ -8,7 +8,33 @@ export const metadata: Metadata = createPageMetadata({
   description: "Generate deterministic PXFACE 3×5 pixel wordmarks as editable SVG or production-ready PNG.",
   path: "/docs/api",
   keywords: ["pixel text API", "SVG generator API", "PNG render API", "OpenAPI pixel art", "headless typography"],
+  alternateTypes: {
+    "text/plain": "/llms.txt",
+    "text/markdown": "/SKILL.md",
+    "text/yaml": "/openapi.yaml",
+  },
 });
+
+const agentResources = [
+  {
+    name: "llms.txt",
+    href: "/llms.txt",
+    type: "text/plain",
+    description: "A compact index of PXFACE, its endpoint, limits, license, and canonical documentation.",
+  },
+  {
+    name: "SKILL.md",
+    href: "/SKILL.md",
+    type: "text/markdown",
+    description: "Ready-to-use instructions for agents that need to generate, validate, and save an asset.",
+  },
+  {
+    name: "openapi.yaml",
+    href: "/openapi.yaml",
+    type: "text/yaml",
+    description: "The complete OpenAPI 3.1 contract for clients, tool calling, validation, and code generation.",
+  },
+] as const;
 
 const svgCurl = `curl --get 'https://pxface.com/api/v1/render' \\
   --data-urlencode 'text=HELLO\nTHERE' \\
@@ -85,11 +111,27 @@ export default function ApiDocsPage() {
             ))}
           </div>
         </section>
+        <section className="docs-agent-resources" aria-labelledby="agent-resources">
+          <header>
+            <h2 id="agent-resources">Agent resources.</h2>
+            <p>Three plain files make the renderer easy to discover and use. Open them directly, copy their URLs, or give them to an agent.</p>
+          </header>
+          <div className="docs-resource-list">
+            {agentResources.map((resource) => (
+              <a href={resource.href} key={resource.name} type={resource.type}>
+                <strong>{resource.name}</strong>
+                <p>{resource.description}</p>
+                <code>{resource.type}</code>
+                <span aria-hidden="true">Open</span>
+              </a>
+            ))}
+          </div>
+        </section>
         <section className="docs-reference">
           <div>
             <h2>Built for automation.</h2>
           </div>
-          <p>Errors include field-level issues. Output dimensions and renderer version are exposed as headers. Public CORS is enabled; the current limit is 60 requests per minute per IP. For agent instructions, read <a href="/SKILL.md">SKILL.md</a>.</p>
+          <p>Errors include field-level issues. Output dimensions and renderer version are exposed as headers. Public CORS is enabled; the current limit is 60 requests per minute per IP. GET responses include an ETag for cache validation.</p>
         </section>
         <SiteFooter />
       </div>

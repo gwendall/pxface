@@ -6,7 +6,7 @@ implementation.
 
 ## Progress
 
-- Current batch: **None - social preview artifact verified**
+- Current batch: **Social preview legibility adjustment in progress**
 - Social-preview production verification: deployment
   `dpl_CutNhMGzbKUPxfnfRWnNGdZ3LM82` from merge commit `1409cbd` served the
   dedicated Open Graph and X images, large-card metadata, and accessible image
@@ -39,6 +39,12 @@ implementation.
   skipped after evaluation.
 
 ## Now - social preview artifact
+
+- [~] **Keep supporting copy readable in real link previews**
+  - Increase the supporting type after the Telegram preview exposed text that
+    was technically present but too small to read comfortably.
+  - Move the URL away from the top-right media overlay used by Telegram and
+    recheck both Telegram-sized and X-sized previews.
 
 - [x] **Turn the social image into the product poster**
   - Make the PXFACE glyph artwork dominate the 1200×630 frame and remain

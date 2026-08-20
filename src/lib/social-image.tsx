@@ -69,9 +69,9 @@ export function SocialImage() {
             top: 60,
             display: "flex",
             color: "#FF4E1A",
-            fontSize: 20,
+            fontSize: 30,
             fontWeight: 700,
-            letterSpacing: "0.12em",
+            letterSpacing: "0.08em",
           }}
         >
           3×5 PIXEL TYPE STUDIO
@@ -81,10 +81,10 @@ export function SocialImage() {
           style={{
             position: "absolute",
             right: 72,
-            top: 60,
+            bottom: 58,
             display: "flex",
             color: "#9B9B94",
-            fontSize: 20,
+            fontSize: 26,
             letterSpacing: "0.08em",
           }}
         >
@@ -98,10 +98,10 @@ export function SocialImage() {
           style={{
             position: "absolute",
             left: 72,
-            bottom: 60,
+            bottom: 54,
             display: "flex",
             alignItems: "center",
-            fontSize: 22,
+            fontSize: 32,
             letterSpacing: "0.04em",
           }}
         >

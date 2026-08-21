@@ -12,18 +12,30 @@ export type RenderParameterDoc = {
 
 type OptionDoc = Omit<RenderParameterDoc, "name" | "defaultValue">;
 
-const requestParameters: Record<"format" | "download" | "pixelOverrides", RenderParameterDoc> = {
+const requestParameters: Record<"format" | "download" | "duration" | "frameRate" | "pixelOverrides", RenderParameterDoc> = {
   format: {
     name: "format",
-    type: "svg | png",
+    type: "svg | png | svg-animation",
     defaultValue: "svg",
-    description: "Selects the response image format and MIME type.",
+    description: "Selects a static SVG, PNG, or self-contained animated SVG response.",
   },
   download: {
     name: "download",
     type: "boolean",
     defaultValue: "false",
     description: "Returns the asset as an attachment instead of displaying it inline.",
+  },
+  duration: {
+    name: "duration",
+    type: "number 1-10",
+    defaultValue: "3",
+    description: "Loop duration in seconds when format is svg-animation.",
+  },
+  frameRate: {
+    name: "frameRate",
+    type: "integer 4-30",
+    defaultValue: "12",
+    description: "Fixed frames per second when format is svg-animation.",
   },
   pixelOverrides: {
     name: "pixelOverrides",
@@ -107,12 +119,16 @@ const optionDocs: { [Key in keyof WordmarkOptions]: OptionDoc } = {
     description: "Output pixels per design unit. Changes dimensions, not the composition.",
   },
   effect: {
-    type: "none | spectrum | explode | wave | glitch | weave",
+    type: "none | spectrum | explode | wave | glitch | weave | assemble | relay | scan",
     description: "Applies a deterministic grid-native transformation to individual pixels.",
   },
   effectAmount: {
     type: "number 0-2",
     description: "Controls the strength of the selected pixel effect without changing its identity.",
+  },
+  animationProgress: {
+    type: "number 0-1",
+    description: "Samples one deterministic point in the seamless loop. Values 0 and 1 resolve to the same frame.",
   },
 };
 
@@ -132,7 +148,12 @@ export const RENDER_PARAMETER_GROUPS = [
   {
     title: "Request",
     description: "Choose the response format and browser download behavior.",
-    parameters: [requestParameters.format, requestParameters.download],
+    parameters: [
+      requestParameters.format,
+      requestParameters.download,
+      requestParameters.duration,
+      requestParameters.frameRate,
+    ],
   },
   {
     title: "Content and color",
@@ -149,7 +170,7 @@ export const RENDER_PARAMETER_GROUPS = [
   {
     title: "Pixel remix",
     description: "Transform each 3x5 cell independently with a deterministic effect.",
-    parameters: [option("effect"), option("effectAmount"), requestParameters.pixelOverrides],
+    parameters: [option("effect"), option("effectAmount"), option("animationProgress"), requestParameters.pixelOverrides],
   },
   {
     title: "Spacing and form",

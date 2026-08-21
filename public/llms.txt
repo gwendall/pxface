@@ -1,6 +1,6 @@
 PXFACE - 3×5 pixel wordmark renderer
 
-PXFACE generates deterministic, editable pixel typography as SVG or PNG. It is a renderer, not a conventional font service.
+PXFACE generates deterministic, editable pixel typography as static or animated SVG and PNG. It is a renderer, not a conventional font service.
 
 Studio: https://pxface.com/
 API guide: https://pxface.com/docs/api
@@ -12,12 +12,13 @@ Agent skill: https://pxface.com/SKILL.md
 License: https://pxface.com/license
 
 Render endpoint: GET or POST https://pxface.com/api/v1/render
-Formats: svg (default), png
+Formats: svg (default), png, svg-animation
 Determinism: pass an integer seed with random colors or pixel effects
-Pixel effects: spectrum, explode, wave, glitch, weave; tune with effectAmount
+Pixel effects: spectrum, explode, wave, glitch, weave, assemble, relay, scan; tune with effectAmount
+Animation: pass animationProgress for an exact frame; pass duration and frameRate with svg-animation for a deterministic seamless loop
 Per-pixel edits: POST pixelOverrides keyed by stable IDs such as l0-c0-r0-x0
 Limits: 160 characters, 8 lines, 60 requests/minute/IP, 16384px/edge, 64 million pixels
 
-For JavaScript, TypeScript, Node, React, SSR, or React Server Components, install `pxface`. Import the pure renderer from `pxface` or the optional server-compatible component from `pxface/react`. Both expose the same effects, resolved pixel scene, and canonical implementation as the hosted endpoint.
+For JavaScript, TypeScript, Node, React, SSR, or React Server Components, install `pxface`. Import `renderWordmark` or `renderWordmarkAnimation` from `pxface`, and `Pxface` or `AnimatedPxface` from `pxface/react`. They expose the same effects, resolved pixel scene, fixed frames, and canonical implementation as the hosted endpoint. Browser GIF, transparent WebM, and MP4 export are available in the Studio.
 
 The 3×5 glyph shapes are CC0-1.0 with no attribution required. App source is MIT. PXFACE name and logo are excluded.

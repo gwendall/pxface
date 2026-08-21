@@ -6,11 +6,18 @@ serializable scene, and editable SVG markup. The published `pxface` package,
 studio, React export, and `/api/v1/render` all use that interface; PNG is
 always rasterized from its SVG.
 
-The pixel pipeline is `glyph data -> layout -> deterministic effect -> manual
-pixel overrides -> resolved scene -> SVG -> optional PNG`. Effects and manual
-edits never bypass the renderer. Every resolved pixel carries a structural ID,
-color, offsets, opacity, scale, and rotation. Export bounds are calculated
-after those transforms so every adapter receives the same unclipped canvas.
+The pixel pipeline is `glyph data -> layout -> normalized loop phase ->
+deterministic effect -> manual pixel overrides -> resolved scene -> SVG ->
+optional raster/video encoding`. Effects and manual edits never bypass the
+renderer. Every resolved pixel carries a structural ID, color, offsets,
+opacity, scale, and rotation. Export bounds are calculated after those
+transforms so every adapter receives the same unclipped canvas.
+
+`renderWordmarkAnimation` samples that pipeline at fixed normalized phases.
+It unions every frame's bounds before emitting frames, so an effect cannot
+change the viewport or clip midway through a loop. The returned animated SVG
+contains those exact frames and CSS timing; browser GIF/WebM/MP4 exporters
+rasterize the same frame SVGs rather than reimplementing motion.
 
 ## Change propagation
 
@@ -34,8 +41,9 @@ canonical TypeScript glyph map. Renderer effects do not enter font outlines.
 
 - `pxface` exports the pure renderer, layout, glyph data, palette utility,
   versioned defaults, validation error, and public types.
-- `pxface/react` is the only framework adapter. It renders the canonical SVG
-  without hooks, browser globals, or another layout implementation.
+- `pxface/react` is the only framework adapter. `Pxface` and `AnimatedPxface`
+  render canonical static or self-contained animated SVG without hooks,
+  browser globals, or another layout implementation.
 - The repository root is a private npm workspace only to prevent accidental
   publication of the Next.js application. It is not a statement about GitHub
   visibility or the code license.
@@ -48,6 +56,9 @@ canonical TypeScript glyph map. Renderer effects do not enter font outlines.
 - Pixel effects use the same seed. `pixelOverrides` are supported in package
   calls and POST JSON; query-string GETs intentionally keep the nested map out
   of the URL surface.
+- Loop duration and frame rate affect sampling and encoding, not effect
+  resolution. A normalized `animationProgress` remains the only time input to
+  the renderer, keeping individual frames cacheable and reproducible.
 - Structured `pxface.render` events record format, version, dimensions, text
   length, and line count without logging the user’s text.
 - The public CORS policy is `*` without credentials. The application also

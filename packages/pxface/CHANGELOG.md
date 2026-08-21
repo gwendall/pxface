@@ -1,5 +1,14 @@
 # Changelog
 
+## 1.2.0 - 2026-08-21
+
+- Add normalized time as a deterministic renderer input and fixed-step loop
+  generation with shared bounds.
+- Add self-contained animated SVG output and the server-renderable
+  `AnimatedPxface` React adapter.
+- Add Assemble, Relay, and Scan plus seamless animated behavior for all
+  existing grid-native effects.
+
 ## 1.1.0 - 2026-08-21
 
 - Add stable structural pixel IDs and resolved color, offset, opacity, scale,

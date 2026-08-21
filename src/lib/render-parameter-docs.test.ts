@@ -4,7 +4,7 @@ import { WORDMARK_OPTION_KEYS } from "pxface";
 
 describe("render parameter documentation", () => {
   it("documents every request and wordmark option exactly once", () => {
-    const expected = ["format", "download", "pixelOverrides", ...WORDMARK_OPTION_KEYS].sort();
+    const expected = ["format", "download", "duration", "frameRate", "pixelOverrides", ...WORDMARK_OPTION_KEYS].sort();
     const documented = [...RENDER_PARAMETER_NAMES].sort();
 
     expect(documented).toEqual(expected);

@@ -49,10 +49,34 @@ const { svg, scene } = renderWordmark({
 console.log(scene.pixels[0].id); // l0-c0-r0-x0
 ```
 
-Available effects are `spectrum`, `explode`, `wave`, `glitch`, and `weave`.
+Available effects are `spectrum`, `explode`, `wave`, `glitch`, `weave`,
+`assemble`, `relay`, and `scan`.
 Each resolved scene pixel exposes its stable ID, color, offsets, opacity,
 scale, and rotation. Export bounds grow around transformed pixels so SVG and
 PNG output do not clip the remix.
+
+## Animate the grid
+
+Animation is fixed-step and deterministic. Sample any exact loop phase with
+`animationProgress`, or generate a complete loop whose frames all share one
+viewBox. The returned animated SVG is self-contained and includes a static
+reduced-motion fallback.
+
+```ts
+import { renderWordmarkAnimation } from "pxface";
+
+const loop = renderWordmarkAnimation(
+  { text: "MOVE", effect: "assemble", seed: 42 },
+  { duration: 3, frameRate: 12 },
+);
+
+console.log(loop.svg);           // self-contained animated SVG
+console.log(loop.frames[0].svg); // exact static SVG frame
+```
+
+For a single deterministic frame, call `renderWordmark` with
+`animationProgress` between `0` and `1`. Both ends resolve to the same seamless
+loop frame.
 
 The root export has no DOM, canvas, browser, or framework dependency. It
 returns deterministic SVG plus a serializable scene. Every SVG pixel remains
@@ -68,6 +92,14 @@ export function Logo() {
 }
 ```
 
+```tsx
+import { AnimatedPxface } from "pxface/react";
+
+export function Loop() {
+  return <AnimatedPxface text="MOVE" effect="relay" duration={3} frameRate={12} />;
+}
+```
+
 ```css
 .logo { width: min(100%, 36rem); }
 .logo > svg { display: block; width: 100%; height: auto; }
@@ -79,7 +111,7 @@ not require React; only `pxface/react` uses the optional peer dependency.
 
 All options, limits, editable-SVG details, and browser examples live at
 [pxface.com/docs/javascript](https://pxface.com/docs/javascript). The hosted
-SVG/PNG endpoint remains available at
+static and animated SVG/PNG endpoint remains available at
 [pxface.com/docs/api](https://pxface.com/docs/api).
 
 ## Licensing

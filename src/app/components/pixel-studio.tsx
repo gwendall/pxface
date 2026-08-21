@@ -5,7 +5,10 @@ import {
   Check,
   Copy,
   DownloadSimple,
+  Export,
   ImageSquare,
+  Pause,
+  Play,
   Shuffle,
   TextAlignCenter,
   TextAlignLeft,
@@ -16,6 +19,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import {
   buildPixelLayout,
   renderWordmark,
+  renderWordmarkAnimation,
   type ColorMode,
   type ExportRatio,
   type PixelEffect,
@@ -23,8 +27,10 @@ import {
   type PixelOverrides,
   type PixelShape,
   type TextAlign,
+  type WordmarkInput,
   wordmarkFileName,
 } from "pxface";
+import { exportAnimationBlob, type AnimatedAssetFormat } from "@/lib/animation-export";
 
 type Palette = {
   name: string;
@@ -70,12 +76,14 @@ const remixPresets: Array<{
   amount: number;
 }> = [
   { effect: "none", name: "Clean", description: "Original grid", amount: 1 },
-  { effect: "spectrum", name: "Spectrum", description: "Cell colors", amount: 1 },
-  { effect: "explode", name: "Explode", description: "Radial cells", amount: 1.15 },
-  { effect: "wave", name: "Wave", description: "Grid displacement", amount: 1.1 },
-  { effect: "glitch", name: "Glitch", description: "Broken scanlines", amount: 1.15 },
-  { effect: "weave", name: "Weave", description: "Interlaced cells", amount: 1.1 },
+  { effect: "assemble", name: "Assemble", description: "Fall into place", amount: 1.15 },
+  { effect: "explode", name: "Reform", description: "Break and return", amount: 1.2 },
+  { effect: "relay", name: "Relay", description: "Cell-by-cell signal", amount: 1.1 },
+  { effect: "scan", name: "Scan", description: "Grid sweep", amount: 1.1 },
+  { effect: "glitch", name: "Glitch", description: "Rerouted scanlines", amount: 1.15 },
 ];
+
+const animationFrameRate = 12;
 
 function randomSeed() {
   const values = new Uint32Array(1);
@@ -190,12 +198,19 @@ export default function PixelStudio() {
   const [randomPaletteSeed, setRandomPaletteSeed] = useState(initialRandomSeed);
   const [effect, setEffect] = useState<PixelEffect>("none");
   const [effectAmount, setEffectAmount] = useState(1);
+  const [loopDuration, setLoopDuration] = useState(3);
+  const [isPlaying, setIsPlaying] = useState(true);
+  const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
   const [pixelOverrides, setPixelOverrides] = useState<PixelOverrides>({});
   const [selectedPixelId, setSelectedPixelId] = useState<string | null>(null);
   const [copyState, setCopyState] = useState<"idle" | "copied" | "error">("idle");
+  const [exportState, setExportState] = useState<AnimatedAssetFormat | "idle" | "error">("idle");
+  const [exportProgress, setExportProgress] = useState(0);
+  const [exportError, setExportError] = useState("");
   const previewRef = useRef<HTMLDivElement>(null);
+  const exportMenuRef = useRef<HTMLDetailsElement>(null);
 
-  const render = useMemo(() => renderWordmark({
+  const wordmarkInput = useMemo<WordmarkInput>(() => ({
     text,
     foreground,
     background,
@@ -238,6 +253,11 @@ export default function PixelStudio() {
     transparent,
     wordSpacing,
   ]);
+  const render = useMemo(() => renderWordmark(wordmarkInput), [wordmarkInput]);
+  const animation = useMemo(() => renderWordmarkAnimation(wordmarkInput, {
+    duration: loopDuration,
+    frameRate: animationFrameRate,
+  }), [loopDuration, wordmarkInput]);
   const { layout } = render.scene;
   const emptyLayout = useMemo(() => buildPixelLayout("ABC", 1, 2, "left"), []);
   const hasPixels = layout.pixels.length > 0;
@@ -246,9 +266,8 @@ export default function PixelStudio() {
     : undefined;
   const hasManualEdits = Object.keys(pixelOverrides).length > 0;
   const previewText = text.split("\n").find(Boolean)?.slice(0, 6) || "PX";
-  const effectPreviews = useMemo(() => remixPresets.map((preset) => ({
-    ...preset,
-    svg: renderWordmark({
+  const effectPreviews = useMemo(() => remixPresets.map((preset) => {
+    const input: WordmarkInput = {
       text: previewText,
       foreground,
       background,
@@ -261,8 +280,14 @@ export default function PixelStudio() {
       effect: preset.effect,
       effectAmount: preset.amount,
       seed: randomPaletteSeed,
-    }).svg,
-  })), [
+    };
+    return {
+      ...preset,
+      svg: preset.effect === "none"
+        ? renderWordmark(input).svg
+        : renderWordmarkAnimation(input, { duration: 2.4, frameRate: 6 }).svg,
+    };
+  }), [
     background,
     foreground,
     letterSpacing,
@@ -274,6 +299,17 @@ export default function PixelStudio() {
   ]);
 
   useEffect(() => {
+    const media = window.matchMedia("(prefers-reduced-motion: reduce)");
+    const update = () => {
+      setPrefersReducedMotion(media.matches);
+      if (media.matches) setIsPlaying(false);
+    };
+    update();
+    media.addEventListener("change", update);
+    return () => media.removeEventListener("change", update);
+  }, []);
+
+  useEffect(() => {
     const root = previewRef.current;
     if (!root) return;
     root.querySelectorAll<SVGGElement>('[data-pixel-layer="type"][data-selected="true"]')
@@ -283,7 +319,7 @@ export default function PixelStudio() {
       .forEach((node) => {
         if (node.dataset.pixelId === selectedPixelId) node.dataset.selected = "true";
       });
-  }, [render.svg, selectedPixelId]);
+  }, [animation.svg, render.svg, selectedPixelId]);
 
   function selectPalette(palette: Palette) {
     setColorMode("solid");
@@ -303,6 +339,7 @@ export default function PixelStudio() {
     }
     setEffect(preset.effect);
     setEffectAmount(preset.amount);
+    if (preset.effect !== "none" && !prefersReducedMotion) setIsPlaying(true);
   }
 
   function updateSelectedPixel(patch: PixelOverride) {
@@ -327,6 +364,7 @@ export default function PixelStudio() {
     setEffectAmount(1);
     setPixelOverrides({});
     setSelectedPixelId(null);
+    setIsPlaying(false);
   }
 
   function handleTextChange(value: string) {
@@ -350,11 +388,12 @@ export default function PixelStudio() {
     setDepth(Math.floor(Math.random() * 4));
     setPixelGap([0, 0.08, 0.2][Math.floor(Math.random() * 3)]);
     setSlant(Math.random() > 0.55);
-    const effects: PixelEffect[] = ["none", "spectrum", "explode", "wave", "glitch", "weave"];
+    const effects: PixelEffect[] = ["assemble", "explode", "relay", "scan", "glitch", "spectrum", "wave", "weave"];
     setEffect(effects[Math.floor(Math.random() * effects.length)]);
     setEffectAmount(0.85 + Math.random() * 0.45);
     setPixelOverrides({});
     setSelectedPixelId(null);
+    if (!prefersReducedMotion) setIsPlaying(true);
   }
 
   function getSvgMarkup() {
@@ -372,6 +411,35 @@ export default function PixelStudio() {
 
   function downloadSvg() {
     downloadBlob(new Blob([getSvgMarkup()], { type: "image/svg+xml" }), wordmarkFileName(text, "svg"));
+  }
+
+  function animationFileName(extension: "svg" | AnimatedAssetFormat) {
+    return wordmarkFileName(text, extension).replace(`.${extension}`, `-loop.${extension}`);
+  }
+
+  function downloadAnimatedSvg() {
+    downloadBlob(
+      new Blob([animation.svg], { type: "image/svg+xml" }),
+      animationFileName("svg"),
+    );
+    if (exportMenuRef.current) exportMenuRef.current.open = false;
+  }
+
+  async function downloadAnimation(format: AnimatedAssetFormat) {
+    setExportState(format);
+    setExportProgress(0);
+    setExportError("");
+    try {
+      const blob = await exportAnimationBlob(animation, format, ({ completed, total }) => {
+        setExportProgress(Math.round((completed / total) * 100));
+      });
+      downloadBlob(blob, animationFileName(format));
+      setExportState("idle");
+      if (exportMenuRef.current) exportMenuRef.current.open = false;
+    } catch (error) {
+      setExportState("error");
+      setExportError(error instanceof Error ? error.message : "Animation export failed.");
+    }
   }
 
   function downloadPng() {
@@ -417,22 +485,59 @@ export default function PixelStudio() {
   const previewStyle = transparent
     ? undefined
     : ({ "--preview-background": background } as React.CSSProperties);
+  const hasAnimation = effect !== "none" && hasPixels;
+  const isExporting = exportState !== "idle" && exportState !== "error";
+  const previewMarkup = effect === "none" ? render.svg : animation.svg;
 
   return (
     <div className="app-shell">
       <div className="studio-toolbar" aria-label="Studio export controls">
-        <p className="source-note"><span>Pixel remix</span><strong>Every pixel is editable SVG. Click one.</strong></p>
+        <p className="source-note"><span>Pixel motion</span><strong>Every cell moves independently. Export the loop.</strong></p>
         <div className="topbar-actions">
           <button type="button" className="button secondary" onClick={copySvg} disabled={!hasPixels}>
             {copyState === "copied" ? <Check weight="bold" /> : <Copy />}
             {copyState === "copied" ? "Copied" : copyState === "error" ? "Copy failed" : "Copy for Figma"}
           </button>
-          <button type="button" className="button secondary" onClick={downloadSvg} disabled={!hasPixels}>
-            <DownloadSimple /> Editable SVG
-          </button>
-          <button type="button" className="button primary" onClick={downloadPng} disabled={!hasPixels}>
-            <ImageSquare weight="fill" /> PNG
-          </button>
+          <details className="export-menu" ref={exportMenuRef}>
+            <summary
+              className="button primary"
+              aria-disabled={!hasPixels || isExporting}
+              onClick={(event) => {
+                if (!hasPixels || isExporting) event.preventDefault();
+              }}
+            >
+              <Export weight="bold" /> {isExporting ? `${exportProgress}%` : "Export"}
+            </summary>
+            <div className="export-popover" aria-label="Export formats">
+              <p>Static</p>
+              <button type="button" onClick={downloadPng} disabled={!hasPixels || isExporting}>
+                <ImageSquare weight="fill" /><span><strong>PNG</strong><small>Raster image</small></span>
+              </button>
+              <button type="button" onClick={downloadSvg} disabled={!hasPixels || isExporting}>
+                <DownloadSimple /><span><strong>SVG</strong><small>Editable pixels</small></span>
+              </button>
+              <p>Loop</p>
+              <button type="button" onClick={downloadAnimatedSvg} disabled={!hasAnimation || isExporting}>
+                <DownloadSimple /><span><strong>Animated SVG</strong><small>Native and hackable</small></span>
+              </button>
+              {(["gif", "webm", "mp4"] as AnimatedAssetFormat[]).map((format) => (
+                <button
+                  type="button"
+                  key={format}
+                  disabled={!hasAnimation || isExporting}
+                  onClick={() => void downloadAnimation(format)}
+                >
+                  <DownloadSimple />
+                  <span>
+                    <strong>{format.toUpperCase()}</strong>
+                    <small>{format === "gif" ? "Universal loop" : format === "webm" ? "Video + alpha" : "Social video"}</small>
+                  </span>
+                </button>
+              ))}
+              {!hasAnimation && <small className="export-hint">Choose a motion effect to export a loop.</small>}
+              {exportState === "error" && <small className="export-error" role="alert">{exportError}</small>}
+            </div>
+          </details>
         </div>
       </div>
 
@@ -459,12 +564,27 @@ export default function PixelStudio() {
           <section className="control-section remix-section">
             <div className="remix-heading">
               <div>
-                <p className="field-label">Remix</p>
-                <p>Grid-native effects, resolved pixel by pixel.</p>
+                <p className="field-label">Motion</p>
+                <p>Seamless loops built from individual cells.</p>
               </div>
-              {(effect !== "none" || hasManualEdits) && (
-                <button type="button" onClick={resetRemix}>Reset all</button>
-              )}
+              <div className="remix-heading-actions">
+                {effect !== "none" && (
+                  <button
+                    type="button"
+                    className="loop-toggle"
+                    aria-label={isPlaying ? "Pause animation" : "Play animation"}
+                    aria-pressed={isPlaying}
+                    onClick={() => setIsPlaying((current) => !current)}
+                    disabled={prefersReducedMotion}
+                  >
+                    {isPlaying ? <Pause weight="fill" /> : <Play weight="fill" />}
+                    {isPlaying ? "Pause" : "Play"}
+                  </button>
+                )}
+                {(effect !== "none" || hasManualEdits) && (
+                  <button type="button" onClick={resetRemix}>Reset all</button>
+                )}
+              </div>
             </div>
             <div className="remix-grid" aria-label="Pixel effect presets">
               {effectPreviews.map((preset) => (
@@ -486,7 +606,11 @@ export default function PixelStudio() {
               ))}
             </div>
             {effect !== "none" && (
-              <RangeControl label="Effect strength" min={0} max={2} step={0.05} value={effectAmount} onChange={setEffectAmount} />
+              <div className="loop-controls">
+                <RangeControl label="Effect strength" min={0} max={2} step={0.05} value={effectAmount} onChange={setEffectAmount} />
+                <RangeControl label="Loop duration" min={1} max={6} step={0.5} value={loopDuration} suffix="s" onChange={setLoopDuration} />
+                <small>{animationFrameRate} fps pixel cadence. Static SVG and PNG use the strongest frame.</small>
+              </div>
             )}
           </section>
 
@@ -636,17 +760,18 @@ export default function PixelStudio() {
         <section className="preview-panel" aria-label="Wordmark preview">
           <div className="preview-meta">
             <span>Live canvas / click a pixel</span>
-            <span>{effect === "none" ? "Clean" : effect} / {layout.width}×{layout.height} units</span>
+            <span>{effect === "none" ? "Clean" : `${effect} / ${loopDuration}s loop`} / {layout.width}×{layout.height} units</span>
           </div>
           <div className={`preview-frame${transparent ? " checkerboard" : ""}`} style={previewStyle}>
             {hasPixels ? (
               <div
                 ref={previewRef}
                 className="wordmark-svg"
+                data-playing={isPlaying && !prefersReducedMotion}
                 role="img"
                 aria-label={`${text || "Empty"} pixel wordmark preview`}
                 onClick={selectCanvasPixel}
-                dangerouslySetInnerHTML={{ __html: render.svg }}
+                dangerouslySetInnerHTML={{ __html: previewMarkup }}
               />
             ) : (
               <div className="empty-state">

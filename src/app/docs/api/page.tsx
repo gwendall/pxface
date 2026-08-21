@@ -5,7 +5,7 @@ import { createPageMetadata } from "@/lib/site-metadata";
 
 export const metadata: Metadata = createPageMetadata({
   title: "Render API",
-  description: "Generate deterministic PXFACE 3×5 pixel wordmarks as editable SVG or production-ready PNG.",
+  description: "Generate deterministic PXFACE 3×5 pixel wordmarks as editable SVG, self-contained animated SVG, or production-ready PNG.",
   path: "/docs/api",
   keywords: ["pixel text API", "SVG generator API", "PNG render API", "OpenAPI pixel art", "headless typography"],
   alternateTypes: {
@@ -47,6 +47,14 @@ const pngCurl = `curl 'https://pxface.com/api/v1/render' \\
   --data '{"format":"png","options":{"text":"HELLO\\nTHERE","ratio":"square","effect":"wave","effectAmount":1.1,"seed":42,"pixelOverrides":{"l0-c0-r0-x0":{"color":"#FF4E1A","offsetY":-1}}}}' \\
   --output hello-there.png`;
 
+const animationCurl = `curl --get 'https://pxface.com/api/v1/render' \\
+  --data-urlencode 'text=PIXELS' \\
+  --data 'format=svg-animation' \\
+  --data 'effect=assemble' \\
+  --data 'duration=3' \\
+  --data 'frameRate=12' \\
+  --output pixels-loop.svg`;
+
 export default function ApiDocsPage() {
   return (
     <main className="docs-page">
@@ -54,7 +62,7 @@ export default function ApiDocsPage() {
         <header className="docs-hero">
           <p className="license-kicker">HEADLESS RENDERER / V1</p>
           <h1>Pixels on demand.</h1>
-          <p>One endpoint turns text and the same options as the studio into editable SVG or production-ready PNG.</p>
+          <p>One endpoint turns text and the same options as the studio into editable SVG, self-contained animated SVG, or production-ready PNG.</p>
           <div className="docs-endpoint"><strong>GET · POST</strong><code>/api/v1/render</code></div>
         </header>
         <section className="docs-grid">
@@ -67,6 +75,15 @@ export default function ApiDocsPage() {
             <h2>PNG from JSON</h2>
             <p>Use POST for structured agent calls. PNG and SVG come from the exact same render scene.</p>
             <pre><code>{pngCurl}</code></pre>
+          </article>
+          <article>
+            <h2>Animated SVG loop</h2>
+            <p>Animation samples the same renderer at fixed phases. Every frame is deterministic, shares one viewBox, and stays made of editable pixel elements.</p>
+            <pre><code>{animationCurl}</code></pre>
+          </article>
+          <article>
+            <h2>Choose the right motion format</h2>
+            <p>The API returns native animated SVG. Use the Studio to encode those exact frames as GIF, transparent WebM, or broadly compatible MP4. MP4 fills transparent canvases with the chosen background.</p>
           </article>
         </section>
         <section className="docs-parameters" aria-labelledby="parameter-reference">
@@ -131,7 +148,7 @@ export default function ApiDocsPage() {
           <div>
             <h2>Built for automation.</h2>
           </div>
-          <p>Errors include field-level issues. Output dimensions and renderer version are exposed as headers. Public CORS is enabled; the current limit is 60 requests per minute per IP. GET responses include an ETag for cache validation. Building a JavaScript frontend? <a href="/docs/javascript">Use the local package</a> instead of making a network request.</p>
+          <p>Errors include field-level issues. Output dimensions, renderer version, loop duration, and frame rate are exposed as headers. Public CORS is enabled; the current limit is 60 requests per minute per IP. GET responses include an ETag for cache validation. Building a JavaScript frontend? <a href="/docs/javascript">Use the local package</a> to sample frames or render loops without a network request.</p>
         </section>
         <SiteFooter />
       </div>

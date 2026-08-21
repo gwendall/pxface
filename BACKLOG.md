@@ -6,7 +6,7 @@ implementation.
 
 ## Progress
 
-- Current batch: **None - pixel remix release verified**
+- Current batch: **Animated pixel loops**
 - Pixel-remix production verification: deployment
   `dpl_6U5hE7BbWxSZeRKVp9bsEwcyt41j` from merge commit `8f6ad1b` serves the
   five grid-native presets, direct pixel inspector, renderer `2.1.0`, and
@@ -54,9 +54,12 @@ implementation.
 - Shared-shell production verification: deployment
   `dpl_3SzVNdh3FZPt7SjJ8fF6p33cVBb5` from merge commit `9856217` served the
   shared navigation and route metadata successfully.
-- QA: 53 automated tests, lint, production build, deterministic font rebuild,
-  OpenAPI parse, skill validation, package smoke tests, API effect/override
-  smoke tests, and desktop/mobile browser checks all pass.
+- QA: 76 automated tests, lint, TypeScript, production build, deterministic
+  font verification, OpenAPI parse, matching skills, package smoke tests,
+  animated API smoke tests, and desktop/mobile browser checks all pass.
+  Chrome generated valid 3.00-second GIF, WebM, and MP4 loops from the same
+  fixed frames; transparent WebM reports an alpha track, and pause, reduced
+  motion, direct pixel selection, full-height layout, and downloads work.
 - Completed: licensing, responsive editor, export padding/ratios, palette mode,
   expanded glyph set, default `HELLO\nTHERE`, and pixel-font empty state.
 - Legend: `[ ]` queued, `[~]` in progress, `[x]` complete, `[-]` deliberately
@@ -88,6 +91,34 @@ implementation.
     coverage; run lint, package verification, font verification, and build.
   - Check desktop/mobile, light/dark, keyboard/focus, PNG/SVG parity, and the
     production deployment before marking the batch complete.
+
+## Now - animated pixel loops
+
+- [x] **Make time a deterministic renderer input**
+  - Resolve every effect from a normalized loop phase through the canonical
+    headless renderer, with stable pixel IDs and manual overrides preserved.
+  - Build one animation interface that supplies fixed-step frames, shared
+    bounds, and a self-contained animated SVG without browser globals.
+- [x] **Ship signature motion that depends on the 3x5 grid**
+  - Add Assemble, Relay, and Scan alongside time-aware Spectrum, Explode,
+    Wave, Glitch, and Weave behaviors.
+  - Make every loop seamless and deterministic, with a deliberately stepped
+    pixel cadence instead of generic whole-word transforms.
+- [x] **Add minimal playback and animated export controls**
+  - Autoplay the showcase and live canvas, with play/pause, loop duration,
+    and a static reduced-motion fallback.
+  - Export Animated SVG, GIF, WebM, and MP4 from the exact same fixed frames;
+    keep editable SVG and PNG as the static formats.
+- [x] **Expose animation to developers and agents**
+  - Publish phase sampling and animation rendering through the JavaScript and
+    React package, plus the render endpoint, OpenAPI, `llms.txt`, and skill.
+  - Document format tradeoffs, deterministic loops, transparency, and the
+    difference between editable static SVG and self-contained animated SVG.
+- [~] **Verify, publish, and close the animation batch**
+  - Cover loop seams, determinism, bounds, formats, playback, reduced motion,
+    export progress, errors, keyboard use, and desktop/mobile layout.
+  - Merge through green CI and preview, deploy production, publish the updated
+    package and source release, then record the exact verification here.
 
 ## Now - JavaScript library and public-source release
 

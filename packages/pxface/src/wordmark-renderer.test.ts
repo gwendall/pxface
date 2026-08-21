@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import {
   normalizeWordmarkOptions,
   renderWordmark,
+  renderWordmarkAnimation,
   WordmarkValidationError,
 } from "./wordmark-renderer";
 
@@ -17,6 +18,7 @@ describe("wordmark renderer", () => {
       ratio: "fit",
       effect: "none",
       effectAmount: 1,
+      animationProgress: 0.5,
     });
   });
 
@@ -31,8 +33,8 @@ describe("wordmark renderer", () => {
     expect(scene.output).toEqual({ width: 40, height: 60 });
     expect(svg).toContain('id="depth-1-line-1-char-1-pixel-1"');
     expect(svg).toContain('id="type-line-1-char-1-pixel-1"');
-    expect(svg).toContain('data-pxface-renderer="2.1.0"');
-    expect(svg).toContain('data-pxword-renderer="2.1.0"');
+    expect(svg).toContain('data-pxface-renderer="2.2.0"');
+    expect(svg).toContain('data-pxword-renderer="2.2.0"');
     expect(svg).toContain('data-pixel-id="l0-c0-r0-x0"');
   });
 
@@ -53,7 +55,7 @@ describe("wordmark renderer", () => {
     }
   });
 
-  it.each(["spectrum", "explode", "wave", "glitch", "weave"] as const)(
+  it.each(["spectrum", "explode", "wave", "glitch", "weave", "assemble", "relay", "scan"] as const)(
     "renders the %s effect deterministically through the shared scene",
     (effect) => {
       const input = { text: "PX", effect, effectAmount: 1.2, seed: 42 };
@@ -72,7 +74,7 @@ describe("wordmark renderer", () => {
     },
   );
 
-  it.each(["spectrum", "explode", "wave", "glitch", "weave"] as const)(
+  it.each(["spectrum", "explode", "wave", "glitch", "weave", "assemble", "relay", "scan"] as const)(
     "reduces the %s effect to the clean scene at zero strength",
     (effect) => {
       const clean = renderWordmark({ text: "PX", effect: "none" }).scene.pixels;
@@ -127,5 +129,52 @@ describe("wordmark renderer", () => {
       text: "A",
       pixelOverrides: { nope: { opacity: 2 } },
     })).toThrow(WordmarkValidationError);
+  });
+
+  it.each(["spectrum", "explode", "wave", "glitch", "weave", "assemble", "relay", "scan"] as const)(
+    "closes the %s animation loop without a seam",
+    (effect) => {
+      const start = renderWordmark({ text: "LOOP", effect, seed: 42, animationProgress: 0 }).scene.pixels;
+      const end = renderWordmark({ text: "LOOP", effect, seed: 42, animationProgress: 1 }).scene.pixels;
+      expect(end).toEqual(start);
+    },
+  );
+
+  it("builds deterministic fixed-step animation frames with one shared viewport", () => {
+    const first = renderWordmarkAnimation(
+      { text: "MOVE", effect: "assemble", effectAmount: 1.2, seed: 42 },
+      { duration: 2, frameRate: 6 },
+    );
+    const second = renderWordmarkAnimation(
+      { text: "MOVE", effect: "assemble", effectAmount: 1.2, seed: 42 },
+      { duration: 2, frameRate: 6 },
+    );
+    expect(first.svg).toBe(second.svg);
+    expect(first.frames).toHaveLength(12);
+    expect(new Set(first.frames.map((frame) => JSON.stringify(frame.scene.viewBox))).size).toBe(1);
+    expect(new Set(first.frames.map((frame) => JSON.stringify(frame.scene.output))).size).toBe(1);
+    expect(first.svg).toContain('data-pxface-animation="loop"');
+    expect(first.svg).toContain("@keyframes pxface-frame");
+    expect(first.svg).toContain("visibility:hidden");
+    expect(first.svg).toContain('id="animation-frame-12"');
+    expect(first.svg).toContain('data-pixel-id="l0-c0-r0-x0"');
+  });
+
+  it("preserves manual pixel overrides in every animation frame", () => {
+    const animation = renderWordmarkAnimation({
+      text: "A",
+      effect: "relay",
+      pixelOverrides: {
+        "l0-c0-r0-x0": { color: "#123456", offsetX: -2, opacity: 0.4 },
+      },
+    }, { duration: 1, frameRate: 4 });
+    animation.frames.forEach(({ scene }) => {
+      expect(scene.pixels[0]).toMatchObject({ color: "#123456", offsetX: -2, opacity: 0.4 });
+    });
+  });
+
+  it("rejects unsafe animation settings", () => {
+    expect(() => renderWordmarkAnimation({ text: "A" }, { duration: 0.5 })).toThrow(WordmarkValidationError);
+    expect(() => renderWordmarkAnimation({ text: "A" }, { frameRate: 60 })).toThrow(WordmarkValidationError);
   });
 });

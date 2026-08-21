@@ -6,7 +6,16 @@ implementation.
 
 ## Progress
 
-- Current batch: **Pixel remix system**
+- Current batch: **None - pixel remix release verified**
+- Pixel-remix production verification: deployment
+  `dpl_6U5hE7BbWxSZeRKVp9bsEwcyt41j` from merge commit `8f6ad1b` serves the
+  five grid-native presets, direct pixel inspector, renderer `2.1.0`, and
+  unclipped SVG/PNG exports successfully.
+- Pixel-remix npm verification: `pxface@1.1.0` is the public `latest` release
+  with registry integrity
+  `sha512-xCEFyhUSArOg1rrY6BpEFjzYJJ6vJmFE72iEwvxCdyL8udgJ5AvxTujtGw2qP7h69Etvnzsdq9Jjd8EiZVoa3Q==`.
+  Fresh registry installs passed ESM, CommonJS, and React SSR smoke tests; the
+  matching immutable source release is tagged `js-v1.1.0` on GitHub.
 - JavaScript-library production verification: deployment
   `dpl_98nVZf4D3n4AAP4TonNZF842U3TD` from merge commit `05c4ce7` serves the
   library guide, package-rendered hero, discovery links, and unchanged SVG/PNG
@@ -45,9 +54,9 @@ implementation.
 - Shared-shell production verification: deployment
   `dpl_3SzVNdh3FZPt7SjJ8fF6p33cVBb5` from merge commit `9856217` served the
   shared navigation and route metadata successfully.
-- QA: 39 automated tests, lint, production build, deterministic font rebuild,
-  OpenAPI parse, skill validation, API smoke tests, and desktop/mobile browser
-  checks all pass.
+- QA: 53 automated tests, lint, production build, deterministic font rebuild,
+  OpenAPI parse, skill validation, package smoke tests, API effect/override
+  smoke tests, and desktop/mobile browser checks all pass.
 - Completed: licensing, responsive editor, export padding/ratios, palette mode,
   expanded glyph set, default `HELLO\nTHERE`, and pixel-font empty state.
 - Legend: `[ ]` queued, `[~]` in progress, `[x]` complete, `[-]` deliberately
@@ -74,7 +83,7 @@ implementation.
 - [x] **Explain and expose the programmable system**
   - Make the pixel-by-pixel, SVG-native promise visible in the studio.
   - Document effects and manual overrides for JavaScript and the render API.
-- [~] **Verify, publish, and close the remix batch**
+- [x] **Verify, publish, and close the remix batch**
   - Add renderer, bounds, determinism, override, API, export, and interaction
     coverage; run lint, package verification, font verification, and build.
   - Check desktop/mobile, light/dark, keyboard/focus, PNG/SVG parity, and the

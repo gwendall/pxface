@@ -50,9 +50,13 @@ export function parseRenderJson(value: unknown): ParsedRenderRequest {
   WORDMARK_OPTION_KEYS.forEach((key) => {
     if (source[key] !== undefined) options[key] = source[key];
   });
+  const pixelOverrides = source.pixelOverrides;
   return {
     format: parseFormat(record.format),
     download: parseDownload(record.download),
-    options: options as WordmarkInput,
+    options: {
+      ...options as WordmarkInput,
+      ...(pixelOverrides === undefined ? {} : { pixelOverrides: pixelOverrides as WordmarkInput["pixelOverrides"] }),
+    },
   };
 }

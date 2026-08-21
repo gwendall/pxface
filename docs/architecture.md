@@ -6,6 +6,12 @@ serializable scene, and editable SVG markup. The published `pxface` package,
 studio, React export, and `/api/v1/render` all use that interface; PNG is
 always rasterized from its SVG.
 
+The pixel pipeline is `glyph data -> layout -> deterministic effect -> manual
+pixel overrides -> resolved scene -> SVG -> optional PNG`. Effects and manual
+edits never bypass the renderer. Every resolved pixel carries a structural ID,
+color, offsets, opacity, scale, and rotation. Export bounds are calculated
+after those transforms so every adapter receives the same unclipped canvas.
+
 ## Change propagation
 
 When adding a glyph, palette, or render option:
@@ -39,6 +45,9 @@ canonical TypeScript glyph map. Renderer effects do not enter font outlines.
 - GET renders are deterministic and cacheable with ETags.
 - POST renders are deterministic but returned with `no-store`.
 - Random colors require a seed; the default seed is versioned.
+- Pixel effects use the same seed. `pixelOverrides` are supported in package
+  calls and POST JSON; query-string GETs intentionally keep the nested map out
+  of the URL surface.
 - Structured `pxface.render` events record format, version, dimensions, text
   length, and line count without logging the user’s text.
 - The public CORS policy is `*` without credentials. The application also

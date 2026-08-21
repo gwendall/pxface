@@ -1,8 +1,8 @@
 # PXFACE
 
-PXFACE is a browser-based 3×5 pixel wordmark studio. Type a mark, adjust its spacing, shape, depth, and palette, then export it as SVG or PNG.
+PXFACE is a browser-based 3×5 pixel type system. Type a mark, apply grid-native effects, edit individual pixels, then export it as editable SVG or PNG.
 
-**Pixel type, made tangible.**
+**Hack every pixel. Export native SVG.**
 
 Production: [pxface.com](https://pxface.com)
 Source: [github.com/gwendall/pxface](https://github.com/gwendall/pxface)
@@ -19,7 +19,13 @@ npm install pxface
 ```ts
 import { renderWordmark } from "pxface";
 
-const { svg, scene } = renderWordmark({ text: "HELLO\nTHERE" });
+const { svg, scene } = renderWordmark({
+  text: "HELLO\nTHERE",
+  effect: "wave",
+  pixelOverrides: {
+    "l0-c0-r0-x0": { color: "#FF4E1A", offsetY: -1 },
+  },
+});
 ```
 
 React is an optional adapter rather than a second renderer:

@@ -6,7 +6,7 @@ implementation.
 
 ## Progress
 
-- Current batch: **None - JavaScript library release verified**
+- Current batch: **Pixel remix system**
 - JavaScript-library production verification: deployment
   `dpl_98nVZf4D3n4AAP4TonNZF842U3TD` from merge commit `05c4ce7` serves the
   library guide, package-rendered hero, discovery links, and unchanged SVG/PNG
@@ -52,6 +52,33 @@ implementation.
   expanded glyph set, default `HELLO\nTHERE`, and pixel-font empty state.
 - Legend: `[ ]` queued, `[~]` in progress, `[x]` complete, `[-]` deliberately
   skipped after evaluation.
+
+## Now - pixel remix system
+
+- [x] **Make every rendered pixel independently addressable**
+  - Give pixels stable structural identifiers and resolved color, offset,
+    opacity, scale, and rotation properties.
+  - Apply deterministic effects and manual overrides through the canonical
+    renderer used by the studio, package, React adapter, API, SVG, and PNG.
+  - Expand export bounds around transformed pixels so remixes never clip.
+- [x] **Ship a focused set of grid-native effects**
+  - Add Clean plus five real-renderer presets: Spectrum, Explode, Wave,
+    Glitch, and Weave.
+  - Keep effects deterministic, adjustable, and visually distinct because
+    they act on individual 3x5 cells rather than the whole word as one shape.
+- [x] **Add direct pixel remixing to the studio**
+  - Make foreground pixels hoverable and selectable on the live canvas.
+  - Expose color, horizontal and vertical offset, opacity, and scale in a
+    compact inspector, with per-pixel and global reset actions.
+  - Keep the fixed desktop/mobile layout and existing visual language intact.
+- [x] **Explain and expose the programmable system**
+  - Make the pixel-by-pixel, SVG-native promise visible in the studio.
+  - Document effects and manual overrides for JavaScript and the render API.
+- [~] **Verify, publish, and close the remix batch**
+  - Add renderer, bounds, determinism, override, API, export, and interaction
+    coverage; run lint, package verification, font verification, and build.
+  - Check desktop/mobile, light/dark, keyboard/focus, PNG/SVG parity, and the
+    production deployment before marking the batch complete.
 
 ## Now - JavaScript library and public-source release
 

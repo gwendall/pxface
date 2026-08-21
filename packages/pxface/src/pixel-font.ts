@@ -3,9 +3,11 @@ import { PIXEL_FONT } from "./pixel-font-data";
 export { PIXEL_FONT, type Glyph } from "./pixel-font-data";
 
 export type Pixel = {
+  id: string;
   x: number;
   y: number;
   row: number;
+  column: number;
   line: number;
   character: number;
   value: string;
@@ -67,9 +69,11 @@ export function buildPixelLayout(
         [...row].forEach((cell, x) => {
           if (cell !== "1") return;
           pixels.push({
+            id: `l${lineIndex}-c${characterIndex}-r${y}-x${x}`,
             x: cursorX + x,
             y: lineIndex * lineAdvance + y,
             row: y,
+            column: x,
             line: lineIndex,
             character: characterIndex,
             value: character,

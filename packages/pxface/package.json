@@ -1,6 +1,6 @@
 {
   "name": "pxface",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Framework-agnostic 3×5 pixel type renderer with an optional React adapter.",
   "type": "module",
   "main": "./dist/index.cjs",

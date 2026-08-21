@@ -24,6 +24,36 @@ const { svg, scene } = renderWordmark({
 console.log(scene.output); // exact pixel dimensions
 ```
 
+## Remix pixels
+
+Effects operate on the individual cells of the 3×5 grid and stay
+deterministic when a seed is provided. Manual overrides are applied after the
+effect, so any pixel can be recolored or transformed independently.
+
+```ts
+const { svg, scene } = renderWordmark({
+  text: "REMIX",
+  effect: "wave",
+  effectAmount: 1.1,
+  seed: 42,
+  pixelOverrides: {
+    "l0-c0-r0-x0": {
+      color: "#FF4E1A",
+      offsetY: -1,
+      opacity: 0.7,
+      scale: 1.4,
+    },
+  },
+});
+
+console.log(scene.pixels[0].id); // l0-c0-r0-x0
+```
+
+Available effects are `spectrum`, `explode`, `wave`, `glitch`, and `weave`.
+Each resolved scene pixel exposes its stable ID, color, offsets, opacity,
+scale, and rotation. Export bounds grow around transformed pixels so SVG and
+PNG output do not clip the remix.
+
 The root export has no DOM, canvas, browser, or framework dependency. It
 returns deterministic SVG plus a serializable scene. Every SVG pixel remains
 an individual rectangle or circle grouped by line, character, and layer.

@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.1.0 - 2026-08-21
+
+- Add stable structural pixel IDs and resolved color, offset, opacity, scale,
+  and rotation properties to every scene.
+- Add deterministic Spectrum, Explode, Wave, Glitch, and Weave effects.
+- Add validated per-pixel overrides and export bounds that expand around
+  transformed cells.
+
 ## 1.0.0 - 2026-08-20
 
 - Publish the canonical, framework-agnostic PXFACE renderer as ESM and

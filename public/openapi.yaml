@@ -1,8 +1,8 @@
 openapi: 3.1.0
 info:
   title: PXFACE Render API
-  version: 2.0.0
-  description: Deterministically render editable 3x5 pixel wordmarks as SVG or PNG.
+  version: 2.1.0
+  description: Deterministically render editable and remixable 3x5 pixel wordmarks as SVG or PNG.
   license:
     name: MIT and CC0-1.0
     url: https://pxface.com/license
@@ -34,6 +34,8 @@ paths:
         - { $ref: '#/components/parameters/colorMode' }
         - { $ref: '#/components/parameters/seed' }
         - { $ref: '#/components/parameters/scale' }
+        - { $ref: '#/components/parameters/effect' }
+        - { $ref: '#/components/parameters/effectAmount' }
       responses:
         '200': { $ref: '#/components/responses/Asset' }
         '304': { description: The ETag still matches. }
@@ -53,10 +55,17 @@ paths:
                 download: { type: boolean, default: false }
                 options: { $ref: '#/components/schemas/WordmarkOptions' }
             examples:
-              randomSquare:
+              remixedPixels:
                 value:
                   format: png
-                  options: { text: "HELLO\nTHERE", ratio: square, colorMode: random, seed: 42 }
+                  options:
+                    text: "HELLO\nTHERE"
+                    ratio: square
+                    effect: wave
+                    effectAmount: 1.2
+                    seed: 42
+                    pixelOverrides:
+                      l0-c0-r0-x0: { color: '#FF4E1A', offsetY: -1, opacity: 0.7 }
       responses:
         '200': { $ref: '#/components/responses/Asset' }
         '400': { $ref: '#/components/responses/Invalid' }
@@ -95,6 +104,24 @@ components:
         colorMode: { type: string, enum: [solid, random], default: solid }
         seed: { type: integer, minimum: 0, maximum: 4294967295, default: 1347962433 }
         scale: { type: number, minimum: 1, maximum: 256, default: 48, description: Output pixels per design unit. }
+        effect: { type: string, enum: [none, spectrum, explode, wave, glitch, weave], default: none }
+        effectAmount: { type: number, minimum: 0, maximum: 2, default: 1 }
+        pixelOverrides: { $ref: '#/components/schemas/PixelOverrides' }
+    PixelOverride:
+      type: object
+      additionalProperties: false
+      properties:
+        color: { type: string, pattern: '^#[0-9A-Fa-f]{6}([0-9A-Fa-f]{2})?$' }
+        offsetX: { type: number, minimum: -12, maximum: 12 }
+        offsetY: { type: number, minimum: -12, maximum: 12 }
+        opacity: { type: number, minimum: 0, maximum: 1 }
+        scale: { type: number, minimum: 0.1, maximum: 4 }
+        rotation: { type: number, minimum: -180, maximum: 180 }
+    PixelOverrides:
+      type: object
+      maxProperties: 2048
+      propertyNames: { pattern: '^l[0-9]+-c[0-9]+-r[0-9]+-x[0-9]+$' }
+      additionalProperties: { $ref: '#/components/schemas/PixelOverride' }
     Error:
       type: object
       required: [error, issues]
@@ -129,6 +156,8 @@ components:
     colorMode: { name: colorMode, in: query, schema: { type: string, enum: [solid, random], default: solid } }
     seed: { name: seed, in: query, schema: { type: integer, minimum: 0, maximum: 4294967295, default: 1347962433 } }
     scale: { name: scale, in: query, schema: { type: number, minimum: 1, maximum: 256, default: 48 } }
+    effect: { name: effect, in: query, schema: { type: string, enum: [none, spectrum, explode, wave, glitch, weave], default: none } }
+    effectAmount: { name: effectAmount, in: query, schema: { type: number, minimum: 0, maximum: 2, default: 1 } }
   responses:
     Asset:
       description: Rendered asset. Exact dimensions and renderer version are returned as X-PXFACE headers.

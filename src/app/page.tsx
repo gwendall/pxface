@@ -5,7 +5,7 @@ import { createPageMetadata } from "@/lib/site-metadata";
 export const metadata: Metadata = createPageMetadata({
   title: "PXFACE - 3×5 Pixel Type Studio",
   description:
-    "Design 3×5 pixel wordmarks, tune every detail, and export editable SVG, PNG, or the installable font.",
+    "Hack a 3×5 type system pixel by pixel, apply grid-native effects, and export editable SVG or PNG.",
   path: "/",
   keywords: [
     "pixel type studio",
@@ -13,6 +13,8 @@ export const metadata: Metadata = createPageMetadata({
     "pixel wordmark generator",
     "editable SVG",
     "pixel art typography",
+    "editable pixel effects",
+    "SVG pixel editor",
   ],
   absoluteTitle: true,
 });

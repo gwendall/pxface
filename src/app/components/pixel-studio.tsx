@@ -15,9 +15,11 @@ import {
   TextAlignRight,
 } from "@phosphor-icons/react";
 import Link from "next/link";
+import NextImage from "next/image";
 import { useEffect, useMemo, useRef, useState } from "react";
 import {
   buildPixelLayout,
+  createWordmarkTimeline,
   renderWordmark,
   renderWordmarkAnimation,
   type ColorMode,
@@ -31,6 +33,7 @@ import {
   wordmarkFileName,
 } from "pxface";
 import { exportAnimationBlob, type AnimatedAssetFormat } from "@/lib/animation-export";
+import WordmarkCanvas from "./wordmark-canvas";
 
 type Palette = {
   name: string;
@@ -74,16 +77,67 @@ const remixPresets: Array<{
   name: string;
   description: string;
   amount: number;
+  asset: string;
 }> = [
-  { effect: "none", name: "Clean", description: "Original grid", amount: 1 },
-  { effect: "assemble", name: "Assemble", description: "Fall into place", amount: 1.15 },
-  { effect: "explode", name: "Reform", description: "Break and return", amount: 1.2 },
-  { effect: "relay", name: "Relay", description: "Cell-by-cell signal", amount: 1.1 },
-  { effect: "scan", name: "Scan", description: "Grid sweep", amount: 1.1 },
-  { effect: "glitch", name: "Glitch", description: "Rerouted scanlines", amount: 1.15 },
+  { effect: "none", name: "Clean", description: "Original grid", amount: 1, asset: "clean" },
+  { effect: "assemble", name: "Assemble", description: "Fall into place", amount: 1.15, asset: "assemble" },
+  { effect: "explode", name: "Reform", description: "Break and return", amount: 1.2, asset: "explode" },
+  { effect: "relay", name: "Relay", description: "Cell-by-cell signal", amount: 1.1, asset: "relay" },
+  { effect: "scan", name: "Scan", description: "Grid sweep", amount: 1.1, asset: "scan" },
+  { effect: "glitch", name: "Glitch", description: "Rerouted scanlines", amount: 1.15, asset: "glitch" },
 ];
 
 const animationFrameRate = 12;
+
+function EffectPreview({ asset, animated, reducedMotion }: {
+  asset: string;
+  animated: boolean;
+  reducedMotion: boolean;
+}) {
+  const videoRef = useRef<HTMLVideoElement>(null);
+  useEffect(() => {
+    const video = videoRef.current;
+    const button = video?.closest("button");
+    if (!video || !button || reducedMotion) return;
+    const play = () => {
+      video.currentTime = 0;
+      void video.play().catch(() => undefined);
+    };
+    const stop = () => {
+      video.pause();
+      video.currentTime = 0;
+    };
+    button.addEventListener("pointerenter", play);
+    button.addEventListener("pointerleave", stop);
+    button.addEventListener("focus", play);
+    button.addEventListener("blur", stop);
+    return () => {
+      button.removeEventListener("pointerenter", play);
+      button.removeEventListener("pointerleave", stop);
+      button.removeEventListener("focus", play);
+      button.removeEventListener("blur", stop);
+    };
+  }, [reducedMotion]);
+
+  if (!animated) {
+    return <NextImage src={`/effects/${asset}.png`} width={192} height={96} alt="" loading="lazy" unoptimized />;
+  }
+  return (
+    <video
+      ref={videoRef}
+      muted
+      loop
+      playsInline
+      preload="none"
+      poster={`/effects/${asset}.png`}
+      width="192"
+      height="96"
+      aria-hidden="true"
+    >
+      <source src={`/effects/${asset}.webm`} type="video/webm" />
+    </video>
+  );
+}
 
 function randomSeed() {
   const values = new Uint32Array(1);
@@ -207,7 +261,6 @@ export default function PixelStudio() {
   const [exportState, setExportState] = useState<AnimatedAssetFormat | "idle" | "error">("idle");
   const [exportProgress, setExportProgress] = useState(0);
   const [exportError, setExportError] = useState("");
-  const previewRef = useRef<HTMLDivElement>(null);
   const exportMenuRef = useRef<HTMLDetailsElement>(null);
 
   const wordmarkInput = useMemo<WordmarkInput>(() => ({
@@ -254,10 +307,10 @@ export default function PixelStudio() {
     wordSpacing,
   ]);
   const render = useMemo(() => renderWordmark(wordmarkInput), [wordmarkInput]);
-  const animation = useMemo(() => renderWordmarkAnimation(wordmarkInput, {
+  const timeline = useMemo(() => effect === "none" ? undefined : createWordmarkTimeline(wordmarkInput, {
     duration: loopDuration,
     frameRate: animationFrameRate,
-  }), [loopDuration, wordmarkInput]);
+  }), [effect, loopDuration, wordmarkInput]);
   const { layout } = render.scene;
   const emptyLayout = useMemo(() => buildPixelLayout("ABC", 1, 2, "left"), []);
   const hasPixels = layout.pixels.length > 0;
@@ -265,38 +318,6 @@ export default function PixelStudio() {
     ? render.scene.pixels.find((pixel) => pixel.id === selectedPixelId)
     : undefined;
   const hasManualEdits = Object.keys(pixelOverrides).length > 0;
-  const previewText = text.split("\n").find(Boolean)?.slice(0, 6) || "PX";
-  const effectPreviews = useMemo(() => remixPresets.map((preset) => {
-    const input: WordmarkInput = {
-      text: previewText,
-      foreground,
-      background,
-      depthColor: shadow,
-      letterSpacing,
-      wordSpacing,
-      pixelGap: Math.max(pixelGap, 0.08),
-      padding: 12,
-      scale: 8,
-      effect: preset.effect,
-      effectAmount: preset.amount,
-      seed: randomPaletteSeed,
-    };
-    return {
-      ...preset,
-      svg: preset.effect === "none"
-        ? renderWordmark(input).svg
-        : renderWordmarkAnimation(input, { duration: 2.4, frameRate: 6 }).svg,
-    };
-  }), [
-    background,
-    foreground,
-    letterSpacing,
-    pixelGap,
-    previewText,
-    randomPaletteSeed,
-    shadow,
-    wordSpacing,
-  ]);
 
   useEffect(() => {
     const media = window.matchMedia("(prefers-reduced-motion: reduce)");
@@ -308,18 +329,6 @@ export default function PixelStudio() {
     media.addEventListener("change", update);
     return () => media.removeEventListener("change", update);
   }, []);
-
-  useEffect(() => {
-    const root = previewRef.current;
-    if (!root) return;
-    root.querySelectorAll<SVGGElement>('[data-pixel-layer="type"][data-selected="true"]')
-      .forEach((node) => node.removeAttribute("data-selected"));
-    if (!selectedPixelId) return;
-    root.querySelectorAll<SVGGElement>('[data-pixel-layer="type"]')
-      .forEach((node) => {
-        if (node.dataset.pixelId === selectedPixelId) node.dataset.selected = "true";
-      });
-  }, [animation.svg, render.svg, selectedPixelId]);
 
   function selectPalette(palette: Palette) {
     setColorMode("solid");
@@ -373,12 +382,6 @@ export default function PixelStudio() {
     setSelectedPixelId(null);
   }
 
-  function selectCanvasPixel(event: React.MouseEvent<HTMLDivElement>) {
-    const target = event.target as Element;
-    const pixel = target.closest<SVGGElement>('[data-pixel-layer="type"][data-pixel-id]');
-    if (pixel?.dataset.pixelId) setSelectedPixelId(pixel.dataset.pixelId);
-  }
-
   function shuffleStyle() {
     const paletteIndex = Math.floor(Math.random() * (palettes.length + 1));
     const shapes: PixelShape[] = ["square", "soft", "dot"];
@@ -418,6 +421,10 @@ export default function PixelStudio() {
   }
 
   function downloadAnimatedSvg() {
+    const animation = renderWordmarkAnimation(wordmarkInput, {
+      duration: loopDuration,
+      frameRate: animationFrameRate,
+    });
     downloadBlob(
       new Blob([animation.svg], { type: "image/svg+xml" }),
       animationFileName("svg"),
@@ -430,6 +437,11 @@ export default function PixelStudio() {
     setExportProgress(0);
     setExportError("");
     try {
+      await new Promise(requestAnimationFrame);
+      const animation = renderWordmarkAnimation(wordmarkInput, {
+        duration: loopDuration,
+        frameRate: animationFrameRate,
+      });
       const blob = await exportAnimationBlob(animation, format, ({ completed, total }) => {
         setExportProgress(Math.round((completed / total) * 100));
       });
@@ -487,7 +499,6 @@ export default function PixelStudio() {
     : ({ "--preview-background": background } as React.CSSProperties);
   const hasAnimation = effect !== "none" && hasPixels;
   const isExporting = exportState !== "idle" && exportState !== "error";
-  const previewMarkup = effect === "none" ? render.svg : animation.svg;
 
   return (
     <div className="app-shell">
@@ -587,7 +598,7 @@ export default function PixelStudio() {
               </div>
             </div>
             <div className="remix-grid" aria-label="Pixel effect presets">
-              {effectPreviews.map((preset) => (
+              {remixPresets.map((preset) => (
                 <button
                   type="button"
                   className="remix-preset"
@@ -597,7 +608,13 @@ export default function PixelStudio() {
                   key={preset.effect}
                   onClick={() => applyRemixPreset(preset)}
                 >
-                  <span className="remix-preset-art" aria-hidden="true" dangerouslySetInnerHTML={{ __html: preset.svg }} />
+                  <span className="remix-preset-art" aria-hidden="true">
+                    <EffectPreview
+                      asset={preset.asset}
+                      animated={preset.effect !== "none"}
+                      reducedMotion={prefersReducedMotion}
+                    />
+                  </span>
                   <span className="remix-preset-copy">
                     <strong>{preset.name}</strong>
                     <small>{preset.description}</small>
@@ -764,14 +781,13 @@ export default function PixelStudio() {
           </div>
           <div className={`preview-frame${transparent ? " checkerboard" : ""}`} style={previewStyle}>
             {hasPixels ? (
-              <div
-                ref={previewRef}
-                className="wordmark-svg"
-                data-playing={isPlaying && !prefersReducedMotion}
-                role="img"
-                aria-label={`${text || "Empty"} pixel wordmark preview`}
-                onClick={selectCanvasPixel}
-                dangerouslySetInnerHTML={{ __html: previewMarkup }}
+              <WordmarkCanvas
+                scene={render.scene}
+                timeline={timeline}
+                playing={isPlaying && !prefersReducedMotion}
+                selectedPixelId={selectedPixelId}
+                ariaLabel={`${text || "Empty"} pixel wordmark preview`}
+                onSelectPixel={setSelectedPixelId}
               />
             ) : (
               <div className="empty-state">

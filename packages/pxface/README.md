@@ -78,6 +78,22 @@ For a single deterministic frame, call `renderWordmark` with
 `animationProgress` between `0` and `1`. Both ends resolve to the same seamless
 loop frame.
 
+For realtime Canvas or WebGL playback, use `createWordmarkTimeline`. It returns
+the same fixed-step scenes and shared viewBox without serializing an SVG string
+for every frame. Call `renderWordmarkAnimation` only when you need the finished
+animated asset.
+
+```ts
+import { createWordmarkTimeline } from "pxface";
+
+const timeline = createWordmarkTimeline(
+  { text: "MOVE", effect: "relay" },
+  { duration: 3, frameRate: 12 },
+);
+
+drawScene(timeline.frames[0].scene);
+```
+
 The root export has no DOM, canvas, browser, or framework dependency. It
 returns deterministic SVG plus a serializable scene. Every SVG pixel remains
 an individual rectangle or circle grouped by line, character, and layer.

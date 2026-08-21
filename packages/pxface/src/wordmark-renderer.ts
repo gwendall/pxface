@@ -158,17 +158,26 @@ export type WordmarkAnimationOptions = {
   frameRate?: number;
 };
 
-export type WordmarkAnimationFrame = WordmarkRender & {
+export type WordmarkTimelineFrame = {
   progress: number;
+  scene: WordmarkScene;
 };
 
-export type WordmarkAnimation = {
+export type WordmarkTimeline = {
   version: string;
   duration: number;
   frameRate: number;
-  frames: WordmarkAnimationFrame[];
+  frames: WordmarkTimelineFrame[];
   output: { width: number; height: number };
   viewBox: { x: number; y: number; width: number; height: number };
+};
+
+export type WordmarkAnimationFrame = WordmarkTimelineFrame & {
+  svg: string;
+};
+
+export type WordmarkAnimation = Omit<WordmarkTimeline, "frames"> & {
+  frames: WordmarkAnimationFrame[];
   svg: string;
 };
 
@@ -541,7 +550,19 @@ function effectAppearance(
   }
 }
 
-function pixelGeometry(pixel: RenderPixel, options: WordmarkOptions, layerOffset = 0) {
+export type RenderPixelGeometry = {
+  x: number;
+  y: number;
+  size: number;
+  centerX: number;
+  centerY: number;
+};
+
+export function getRenderPixelGeometry(
+  pixel: RenderPixel,
+  options: WordmarkOptions,
+  layerOffset = 0,
+): RenderPixelGeometry {
   const inset = options.pixelGap / 2;
   const size = 1 - options.pixelGap;
   const slantOffset = options.slant ? (4 - pixel.row) * 0.18 : 0;
@@ -553,7 +574,7 @@ function pixelGeometry(pixel: RenderPixel, options: WordmarkOptions, layerOffset
 }
 
 function pixelShape(pixel: RenderPixel, color: string, options: WordmarkOptions, offset = 0) {
-  const { x, y, size, centerX, centerY } = pixelGeometry(pixel, options, offset);
+  const { x, y, size, centerX, centerY } = getRenderPixelGeometry(pixel, options, offset);
   const transform = pixel.scale === 1 && pixel.rotation === 0
     ? ""
     : ` transform="translate(${centerX} ${centerY}) rotate(${round(pixel.rotation)}) scale(${round(pixel.scale)}) translate(${-centerX} ${-centerY})"`;
@@ -595,7 +616,7 @@ function groupedPixels(
 }
 
 function transformedPixelBounds(pixel: RenderPixel, options: WordmarkOptions, layerOffset: number) {
-  const { size, centerX, centerY } = pixelGeometry(pixel, options, layerOffset);
+  const { size, centerX, centerY } = getRenderPixelGeometry(pixel, options, layerOffset);
   const half = size * pixel.scale / 2;
   if (options.shape === "dot") {
     return { minX: centerX - half, minY: centerY - half, maxX: centerX + half, maxY: centerY + half };
@@ -603,6 +624,25 @@ function transformedPixelBounds(pixel: RenderPixel, options: WordmarkOptions, la
   const radians = pixel.rotation * Math.PI / 180;
   const extent = half * (Math.abs(Math.cos(radians)) + Math.abs(Math.sin(radians)));
   return { minX: centerX - extent, minY: centerY - extent, maxX: centerX + extent, maxY: centerY + extent };
+}
+
+export function hitTestWordmarkPixel(scene: WordmarkScene, x: number, y: number) {
+  for (let index = scene.pixels.length - 1; index >= 0; index -= 1) {
+    const pixel = scene.pixels[index];
+    if (pixel.opacity <= 0) continue;
+    const geometry = getRenderPixelGeometry(pixel, scene.options);
+    const radians = -pixel.rotation * Math.PI / 180;
+    const relativeX = x - geometry.centerX;
+    const relativeY = y - geometry.centerY;
+    const localX = (relativeX * Math.cos(radians) - relativeY * Math.sin(radians)) / pixel.scale;
+    const localY = (relativeX * Math.sin(radians) + relativeY * Math.cos(radians)) / pixel.scale;
+    if (scene.options.shape === "dot") {
+      if (Math.hypot(localX, localY) <= geometry.size / 2) return pixel;
+      continue;
+    }
+    if (Math.abs(localX) <= geometry.size / 2 && Math.abs(localY) <= geometry.size / 2) return pixel;
+  }
+  return undefined;
 }
 
 export function createWordmarkScene(optionsInput: WordmarkInput = {}): WordmarkScene {
@@ -748,6 +788,27 @@ export function renderWordmarkAnimation(
   input: WordmarkInput = {},
   animationInput: WordmarkAnimationOptions = {},
 ): WordmarkAnimation {
+  const timeline = createWordmarkTimeline(input, animationInput);
+  const frames = timeline.frames.map(({ progress, scene }) => ({
+    progress,
+    scene,
+    svg: sceneToSvg(scene),
+  }));
+  return {
+    ...timeline,
+    frames,
+    svg: animationToSvg(frames, timeline.duration, timeline.frameRate, timeline.viewBox, timeline.output),
+  };
+}
+
+/**
+ * Samples deterministic scenes without serializing SVG. Use this lightweight
+ * timeline for live playback; serialize only when an asset is requested.
+ */
+export function createWordmarkTimeline(
+  input: WordmarkInput = {},
+  animationInput: WordmarkAnimationOptions = {},
+): WordmarkTimeline {
   const { duration, frameRate } = normalizeAnimationOptions(animationInput);
   const frameCount = Math.max(2, Math.round(duration * frameRate));
   const initialFrames = Array.from({ length: frameCount }, (_, index) => {
@@ -776,9 +837,9 @@ export function renderWordmarkAnimation(
   if (output.width > MAX_OUTPUT_DIMENSION || output.height > MAX_OUTPUT_DIMENSION || output.width * output.height > MAX_OUTPUT_AREA) {
     throw new WordmarkValidationError([{ field: "output", message: "Animated output exceeds the renderer size limits." }]);
   }
-  const frames = initialFrames.map(({ progress, scene }) => {
+  const frames: WordmarkTimelineFrame[] = initialFrames.map(({ progress, scene }) => {
     const sharedScene = { ...scene, viewBox, output, shapeRendering: "geometricPrecision" as const };
-    return { progress, scene: sharedScene, svg: sceneToSvg(sharedScene) };
+    return { progress, scene: sharedScene };
   });
   return {
     version: RENDERER_VERSION,
@@ -787,7 +848,6 @@ export function renderWordmarkAnimation(
     frames,
     output,
     viewBox,
-    svg: animationToSvg(frames, duration, frameRate, viewBox, output),
   };
 }
 

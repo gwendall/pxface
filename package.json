@@ -16,6 +16,7 @@
     "lint": "eslint",
     "package:build": "npm run build --workspace pxface",
     "package:verify": "npm run package:build && node scripts/verify-package.mjs && npm pack --workspace pxface --dry-run",
+    "previews:build": "npm run package:build && node scripts/build-effect-previews.mjs",
     "font:build": "python3 scripts/build-fonts.py",
     "font:verify": "python3 scripts/verify-font-packages.py",
     "fixtures:update": "tsx scripts/update-golden.ts",

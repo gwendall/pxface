@@ -6,7 +6,7 @@ implementation.
 
 ## Progress
 
-- Current batch: **Animated pixel loops**
+- Current batch: **Animated pixel performance**
 - Pixel-remix production verification: deployment
   `dpl_6U5hE7BbWxSZeRKVp9bsEwcyt41j` from merge commit `8f6ad1b` serves the
   five grid-native presets, direct pixel inspector, renderer `2.1.0`, and
@@ -93,6 +93,26 @@ implementation.
     production deployment before marking the batch complete.
 
 ## Now - animated pixel loops
+
+- [x] **Keep the live Studio inside a strict frame budget**
+  - Replace multi-frame SVG DOM playback with one lightweight canvas fed by
+    the canonical scene timeline, while preserving exact pixel selection.
+  - Build animated SVG strings only when exporting, never during ordinary
+    controls, playback, scrolling, or preset changes.
+- [x] **Replace animated preset DOM with hover-only media**
+  - Ship tiny deterministic poster/WebM assets for motion cards.
+  - Load metadata only at rest and play the selected clip on pointer or
+    keyboard hover; reduced-motion remains on the poster.
+- [~] **Measure, republish, and close the performance regression**
+  - Enforce DOM, commit-latency, long-task, and frame-time budgets against a
+    browser performance harness, then repeat full export and responsive QA.
+  - Supersede the merged but unpublished `1.2.0` build with a verified patch,
+    merge, deploy, publish npm, tag the source, and record exact evidence.
+  - Local production QA: 435 DOM nodes (from 14,412), 32 SVG descendants
+    (from 14,013), no mounted animation frames (from 106), 0 long tasks, and
+    16.8–17.7ms p95 frame gaps across repeated animated scrolling and control
+    runs. Preset commit latency is 83–100ms (from 239–279ms). Desktop/mobile,
+    reduced-motion, pixel selection, and SVG/GIF/WebM/MP4 exports pass.
 
 - [x] **Make time a deterministic renderer input**
   - Resolve every effect from a normalized loop phase through the canonical

@@ -19,6 +19,12 @@ change the viewport or clip midway through a loop. The returned animated SVG
 contains those exact frames and CSS timing; browser GIF/WebM/MP4 exporters
 rasterize the same frame SVGs rather than reimplementing motion.
 
+The Studio calls `createWordmarkTimeline` for live playback. That path keeps
+only serializable scenes in memory and paints one canvas; it deliberately does
+not serialize or mount frame SVG. Full SVG strings are produced lazily only
+when an export is requested. Motion-card posters and hover-only WebM clips are
+generated from the same scene timeline by `scripts/build-effect-previews.mjs`.
+
 ## Change propagation
 
 When adding a glyph, palette, or render option:

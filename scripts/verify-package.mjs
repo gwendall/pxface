@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import { createRequire } from "node:module";
 import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
-import { renderWordmark, renderWordmarkAnimation } from "pxface";
+import { createWordmarkTimeline, renderWordmark, renderWordmarkAnimation } from "pxface";
 import { AnimatedPxface, Pxface } from "pxface/react";
 
 const esmRender = renderWordmark({
@@ -36,6 +36,14 @@ assert.equal(animation.frames.length, 12);
 assert.match(animation.svg, /data-pxface-animation="loop"/);
 assert.equal(animation.frames[0].scene.viewBox.width, animation.frames[7].scene.viewBox.width);
 
+const timeline = createWordmarkTimeline({ text: "LIVE", effect: "assemble" }, {
+  duration: 2,
+  frameRate: 6,
+});
+assert.equal(timeline.frames.length, 12);
+assert.equal("svg" in timeline.frames[0], false);
+assert.equal(timeline.frames[0].scene.viewBox.width, timeline.frames[7].scene.viewBox.width);
+
 const animatedHtml = renderToStaticMarkup(createElement(AnimatedPxface, {
   text: "SSR",
   effect: "scan",
@@ -44,4 +52,4 @@ const animatedHtml = renderToStaticMarkup(createElement(AnimatedPxface, {
 }));
 assert.match(animatedHtml, /data-pxface-animation="loop"/);
 
-console.log("Verified ESM, CommonJS, static and animated scenes, and React SSR exports.");
+console.log("Verified ESM, CommonJS, static, lightweight timeline, animated scenes, and React SSR exports.");

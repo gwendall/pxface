@@ -1,5 +1,8 @@
 import { describe, expect, it } from "vitest";
 import {
+  createWordmarkTimeline,
+  getRenderPixelGeometry,
+  hitTestWordmarkPixel,
   normalizeWordmarkOptions,
   renderWordmark,
   renderWordmarkAnimation,
@@ -158,6 +161,27 @@ describe("wordmark renderer", () => {
     expect(first.svg).toContain("visibility:hidden");
     expect(first.svg).toContain('id="animation-frame-12"');
     expect(first.svg).toContain('data-pixel-id="l0-c0-r0-x0"');
+  });
+
+  it("builds a lightweight scene timeline without serializing frame SVG", () => {
+    const timeline = createWordmarkTimeline(
+      { text: "MOVE", effect: "relay" },
+      { duration: 2, frameRate: 6 },
+    );
+    expect(timeline.frames).toHaveLength(12);
+    expect(timeline.frames[0]).not.toHaveProperty("svg");
+    expect(timeline.frames[0].scene.viewBox).toEqual(timeline.viewBox);
+  });
+
+  it("hit-tests transformed foreground pixels in design coordinates", () => {
+    const scene = renderWordmark({
+      text: "A",
+      pixelOverrides: { "l0-c0-r0-x0": { offsetX: -3, scale: 1.5, rotation: 20 } },
+    }).scene;
+    const pixel = scene.pixels[0];
+    const geometry = getRenderPixelGeometry(pixel, scene.options);
+    expect(hitTestWordmarkPixel(scene, geometry.centerX, geometry.centerY)?.id).toBe(pixel.id);
+    expect(hitTestWordmarkPixel(scene, scene.viewBox.x - 10, scene.viewBox.y - 10)).toBeUndefined();
   });
 
   it("preserves manual pixel overrides in every animation frame", () => {

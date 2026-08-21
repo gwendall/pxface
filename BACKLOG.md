@@ -7,6 +7,15 @@ implementation.
 ## Progress
 
 - Current batch: **Animated pixel performance**
+- Animated-performance production verification: deployment
+  `dpl_ECJWtCpD9vDkPqEr3hvBwrmFap1p` from merge commit `faa6d2e` serves the
+  single-canvas player and hover-only preview clips on `pxface.com`. Direct
+  production QA measured 424 DOM nodes, no mounted SVG animation frames,
+  17.4ms p95 frame gaps, zero frames below 50fps, and zero long tasks.
+- Animated-package release: `pxface@1.2.0` is built and fully verified but is
+  not yet public; npm web authentication expired before the required 2FA
+  confirmation. The registry `latest` therefore remains `1.1.0`, and the
+  matching `js-v1.2.0` source tag must wait for a successful publish.
 - Pixel-remix production verification: deployment
   `dpl_6U5hE7BbWxSZeRKVp9bsEwcyt41j` from merge commit `8f6ad1b` serves the
   five grid-native presets, direct pixel inspector, renderer `2.1.0`, and
@@ -113,6 +122,10 @@ implementation.
     16.8–17.7ms p95 frame gaps across repeated animated scrolling and control
     runs. Preset commit latency is 83–100ms (from 239–279ms). Desktop/mobile,
     reduced-motion, pixel selection, and SVG/GIF/WebM/MP4 exports pass.
+  - Production QA on deployment `dpl_ECJWtCpD9vDkPqEr3hvBwrmFap1p`: 424 DOM
+    nodes, 32 SVG descendants, no mounted animation frames, 17.4ms p95 frame
+    gaps, zero frames below 50fps, and zero long tasks. npm publish/tag remain
+    open only because the required web 2FA confirmation expired.
 
 - [x] **Make time a deterministic renderer input**
   - Resolve every effect from a normalized loop phase through the canonical

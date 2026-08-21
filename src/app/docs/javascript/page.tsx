@@ -145,7 +145,7 @@ export default function JavaScriptDocsPage() {
             </article>
             <article>
               <strong>Exact scene</strong>
-              <p>Read stable pixel IDs, resolved transforms, layout coordinates, viewBox, and final dimensions before writing a file or mounting markup.</p>
+              <p>Read stable pixel IDs, resolved transforms, layout coordinates, viewBox, and final dimensions. For live Canvas or WebGL playback, <code>createWordmarkTimeline</code> returns scenes without eagerly serializing every SVG frame.</p>
             </article>
             <article>
               <strong>Zero duplication</strong>

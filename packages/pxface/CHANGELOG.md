@@ -8,6 +8,8 @@
   `AnimatedPxface` React adapter.
 - Add Assemble, Relay, and Scan plus seamless animated behavior for all
   existing grid-native effects.
+- Add a lightweight `createWordmarkTimeline` scene API for realtime Canvas or
+  WebGL playback without eager per-frame SVG serialization.
 
 ## 1.1.0 - 2026-08-21
 

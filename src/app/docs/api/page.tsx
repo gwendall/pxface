@@ -44,7 +44,7 @@ const svgCurl = `curl --get 'https://pxface.com/api/v1/render' \\
 
 const pngCurl = `curl 'https://pxface.com/api/v1/render' \\
   --header 'Content-Type: application/json' \\
-  --data '{"format":"png","options":{"text":"HELLO\\nTHERE","ratio":"square","colorMode":"random","seed":42}}' \\
+  --data '{"format":"png","options":{"text":"HELLO\\nTHERE","ratio":"square","effect":"wave","effectAmount":1.1,"seed":42,"pixelOverrides":{"l0-c0-r0-x0":{"color":"#FF4E1A","offsetY":-1}}}}' \\
   --output hello-there.png`;
 
 export default function ApiDocsPage() {

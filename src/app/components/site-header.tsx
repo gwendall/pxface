@@ -36,7 +36,7 @@ export default function SiteHeader() {
         <span aria-hidden="true">FACE</span>
       </Link>
 
-      <p className="site-tagline">Pixel type, made tangible.</p>
+      <p className="site-tagline">A 3×5 type system you can hack pixel by pixel.</p>
 
       <nav className="site-nav" aria-label="Primary navigation">
         {navigation.map((item) => {

@@ -15,9 +15,18 @@ const javascriptExample = `import { renderWordmark } from "pxface";
 
 const { svg, scene } = renderWordmark({
   text: "HELLO\\nTHERE",
+  effect: "wave",
+  effectAmount: 1.1,
   pixelGap: 0,
   padding: 20,
   ratio: "fit",
+  pixelOverrides: {
+    "l0-c0-r0-x0": {
+      color: "#FF4E1A",
+      offsetY: -1,
+      opacity: 0.7,
+    },
+  },
 });
 
 document.querySelector("#mark").innerHTML = svg;
@@ -29,6 +38,7 @@ export function Logo() {
   return (
     <Pxface
       text="HELLO"
+      effect="weave"
       depth={1}
       className="logo"
     />
@@ -43,7 +53,7 @@ export default function JavaScriptDocsPage() {
           <div className="library-hero-copy">
             <p className="license-kicker">NPM / TYPESCRIPT / REACT</p>
             <h1>Pixels,<br />in your code.</h1>
-            <p>One dependency gives any frontend the exact renderer behind the studio—without a browser, canvas, or duplicated rules.</p>
+            <p>One dependency gives any frontend the exact renderer behind the studio, without a browser, canvas, or duplicated rules.</p>
             <div className="library-install" aria-label="Install pxface from npm">
               <code>npm install pxface</code>
               <a href="https://www.npmjs.com/package/pxface" target="_blank" rel="noreferrer">View on npm</a>
@@ -90,11 +100,11 @@ export default function JavaScriptDocsPage() {
             </article>
             <article>
               <strong>Typed options</strong>
-              <p>Spacing, colors, depth, shape, alignment, palette, padding, ratio, transparency, slant, seed, and scale share versioned defaults.</p>
+              <p>Spacing, colors, depth, shape, effects, pixel overrides, padding, ratio, transparency, seed, and scale share versioned defaults.</p>
             </article>
             <article>
               <strong>Exact scene</strong>
-              <p>Read normalized options, layout coordinates, colors, viewBox, and final dimensions before writing a file or mounting markup.</p>
+              <p>Read stable pixel IDs, resolved transforms, layout coordinates, viewBox, and final dimensions before writing a file or mounting markup.</p>
             </article>
             <article>
               <strong>Zero duplication</strong>

@@ -12,7 +12,7 @@ export type RenderParameterDoc = {
 
 type OptionDoc = Omit<RenderParameterDoc, "name" | "defaultValue">;
 
-const requestParameters: Record<"format" | "download", RenderParameterDoc> = {
+const requestParameters: Record<"format" | "download" | "pixelOverrides", RenderParameterDoc> = {
   format: {
     name: "format",
     type: "svg | png",
@@ -24,6 +24,12 @@ const requestParameters: Record<"format" | "download", RenderParameterDoc> = {
     type: "boolean",
     defaultValue: "false",
     description: "Returns the asset as an attachment instead of displaying it inline.",
+  },
+  pixelOverrides: {
+    name: "pixelOverrides",
+    type: "object (POST JSON)",
+    defaultValue: "{}",
+    description: "Overrides color, offsets, opacity, scale, or rotation by stable pixel ID after the effect.",
   },
 };
 
@@ -100,6 +106,14 @@ const optionDocs: { [Key in keyof WordmarkOptions]: OptionDoc } = {
     type: "number 1-256",
     description: "Output pixels per design unit. Changes dimensions, not the composition.",
   },
+  effect: {
+    type: "none | spectrum | explode | wave | glitch | weave",
+    description: "Applies a deterministic grid-native transformation to individual pixels.",
+  },
+  effectAmount: {
+    type: "number 0-2",
+    description: "Controls the strength of the selected pixel effect without changing its identity.",
+  },
 };
 
 function displayDefault(value: WordmarkOptions[keyof WordmarkOptions]) {
@@ -131,6 +145,11 @@ export const RENDER_PARAMETER_GROUPS = [
       option("colorMode"),
       option("seed"),
     ],
+  },
+  {
+    title: "Pixel remix",
+    description: "Transform each 3x5 cell independently with a deterministic effect.",
+    parameters: [option("effect"), option("effectAmount"), requestParameters.pixelOverrides],
   },
   {
     title: "Spacing and form",

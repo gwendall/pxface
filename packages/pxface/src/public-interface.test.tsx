@@ -17,6 +17,6 @@ describe("published pxface interface", () => {
     expect(html).toContain('class="logo"');
     expect(html).toContain('aria-label="SSR pixel wordmark"');
     expect(html).toContain('<svg xmlns="http://www.w3.org/2000/svg"');
-    expect(html).toContain('data-pxface-renderer="2.0.0"');
+    expect(html).toContain('data-pxface-renderer="2.1.0"');
   });
 });

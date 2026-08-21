@@ -1,6 +1,7 @@
 "use client";
 
 import {
+  ArrowCounterClockwise,
   Check,
   Copy,
   DownloadSimple,
@@ -11,12 +12,15 @@ import {
   TextAlignRight,
 } from "@phosphor-icons/react";
 import Link from "next/link";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import {
   buildPixelLayout,
   renderWordmark,
   type ColorMode,
   type ExportRatio,
+  type PixelEffect,
+  type PixelOverride,
+  type PixelOverrides,
   type PixelShape,
   type TextAlign,
   wordmarkFileName,
@@ -58,6 +62,20 @@ const palettes: Palette[] = [
 
 const sampleWords = ["PXFACE", "TYPE", "GLYPH", "MODULAR"];
 const initialRandomSeed = 0x50584641;
+
+const remixPresets: Array<{
+  effect: PixelEffect;
+  name: string;
+  description: string;
+  amount: number;
+}> = [
+  { effect: "none", name: "Clean", description: "Original grid", amount: 1 },
+  { effect: "spectrum", name: "Spectrum", description: "Cell colors", amount: 1 },
+  { effect: "explode", name: "Explode", description: "Radial cells", amount: 1.15 },
+  { effect: "wave", name: "Wave", description: "Grid displacement", amount: 1.1 },
+  { effect: "glitch", name: "Glitch", description: "Broken scanlines", amount: 1.15 },
+  { effect: "weave", name: "Weave", description: "Interlaced cells", amount: 1.1 },
+];
 
 function randomSeed() {
   const values = new Uint32Array(1);
@@ -107,11 +125,12 @@ function RangeControl({
   suffix?: string;
   onChange: (value: number) => void;
 }) {
+  const displayValue = Number.isInteger(value) ? value : Number(value.toFixed(2));
   return (
     <label className="range-control">
       <span>
         {label}
-        <output>{value}{suffix}</output>
+        <output>{displayValue}{suffix}</output>
       </span>
       <input
         type="range"
@@ -134,6 +153,7 @@ function ColorControl({
   value: string;
   onChange: (value: string) => void;
 }) {
+  const pickerValue = /^#[0-9a-f]{8}$/i.test(value) ? value.slice(0, 7) : value;
   return (
     <label className="color-control">
       <span>{label}</span>
@@ -141,7 +161,7 @@ function ColorControl({
         {value.toUpperCase()}
         <input
           type="color"
-          value={value}
+          value={pickerValue}
           aria-label={`${label} color`}
           onChange={(event) => onChange(event.target.value)}
         />
@@ -168,7 +188,12 @@ export default function PixelStudio() {
   const [shadow, setShadow] = useState(palettes[0].shadow);
   const [colorMode, setColorMode] = useState<ColorMode>("solid");
   const [randomPaletteSeed, setRandomPaletteSeed] = useState(initialRandomSeed);
+  const [effect, setEffect] = useState<PixelEffect>("none");
+  const [effectAmount, setEffectAmount] = useState(1);
+  const [pixelOverrides, setPixelOverrides] = useState<PixelOverrides>({});
+  const [selectedPixelId, setSelectedPixelId] = useState<string | null>(null);
   const [copyState, setCopyState] = useState<"idle" | "copied" | "error">("idle");
+  const previewRef = useRef<HTMLDivElement>(null);
 
   const render = useMemo(() => renderWordmark({
     text,
@@ -188,17 +213,23 @@ export default function PixelStudio() {
     transparent,
     colorMode,
     seed: randomPaletteSeed,
+    effect,
+    effectAmount,
+    pixelOverrides,
   }), [
     align,
     background,
     colorMode,
     depth,
     exportRatio,
+    effect,
+    effectAmount,
     foreground,
     letterSpacing,
     lineSpacing,
     paddingPercent,
     pixelGap,
+    pixelOverrides,
     randomPaletteSeed,
     shadow,
     shape,
@@ -210,6 +241,49 @@ export default function PixelStudio() {
   const { layout } = render.scene;
   const emptyLayout = useMemo(() => buildPixelLayout("ABC", 1, 2, "left"), []);
   const hasPixels = layout.pixels.length > 0;
+  const selectedPixel = selectedPixelId
+    ? render.scene.pixels.find((pixel) => pixel.id === selectedPixelId)
+    : undefined;
+  const hasManualEdits = Object.keys(pixelOverrides).length > 0;
+  const previewText = text.split("\n").find(Boolean)?.slice(0, 6) || "PX";
+  const effectPreviews = useMemo(() => remixPresets.map((preset) => ({
+    ...preset,
+    svg: renderWordmark({
+      text: previewText,
+      foreground,
+      background,
+      depthColor: shadow,
+      letterSpacing,
+      wordSpacing,
+      pixelGap: Math.max(pixelGap, 0.08),
+      padding: 12,
+      scale: 8,
+      effect: preset.effect,
+      effectAmount: preset.amount,
+      seed: randomPaletteSeed,
+    }).svg,
+  })), [
+    background,
+    foreground,
+    letterSpacing,
+    pixelGap,
+    previewText,
+    randomPaletteSeed,
+    shadow,
+    wordSpacing,
+  ]);
+
+  useEffect(() => {
+    const root = previewRef.current;
+    if (!root) return;
+    root.querySelectorAll<SVGGElement>('[data-pixel-layer="type"][data-selected="true"]')
+      .forEach((node) => node.removeAttribute("data-selected"));
+    if (!selectedPixelId) return;
+    root.querySelectorAll<SVGGElement>('[data-pixel-layer="type"]')
+      .forEach((node) => {
+        if (node.dataset.pixelId === selectedPixelId) node.dataset.selected = "true";
+      });
+  }, [render.svg, selectedPixelId]);
 
   function selectPalette(palette: Palette) {
     setColorMode("solid");
@@ -223,6 +297,50 @@ export default function PixelStudio() {
     setRandomPaletteSeed(randomSeed());
   }
 
+  function applyRemixPreset(preset: (typeof remixPresets)[number]) {
+    if (preset.effect === effect && preset.effect !== "none") {
+      setRandomPaletteSeed(randomSeed());
+    }
+    setEffect(preset.effect);
+    setEffectAmount(preset.amount);
+  }
+
+  function updateSelectedPixel(patch: PixelOverride) {
+    if (!selectedPixelId) return;
+    setPixelOverrides((current) => ({
+      ...current,
+      [selectedPixelId]: { ...current[selectedPixelId], ...patch },
+    }));
+  }
+
+  function resetSelectedPixel() {
+    if (!selectedPixelId) return;
+    setPixelOverrides((current) => {
+      const next = { ...current };
+      delete next[selectedPixelId];
+      return next;
+    });
+  }
+
+  function resetRemix() {
+    setEffect("none");
+    setEffectAmount(1);
+    setPixelOverrides({});
+    setSelectedPixelId(null);
+  }
+
+  function handleTextChange(value: string) {
+    setText(value.toUpperCase().split("\n").slice(0, 3).join("\n"));
+    setPixelOverrides({});
+    setSelectedPixelId(null);
+  }
+
+  function selectCanvasPixel(event: React.MouseEvent<HTMLDivElement>) {
+    const target = event.target as Element;
+    const pixel = target.closest<SVGGElement>('[data-pixel-layer="type"][data-pixel-id]');
+    if (pixel?.dataset.pixelId) setSelectedPixelId(pixel.dataset.pixelId);
+  }
+
   function shuffleStyle() {
     const paletteIndex = Math.floor(Math.random() * (palettes.length + 1));
     const shapes: PixelShape[] = ["square", "soft", "dot"];
@@ -232,6 +350,11 @@ export default function PixelStudio() {
     setDepth(Math.floor(Math.random() * 4));
     setPixelGap([0, 0.08, 0.2][Math.floor(Math.random() * 3)]);
     setSlant(Math.random() > 0.55);
+    const effects: PixelEffect[] = ["none", "spectrum", "explode", "wave", "glitch", "weave"];
+    setEffect(effects[Math.floor(Math.random() * effects.length)]);
+    setEffectAmount(0.85 + Math.random() * 0.45);
+    setPixelOverrides({});
+    setSelectedPixelId(null);
   }
 
   function getSvgMarkup() {
@@ -298,7 +421,7 @@ export default function PixelStudio() {
   return (
     <div className="app-shell">
       <div className="studio-toolbar" aria-label="Studio export controls">
-        <p className="source-note"><span>Studio exports</span><Link href="/font">Download font</Link></p>
+        <p className="source-note"><span>Pixel remix</span><strong>Every pixel is editable SVG. Click one.</strong></p>
         <div className="topbar-actions">
           <button type="button" className="button secondary" onClick={copySvg} disabled={!hasPixels}>
             {copyState === "copied" ? <Check weight="bold" /> : <Copy />}
@@ -324,13 +447,79 @@ export default function PixelStudio() {
               maxLength={80}
               spellCheck={false}
               style={{ textAlign: align }}
-              onChange={(event) => setText(event.target.value.toUpperCase().split("\n").slice(0, 3).join("\n"))}
+              onChange={(event) => handleTextChange(event.target.value)}
             />
             <div className="sample-row" aria-label="Text examples">
               {sampleWords.map((word) => (
-                <button type="button" key={word} onClick={() => setText(word)}>{word}</button>
+                <button type="button" key={word} onClick={() => handleTextChange(word)}>{word}</button>
               ))}
             </div>
+          </section>
+
+          <section className="control-section remix-section">
+            <div className="remix-heading">
+              <div>
+                <p className="field-label">Remix</p>
+                <p>Grid-native effects, resolved pixel by pixel.</p>
+              </div>
+              {(effect !== "none" || hasManualEdits) && (
+                <button type="button" onClick={resetRemix}>Reset all</button>
+              )}
+            </div>
+            <div className="remix-grid" aria-label="Pixel effect presets">
+              {effectPreviews.map((preset) => (
+                <button
+                  type="button"
+                  className="remix-preset"
+                  data-active={effect === preset.effect}
+                  aria-pressed={effect === preset.effect}
+                  aria-label={`Apply ${preset.name} effect: ${preset.description}`}
+                  key={preset.effect}
+                  onClick={() => applyRemixPreset(preset)}
+                >
+                  <span className="remix-preset-art" aria-hidden="true" dangerouslySetInnerHTML={{ __html: preset.svg }} />
+                  <span className="remix-preset-copy">
+                    <strong>{preset.name}</strong>
+                    <small>{preset.description}</small>
+                  </span>
+                </button>
+              ))}
+            </div>
+            {effect !== "none" && (
+              <RangeControl label="Effect strength" min={0} max={2} step={0.05} value={effectAmount} onChange={setEffectAmount} />
+            )}
+          </section>
+
+          <section className="control-section pixel-inspector" data-active={Boolean(selectedPixel)}>
+            <div className="pixel-inspector-heading">
+              <div>
+                <p className="field-label">Pixel editor</p>
+                <p>{selectedPixel ? "Manual overrides are applied after the effect." : "Click a pixel on the canvas or choose one below."}</p>
+              </div>
+              {selectedPixel && pixelOverrides[selectedPixel.id] && (
+                <button type="button" onClick={resetSelectedPixel}><ArrowCounterClockwise /> Reset</button>
+              )}
+            </div>
+            <label className="pixel-select-label">
+              <span>Selected pixel</span>
+              <select value={selectedPixelId ?? ""} onChange={(event) => setSelectedPixelId(event.target.value || null)}>
+                <option value="">None</option>
+                {render.scene.pixels.map((pixel) => (
+                  <option value={pixel.id} key={pixel.id}>
+                    {pixel.value} {pixel.character + 1} / row {pixel.row + 1} / col {pixel.column + 1}
+                  </option>
+                ))}
+              </select>
+            </label>
+            {selectedPixel && (
+              <div className="pixel-controls">
+                <ColorControl label="Pixel color" value={selectedPixel.color} onChange={(color) => updateSelectedPixel({ color })} />
+                <RangeControl label="Horizontal offset" min={-3} max={3} step={0.1} value={selectedPixel.offsetX} onChange={(offsetX) => updateSelectedPixel({ offsetX })} />
+                <RangeControl label="Vertical offset" min={-3} max={3} step={0.1} value={selectedPixel.offsetY} onChange={(offsetY) => updateSelectedPixel({ offsetY })} />
+                <RangeControl label="Opacity" min={0} max={1} step={0.05} value={selectedPixel.opacity} onChange={(opacity) => updateSelectedPixel({ opacity })} />
+                <RangeControl label="Scale" min={0.1} max={3} step={0.1} value={selectedPixel.scale} onChange={(scale) => updateSelectedPixel({ scale })} />
+              </div>
+            )}
           </section>
 
           <section className="control-section split-control">
@@ -446,15 +635,17 @@ export default function PixelStudio() {
 
         <section className="preview-panel" aria-label="Wordmark preview">
           <div className="preview-meta">
-            <span>Live canvas</span>
-            <span>{layout.width}×{layout.height} units</span>
+            <span>Live canvas / click a pixel</span>
+            <span>{effect === "none" ? "Clean" : effect} / {layout.width}×{layout.height} units</span>
           </div>
           <div className={`preview-frame${transparent ? " checkerboard" : ""}`} style={previewStyle}>
             {hasPixels ? (
               <div
+                ref={previewRef}
                 className="wordmark-svg"
                 role="img"
                 aria-label={`${text || "Empty"} pixel wordmark preview`}
+                onClick={selectCanvasPixel}
                 dangerouslySetInnerHTML={{ __html: render.svg }}
               />
             ) : (

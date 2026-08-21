@@ -1,6 +1,6 @@
 ---
 name: pxface-render
-description: Generate deterministic 3×5 pixel wordmark assets through the PXFACE HTTP API. Use when an agent needs to create or save editable SVG or PNG text art, logos, wordmarks, social assets, or pixel typography with controlled spacing, colors, shape, depth, padding, alignment, and canvas ratio.
+description: Generate deterministic 3×5 pixel wordmark assets through the PXFACE HTTP API. Use when an agent needs editable SVG or PNG text art with controlled spacing, colors, grid-native effects, and per-pixel overrides.
 ---
 
 # PXFACE Render
@@ -17,7 +17,7 @@ endpoint for other languages, remote tools, and image-file responses.
 
 1. Choose SVG when pixels must remain editable or PNG when the caller needs a bitmap.
 2. Prefer a GET request for a cacheable deterministic URL. Use POST JSON for long or structured calls.
-3. Always set `text`. Set `seed` whenever `colorMode=random` so the result can be reproduced.
+3. Always set `text`. Set `seed` for random colors or pixel effects so the result can be reproduced.
 4. Check the HTTP status and `Content-Type` before saving the body.
 5. Read `X-PXFACE-Width`, `X-PXFACE-Height`, and `X-PXFACE-Renderer-Version` when exact metadata matters.
 
@@ -33,13 +33,15 @@ THERE' \
 ```bash
 curl 'https://pxface.com/api/v1/render' \
   --header 'Content-Type: application/json' \
-  --data '{"format":"png","options":{"text":"HELLO\\nTHERE","ratio":"square","colorMode":"random","seed":42}}' \
+  --data '{"format":"png","options":{"text":"HELLO\\nTHERE","ratio":"square","effect":"wave","effectAmount":1.1,"seed":42,"pixelOverrides":{"l0-c0-r0-x0":{"color":"#FF4E1A","offsetY":-1}}}}' \
   --output hello-there.png
 ```
 
 ## Control the render
 
-Pass any subset of these options: `text`, `foreground`, `background`, `depthColor`, `letterSpacing`, `wordSpacing`, `lineSpacing`, `pixelGap`, `depth`, `padding`, `ratio`, `align`, `shape`, `slant`, `transparent`, `colorMode`, `seed`, and `scale`.
+Pass any subset of these options: `text`, `foreground`, `background`, `depthColor`, `letterSpacing`, `wordSpacing`, `lineSpacing`, `pixelGap`, `depth`, `padding`, `ratio`, `align`, `shape`, `slant`, `transparent`, `colorMode`, `seed`, `scale`, `effect`, and `effectAmount`.
+
+Available effects are `spectrum`, `explode`, `wave`, `glitch`, and `weave`. For POST requests, `pixelOverrides` can map a stable pixel ID such as `l0-c0-r0-x0` to `color`, `offsetX`, `offsetY`, `opacity`, `scale`, or `rotation`. Overrides are applied after the effect.
 
 Read the canonical defaults, ranges, enums, errors, and response schema at `https://pxface.com/openapi.yaml`. Human documentation is at `https://pxface.com/docs/api`.
 

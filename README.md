@@ -1,8 +1,8 @@
 # PXFACE
 
-PXFACE is a browser-based 3×5 pixel type system. Type a mark, apply grid-native effects, edit individual pixels, then export it as editable SVG or PNG.
+PXFACE is a browser-based 3×5 pixel type system. Type a mark, apply grid-native motion, edit individual pixels, then export editable SVG, PNG, animated SVG, GIF, WebM, or MP4.
 
-**Hack every pixel. Export native SVG.**
+**Every pixel is an SVG element. Move it, remix it, loop it.**
 
 Production: [pxface.com](https://pxface.com)
 Source: [github.com/gwendall/pxface](https://github.com/gwendall/pxface)
@@ -17,7 +17,7 @@ npm install pxface
 ```
 
 ```ts
-import { renderWordmark } from "pxface";
+import { renderWordmark, renderWordmarkAnimation } from "pxface";
 
 const { svg, scene } = renderWordmark({
   text: "HELLO\nTHERE",
@@ -26,20 +26,26 @@ const { svg, scene } = renderWordmark({
     "l0-c0-r0-x0": { color: "#FF4E1A", offsetY: -1 },
   },
 });
+
+const loop = renderWordmarkAnimation(
+  { text: "MOVE", effect: "relay" },
+  { duration: 3, frameRate: 12 },
+);
 ```
 
 React is an optional adapter rather than a second renderer:
 
 ```tsx
-import { Pxface } from "pxface/react";
+import { AnimatedPxface } from "pxface/react";
 
 export function Logo() {
-  return <Pxface text="HELLO" depth={1} />;
+  return <AnimatedPxface text="HELLO" effect="scan" duration={3} />;
 }
 ```
 
-The package supports ESM, CommonJS, TypeScript, React SSR, and React Server
-Components. Full documentation: [pxface.com/docs/javascript](https://pxface.com/docs/javascript).
+The package supports ESM, CommonJS, TypeScript, deterministic fixed-step
+animation, React SSR, and React Server Components. Full documentation:
+[pxface.com/docs/javascript](https://pxface.com/docs/javascript).
 
 ## Getting Started
 

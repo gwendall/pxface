@@ -1,5 +1,10 @@
 import type { CSSProperties } from "react";
-import { renderWordmark, type WordmarkInput } from "./wordmark-renderer";
+import {
+  renderWordmark,
+  renderWordmarkAnimation,
+  type WordmarkAnimationOptions,
+  type WordmarkInput,
+} from "./wordmark-renderer";
 
 export type PxfaceProps = WordmarkInput & {
   /** Applied to the wrapper so the generated SVG can be sized with CSS. */
@@ -26,6 +31,33 @@ export function Pxface({ className, style, ariaLabel, ...options }: PxfaceProps)
       aria-label={label}
       data-pxface-version={scene.version}
       dangerouslySetInnerHTML={{ __html: svg }}
+    />
+  );
+}
+
+export type AnimatedPxfaceProps = PxfaceProps & WordmarkAnimationOptions;
+
+/** Server-renderable, self-contained animated SVG adapter. */
+export function AnimatedPxface({
+  className,
+  style,
+  ariaLabel,
+  duration,
+  frameRate,
+  ...options
+}: AnimatedPxfaceProps) {
+  const animation = renderWordmarkAnimation(options, { duration, frameRate });
+  const label = (ariaLabel ?? animation.frames[0].scene.options.text.replaceAll("\n", " ")) || "PXFACE animated wordmark";
+
+  return (
+    <span
+      className={className}
+      style={{ display: "inline-block", lineHeight: 0, ...style }}
+      role="img"
+      aria-label={label}
+      data-pxface-version={animation.version}
+      data-pxface-animation="loop"
+      dangerouslySetInnerHTML={{ __html: animation.svg }}
     />
   );
 }

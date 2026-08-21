@@ -3,6 +3,7 @@ import sharp from "sharp";
 import { parseRenderJson, parseRenderSearchParams, type ParsedRenderRequest } from "@/lib/render-request";
 import {
   renderWordmark,
+  renderWordmarkAnimation,
   RENDERER_VERSION,
   WordmarkValidationError,
   wordmarkFileName,
@@ -22,7 +23,7 @@ function corsHeaders() {
     "Access-Control-Allow-Origin": "*",
     "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
     "Access-Control-Allow-Headers": "Content-Type, Accept",
-    "Access-Control-Expose-Headers": "Content-Disposition, X-PXFACE-Height, X-PXFACE-Renderer-Version, X-PXFACE-Width, X-PXWORD-Height, X-PXWORD-Renderer-Version, X-PXWORD-Width, X-RateLimit-Limit, X-RateLimit-Remaining, X-RateLimit-Reset",
+    "Access-Control-Expose-Headers": "Content-Disposition, X-PXFACE-Duration, X-PXFACE-Frame-Rate, X-PXFACE-Height, X-PXFACE-Renderer-Version, X-PXFACE-Width, X-PXWORD-Height, X-PXWORD-Renderer-Version, X-PXWORD-Width, X-RateLimit-Limit, X-RateLimit-Remaining, X-RateLimit-Reset",
   };
 }
 
@@ -63,14 +64,21 @@ function jsonError(status: number, error: string, issues: { field: string; messa
 }
 
 async function renderResponse(request: Request, parsed: ParsedRenderRequest, cacheable: boolean, rate: RateState) {
-  const result = renderWordmark(parsed.options);
-  const { scene, svg } = result;
+  const animation = parsed.format === "svg-animation"
+    ? renderWordmarkAnimation(parsed.options, parsed.animation)
+    : undefined;
+  const result = animation ? animation.frames[0] : renderWordmark(parsed.options);
+  const { scene } = result;
+  const svg = animation?.svg ?? result.svg;
   const body = parsed.format === "png"
     ? await sharp(Buffer.from(svg)).png({ compressionLevel: 9 }).toBuffer()
     : svg;
   const mime = parsed.format === "png" ? "image/png" : "image/svg+xml; charset=utf-8";
   const etag = `"${createHash("sha256").update(body).digest("base64url")}"`;
-  const disposition = `${parsed.download ? "attachment" : "inline"}; filename="${wordmarkFileName(scene.options.text, parsed.format)}"`;
+  const extension = parsed.format === "png" ? "png" : "svg";
+  const baseName = wordmarkFileName(scene.options.text, extension);
+  const fileName = animation ? baseName.replace(".svg", "-loop.svg") : baseName;
+  const disposition = `${parsed.download ? "attachment" : "inline"}; filename="${fileName}"`;
   if (request.headers.get("if-none-match") === etag) {
     return new Response(null, {
       status: 304,
@@ -86,6 +94,7 @@ async function renderResponse(request: Request, parsed: ParsedRenderRequest, cac
     height: scene.output.height,
     textLength: scene.options.text.length,
     lineCount: scene.options.text.split("\n").length,
+    ...(animation ? { duration: animation.duration, frameRate: animation.frameRate } : {}),
   }));
   return new Response(body, {
     headers: {
@@ -101,6 +110,10 @@ async function renderResponse(request: Request, parsed: ParsedRenderRequest, cac
       "X-PXFACE-Height": String(scene.output.height),
       "X-PXFACE-Renderer-Version": RENDERER_VERSION,
       "X-PXFACE-Width": String(scene.output.width),
+      ...(animation ? {
+        "X-PXFACE-Duration": String(animation.duration),
+        "X-PXFACE-Frame-Rate": String(animation.frameRate),
+      } : {}),
       "X-PXWORD-Height": String(scene.output.height),
       "X-PXWORD-Renderer-Version": RENDERER_VERSION,
       "X-PXWORD-Width": String(scene.output.width),

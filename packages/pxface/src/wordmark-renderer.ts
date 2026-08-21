@@ -1,7 +1,7 @@
 import { buildPixelLayout, type Pixel, type PixelLayout, type TextAlign } from "./pixel-font";
 import { buildRandomPalette } from "./random-palette";
 
-export const RENDERER_VERSION = "2.1.0";
+export const RENDERER_VERSION = "2.2.0";
 export const MAX_TEXT_LENGTH = 160;
 export const MAX_LINE_COUNT = 8;
 export const MAX_OUTPUT_DIMENSION = 16_384;
@@ -10,7 +10,16 @@ export const MAX_OUTPUT_AREA = 64_000_000;
 export type PixelShape = "square" | "soft" | "dot";
 export type ColorMode = "solid" | "random";
 export type ExportRatio = "fit" | "square";
-export type PixelEffect = "none" | "spectrum" | "explode" | "wave" | "glitch" | "weave";
+export type PixelEffect =
+  | "none"
+  | "spectrum"
+  | "explode"
+  | "wave"
+  | "glitch"
+  | "weave"
+  | "assemble"
+  | "relay"
+  | "scan";
 
 export type PixelOverride = {
   color?: string;
@@ -44,6 +53,8 @@ export type WordmarkOptions = {
   scale: number;
   effect: PixelEffect;
   effectAmount: number;
+  /** Normalized loop position. `0` and `1` resolve to the same frame. */
+  animationProgress: number;
 };
 
 /** Any subset of renderer options. Missing values use versioned defaults. */
@@ -72,6 +83,7 @@ export const WORDMARK_OPTION_KEYS = [
   "scale",
   "effect",
   "effectAmount",
+  "animationProgress",
 ] as const satisfies readonly (keyof WordmarkOptions)[];
 
 export const WORDMARK_DEFAULTS: Readonly<WordmarkOptions> = Object.freeze({
@@ -95,6 +107,7 @@ export const WORDMARK_DEFAULTS: Readonly<WordmarkOptions> = Object.freeze({
   scale: 48,
   effect: "none",
   effectAmount: 1,
+  animationProgress: 0.5,
 });
 
 export type ValidationIssue = {
@@ -139,6 +152,30 @@ export type WordmarkRender = {
   scene: WordmarkScene;
   svg: string;
 };
+
+export type WordmarkAnimationOptions = {
+  duration?: number;
+  frameRate?: number;
+};
+
+export type WordmarkAnimationFrame = WordmarkRender & {
+  progress: number;
+};
+
+export type WordmarkAnimation = {
+  version: string;
+  duration: number;
+  frameRate: number;
+  frames: WordmarkAnimationFrame[];
+  output: { width: number; height: number };
+  viewBox: { x: number; y: number; width: number; height: number };
+  svg: string;
+};
+
+export const WORDMARK_ANIMATION_DEFAULTS = Object.freeze({
+  duration: 3,
+  frameRate: 12,
+});
 
 function round(value: number) {
   return Number(value.toFixed(4));
@@ -211,6 +248,7 @@ export function normalizeWordmarkOptions(input: WordmarkInput = {}): WordmarkOpt
   const seed = finiteNumber(input.seed, WORDMARK_DEFAULTS.seed);
   const scale = finiteNumber(input.scale, WORDMARK_DEFAULTS.scale);
   const effectAmount = finiteNumber(input.effectAmount, WORDMARK_DEFAULTS.effectAmount);
+  const animationProgress = finiteNumber(input.animationProgress, WORDMARK_DEFAULTS.animationProgress);
   addRangeIssue(issues, "letterSpacing", letterSpacing, 0, 8);
   addRangeIssue(issues, "wordSpacing", wordSpacing, 0, 16);
   addRangeIssue(issues, "lineSpacing", lineSpacing, 0, 12);
@@ -220,19 +258,30 @@ export function normalizeWordmarkOptions(input: WordmarkInput = {}): WordmarkOpt
   addRangeIssue(issues, "seed", seed, 0, 0xffffffff, true);
   addRangeIssue(issues, "scale", scale, 1, 256);
   addRangeIssue(issues, "effectAmount", effectAmount, 0, 2);
+  addRangeIssue(issues, "animationProgress", animationProgress, 0, 1);
 
   const ratio = enumValue(input.ratio, WORDMARK_DEFAULTS.ratio, ["fit", "square"] as const);
   const align = enumValue(input.align, WORDMARK_DEFAULTS.align, ["left", "center", "right"] as const);
   const shape = enumValue(input.shape, WORDMARK_DEFAULTS.shape, ["square", "soft", "dot"] as const);
   const colorMode = enumValue(input.colorMode, WORDMARK_DEFAULTS.colorMode, ["solid", "random"] as const);
-  const effect = enumValue(input.effect, WORDMARK_DEFAULTS.effect, ["none", "spectrum", "explode", "wave", "glitch", "weave"] as const);
+  const effect = enumValue(input.effect, WORDMARK_DEFAULTS.effect, [
+    "none",
+    "spectrum",
+    "explode",
+    "wave",
+    "glitch",
+    "weave",
+    "assemble",
+    "relay",
+    "scan",
+  ] as const);
   const slant = booleanValue(input.slant, WORDMARK_DEFAULTS.slant);
   const transparent = booleanValue(input.transparent, WORDMARK_DEFAULTS.transparent);
   if (!ratio) issues.push({ field: "ratio", message: "Must be fit or square." });
   if (!align) issues.push({ field: "align", message: "Must be left, center, or right." });
   if (!shape) issues.push({ field: "shape", message: "Must be square, soft, or dot." });
   if (!colorMode) issues.push({ field: "colorMode", message: "Must be solid or random." });
-  if (!effect) issues.push({ field: "effect", message: "Must be none, spectrum, explode, wave, glitch, or weave." });
+  if (!effect) issues.push({ field: "effect", message: "Must be a supported pixel effect." });
   if (slant === undefined) issues.push({ field: "slant", message: "Must be a boolean." });
   if (transparent === undefined) issues.push({ field: "transparent", message: "Must be a boolean." });
 
@@ -259,6 +308,7 @@ export function normalizeWordmarkOptions(input: WordmarkInput = {}): WordmarkOpt
     scale,
     effect: effect!,
     effectAmount,
+    animationProgress,
   };
 }
 
@@ -345,14 +395,32 @@ function pixelNoise(pixel: Pixel, seed: number, salt = 0) {
   return (hash >>> 0) / 0xffffffff;
 }
 
+function clamp01(value: number) {
+  return Math.max(0, Math.min(1, value));
+}
+
+function smoothstep(value: number) {
+  const t = clamp01(value);
+  return t * t * (3 - 2 * t);
+}
+
+function cyclicDistance(a: number, b: number) {
+  const distance = Math.abs(a - b);
+  return Math.min(distance, 1 - distance);
+}
+
 function effectAppearance(
   pixel: Pixel,
   index: number,
   options: WordmarkOptions,
   palette: readonly string[],
+  totalPixels: number,
+  layoutWidth: number,
 ): Omit<RenderPixel, keyof Pixel | "index"> {
   const amount = options.effectAmount;
   const strength = Math.min(amount, 1);
+  const progress = options.animationProgress % 1;
+  const angle = progress * Math.PI * 2;
   const noise = pixelNoise(pixel, options.seed);
   const alternate = (pixel.row + pixel.column + pixel.character) % 2 === 0;
   const baseColor = options.colorMode === "random"
@@ -373,22 +441,26 @@ function effectAppearance(
     case "spectrum":
       return {
         ...base,
-        color: palette[Math.floor(pixelNoise(pixel, options.seed, 4) * palette.length) % palette.length],
-        scale: round(1 + ((0.82 + pixelNoise(pixel, options.seed, 5) * 0.24) - 1) * strength),
+        color: palette[(
+          Math.floor(pixelNoise(pixel, options.seed, 4) * palette.length)
+          + Math.floor(progress * palette.length)
+        ) % palette.length],
+        scale: round(1 + ((0.86 + Math.sin(angle + index * 0.72) * 0.14) - 1) * strength),
       };
     case "explode": {
-      const force = 0.42 * amount;
+      const pulse = Math.sin(progress * Math.PI) ** 2;
+      const force = 0.62 * amount * pulse;
       return {
         ...base,
-        color: alternate ? baseColor : options.depthColor,
-        offsetX: round((pixel.column - 1) * force + (noise - 0.5) * 0.12 * amount),
-        offsetY: round((pixel.row - 2) * force + (pixelNoise(pixel, options.seed, 1) - 0.5) * 0.12 * amount),
-        scale: round(1 + ((0.68 + pixelNoise(pixel, options.seed, 2) * 0.34) - 1) * strength),
-        rotation: round((pixelNoise(pixel, options.seed, 3) - 0.5) * 28 * amount),
+        color: pulse > 0.36 && !alternate ? options.depthColor : baseColor,
+        offsetX: round((pixel.column - 1) * force + (noise - 0.5) * 0.12 * amount * pulse),
+        offsetY: round((pixel.row - 2) * force + (pixelNoise(pixel, options.seed, 1) - 0.5) * 0.12 * amount * pulse),
+        scale: round(1 - pulse * (0.18 + pixelNoise(pixel, options.seed, 2) * 0.2) * strength),
+        rotation: round((pixelNoise(pixel, options.seed, 3) - 0.5) * 38 * amount * pulse),
       };
     }
     case "wave": {
-      const phase = pixel.x * 1.12 + pixel.row * 0.42 + pixel.line * 0.8;
+      const phase = pixel.x * 1.12 + pixel.row * 0.42 + pixel.line * 0.8 - angle;
       const wave = Math.sin(phase);
       return {
         ...base,
@@ -400,27 +472,70 @@ function effectAppearance(
       };
     }
     case "glitch": {
+      const tick = Math.floor(progress * 12) % 12;
       const rowShift = [-0.82, 0.34, -0.26, 0.9, -0.48][pixel.row] ?? 0;
-      const dropout = pixelNoise(pixel, options.seed, 6);
+      const dropout = pixelNoise(pixel, options.seed, 6 + tick);
+      const activeRow = tick % 5 === pixel.row;
       return {
         ...base,
-        color: dropout > 0.68 ? options.depthColor : baseColor,
-        offsetX: round(rowShift * amount + (dropout > 0.84 ? (noise - 0.5) * 1.2 * amount : 0)),
-        offsetY: round((pixel.character % 2 === 0 ? -0.06 : 0.06) * amount),
-        opacity: dropout < 0.12 * amount ? round(1 + (0.18 - 1) * strength) : 1,
-        scale: dropout > 0.9 ? round(1 + (0.66 - 1) * strength) : 1,
+        color: activeRow || dropout > 0.82 ? options.depthColor : baseColor,
+        offsetX: round((activeRow ? rowShift * 1.4 * amount : 0) + (dropout > 0.9 ? (noise - 0.5) * 1.4 * amount : 0)),
+        offsetY: round((activeRow ? (pixel.character % 2 === 0 ? -0.12 : 0.12) : 0) * amount),
+        opacity: dropout < 0.08 * amount ? round(1 + (0.12 - 1) * strength) : 1,
+        scale: dropout > 0.92 ? round(1 + (0.54 - 1) * strength) : 1,
       };
     }
-    case "weave":
+    case "weave": {
+      const weave = Math.sin(angle + (alternate ? 0 : Math.PI));
       return {
         ...base,
-        color: alternate ? options.foreground : options.depthColor,
-        offsetX: round((alternate ? -0.16 : 0.16) * amount),
-        offsetY: round((alternate ? 0.16 : -0.16) * amount),
-        opacity: alternate ? 1 : round(1 + (0.8 - 1) * strength),
-        scale: round(alternate ? 1 : 1 + (0.64 - 1) * strength),
-        rotation: round((alternate ? -1 : 1) * 8 * amount),
+        color: weave > 0 ? options.foreground : options.depthColor,
+        offsetX: round(weave * 0.24 * amount),
+        offsetY: round(-weave * 0.24 * amount),
+        opacity: round(1 - Math.max(0, -weave) * 0.18 * strength),
+        scale: round(1 - Math.max(0, -weave) * 0.3 * strength),
+        rotation: round(weave * 10 * amount),
       };
+    }
+    case "assemble": {
+      const delay = Math.min(0.3, pixel.character * 0.018 + pixel.row * 0.014 + noise * 0.08);
+      const local = clamp01((progress - delay) / Math.max(0.01, 1 - delay * 2));
+      const burst = Math.sin(Math.PI * smoothstep(local)) ** 2;
+      const direction = pixelNoise(pixel, options.seed, 12) - 0.5;
+      return {
+        ...base,
+        color: burst > 0.48 && alternate ? options.depthColor : baseColor,
+        offsetX: round(direction * 5.8 * amount * burst),
+        offsetY: round((3.4 + pixelNoise(pixel, options.seed, 13) * 4.8) * amount * burst),
+        opacity: round(1 - burst * 0.78 * strength),
+        scale: round(1 - burst * (0.36 + noise * 0.24) * strength),
+        rotation: round(direction * 120 * amount * burst),
+      };
+    }
+    case "relay": {
+      const pixelProgress = totalPixels > 1 ? index / totalPixels : 0;
+      const pulse = smoothstep(1 - cyclicDistance(pixelProgress, progress) / 0.12);
+      return {
+        ...base,
+        color: pulse > 0.22 ? options.depthColor : baseColor,
+        offsetY: round(-0.82 * amount * pulse),
+        opacity: round(1 - pulse * 0.08 * strength),
+        scale: round(1 + pulse * 0.52 * strength),
+        rotation: round((noise - 0.5) * 18 * amount * pulse),
+      };
+    }
+    case "scan": {
+      const cellProgress = ((pixel.x + pixel.row * 0.22) / Math.max(1, layoutWidth)) % 1;
+      const pulse = smoothstep(1 - cyclicDistance(cellProgress, progress) / 0.11);
+      return {
+        ...base,
+        color: pulse > 0.18 ? options.depthColor : baseColor,
+        offsetX: round((pixel.row % 2 === 0 ? 1 : -1) * pulse * 0.18 * amount),
+        opacity: round(1 - pulse * 0.36 * strength),
+        scale: round(1 - pulse * 0.58 * strength),
+        rotation: round((pixel.row % 2 === 0 ? 1 : -1) * pulse * 90 * amount),
+      };
+    }
     default:
       return base;
   }
@@ -450,7 +565,14 @@ function pixelShape(pixel: RenderPixel, color: string, options: WordmarkOptions,
   return `<rect x="${x}" y="${y}" width="${round(size)}" height="${round(size)}" rx="${round(radius)}" ${common}/>`;
 }
 
-function groupedPixels(pixels: RenderPixel[], options: WordmarkOptions, layer: string, offset: number, color?: string) {
+function groupedPixels(
+  pixels: RenderPixel[],
+  options: WordmarkOptions,
+  layer: string,
+  offset: number,
+  color?: string,
+  idPrefix = "",
+) {
   const lines = new Map<number, Map<number, RenderPixel[]>>();
   pixels.forEach((pixel) => {
     const characters = lines.get(pixel.line) ?? new Map<number, RenderPixel[]>();
@@ -463,13 +585,13 @@ function groupedPixels(pixels: RenderPixel[], options: WordmarkOptions, layer: s
     const characterMarkup = [...characters.entries()].map(([characterIndex, characterPixels]) => {
       const value = characterPixels[0]?.value ?? "";
       const shapes = characterPixels.map((pixel) =>
-        `<g id="${layer}-line-${lineIndex + 1}-char-${characterIndex + 1}-pixel-${pixel.index + 1}" data-pixel-id="${pixel.id}" data-pixel-layer="${layer}" data-pixel-index="${pixel.index}">${pixelShape(pixel, color ?? pixel.color, options, offset)}</g>`,
+        `<g id="${idPrefix}${layer}-line-${lineIndex + 1}-char-${characterIndex + 1}-pixel-${pixel.index + 1}" data-pixel-id="${pixel.id}" data-pixel-layer="${layer}" data-pixel-index="${pixel.index}">${pixelShape(pixel, color ?? pixel.color, options, offset)}</g>`,
       ).join("");
-      return `<g id="${layer}-line-${lineIndex + 1}-char-${characterIndex + 1}" data-character="${xml(value)}">${shapes}</g>`;
+      return `<g id="${idPrefix}${layer}-line-${lineIndex + 1}-char-${characterIndex + 1}" data-character="${xml(value)}">${shapes}</g>`;
     }).join("");
-    return `<g id="${layer}-line-${lineIndex + 1}">${characterMarkup}</g>`;
+    return `<g id="${idPrefix}${layer}-line-${lineIndex + 1}">${characterMarkup}</g>`;
   }).join("");
-  return `<g id="${layer}">${lineMarkup}</g>`;
+  return `<g id="${idPrefix}${layer}">${lineMarkup}</g>`;
 }
 
 function transformedPixelBounds(pixel: RenderPixel, options: WordmarkOptions, layerOffset: number) {
@@ -495,7 +617,7 @@ export function createWordmarkScene(optionsInput: WordmarkInput = {}): WordmarkS
   );
   const palette = buildRandomPalette(options.background, options.seed);
   const pixels = layout.pixels.map((pixel, index) => {
-    const effect = effectAppearance(pixel, index, options, palette);
+    const effect = effectAppearance(pixel, index, options, palette, layout.pixels.length, layout.width);
     const override = pixelOverrides[pixel.id];
     return {
       ...pixel,
@@ -575,12 +697,106 @@ export function sceneToSvg(scene: WordmarkScene) {
   return `<svg xmlns="http://www.w3.org/2000/svg" width="${output.width}" height="${output.height}" viewBox="${viewBox.x} ${viewBox.y} ${viewBox.width} ${viewBox.height}" shape-rendering="${scene.shapeRendering}" data-pxface-renderer="${scene.version}" data-pxword-renderer="${scene.version}"><title>${xml(options.text || "PXFACE wordmark")}</title><metadata>PXFACE 3x5 glyph shapes are dedicated under CC0-1.0: https://creativecommons.org/publicdomain/zero/1.0/</metadata>${background}${depth}${foreground}</svg>`;
 }
 
+function normalizeAnimationOptions(input: WordmarkAnimationOptions = {}) {
+  const duration = finiteNumber(input.duration, WORDMARK_ANIMATION_DEFAULTS.duration);
+  const frameRate = finiteNumber(input.frameRate, WORDMARK_ANIMATION_DEFAULTS.frameRate);
+  const issues: ValidationIssue[] = [];
+  if (!Number.isFinite(duration) || duration < 1 || duration > 10) {
+    issues.push({ field: "output", message: "Animation duration must be between 1 and 10 seconds." });
+  }
+  if (!Number.isInteger(frameRate) || frameRate < 4 || frameRate > 30) {
+    issues.push({ field: "output", message: "Animation frame rate must be an integer between 4 and 30." });
+  }
+  if (issues.length) throw new WordmarkValidationError(issues);
+  return { duration, frameRate };
+}
+
+function animationLayers(scene: WordmarkScene, frameIndex: number) {
+  const prefix = `frame-${frameIndex + 1}-`;
+  const depth = Array.from({ length: scene.options.depth }, (_, index) =>
+    groupedPixels(scene.pixels, scene.options, `depth-${index + 1}`, index + 1, scene.options.depthColor, prefix),
+  ).join("");
+  return `${depth}${groupedPixels(scene.pixels, scene.options, "type", 0, undefined, prefix)}`;
+}
+
+function animationToSvg(
+  frames: WordmarkAnimationFrame[],
+  duration: number,
+  frameRate: number,
+  viewBox: WordmarkAnimation["viewBox"],
+  output: WordmarkAnimation["output"],
+) {
+  const first = frames[0].scene;
+  const frameDuration = duration / frames.length;
+  const visibleUntil = round(100 / frames.length);
+  const hiddenFrom = round(visibleUntil + 0.0001);
+  const style = `<style>#animation-frames>.pxface-frame{opacity:0;visibility:hidden;animation:pxface-frame ${round(duration)}s steps(1,end) infinite}@keyframes pxface-frame{0%,${visibleUntil}%{opacity:1;visibility:visible}${hiddenFrom}%,100%{opacity:0;visibility:hidden}}@media (prefers-reduced-motion:reduce){#animation-frames>.pxface-frame{display:none;animation:none!important}#animation-frames>.pxface-frame:first-child{display:inline;opacity:1;visibility:visible}}</style>`;
+  const background = first.options.transparent
+    ? ""
+    : `<g id="canvas"><rect id="background" x="${viewBox.x}" y="${viewBox.y}" width="${viewBox.width}" height="${viewBox.height}" fill="${xml(first.options.background)}"/></g>`;
+  const markup = frames.map((frame, index) =>
+    `<g id="animation-frame-${index + 1}" class="pxface-frame" data-animation-frame="${index}" data-animation-progress="${round(frame.progress)}" style="animation-delay:${round(index * frameDuration)}s">${animationLayers(frame.scene, index)}</g>`,
+  ).join("");
+  return `<svg xmlns="http://www.w3.org/2000/svg" width="${output.width}" height="${output.height}" viewBox="${viewBox.x} ${viewBox.y} ${viewBox.width} ${viewBox.height}" shape-rendering="geometricPrecision" data-pxface-renderer="${first.version}" data-pxword-renderer="${first.version}" data-pxface-animation="loop" data-duration="${round(duration)}" data-frame-rate="${frameRate}"><title>${xml(first.options.text || "PXFACE animated wordmark")}</title><metadata>PXFACE animated SVG. Every frame and pixel remains an SVG group. Glyph shapes are CC0-1.0.</metadata>${style}${background}<g id="animation-frames">${markup}</g></svg>`;
+}
+
+/**
+ * Builds deterministic fixed-step frames and a self-contained looping SVG.
+ * All frames share one viewport so animated exports never jump or clip.
+ */
+export function renderWordmarkAnimation(
+  input: WordmarkInput = {},
+  animationInput: WordmarkAnimationOptions = {},
+): WordmarkAnimation {
+  const { duration, frameRate } = normalizeAnimationOptions(animationInput);
+  const frameCount = Math.max(2, Math.round(duration * frameRate));
+  const initialFrames = Array.from({ length: frameCount }, (_, index) => {
+    const progress = index / frameCount;
+    const scene = createWordmarkScene({ ...input, animationProgress: progress });
+    return { progress, scene };
+  });
+  const minX = Math.min(...initialFrames.map(({ scene }) => scene.viewBox.x));
+  const minY = Math.min(...initialFrames.map(({ scene }) => scene.viewBox.y));
+  const maxX = Math.max(...initialFrames.map(({ scene }) => scene.viewBox.x + scene.viewBox.width));
+  const maxY = Math.max(...initialFrames.map(({ scene }) => scene.viewBox.y + scene.viewBox.height));
+  let width = round(maxX - minX);
+  let height = round(maxY - minY);
+  let x = round(minX);
+  let y = round(minY);
+  if (initialFrames[0].scene.options.ratio === "square") {
+    const size = Math.max(width, height);
+    x = round(x - (size - width) / 2);
+    y = round(y - (size - height) / 2);
+    width = round(size);
+    height = round(size);
+  }
+  const viewBox = { x, y, width, height };
+  const scale = initialFrames[0].scene.options.scale;
+  const output = { width: Math.ceil(width * scale), height: Math.ceil(height * scale) };
+  if (output.width > MAX_OUTPUT_DIMENSION || output.height > MAX_OUTPUT_DIMENSION || output.width * output.height > MAX_OUTPUT_AREA) {
+    throw new WordmarkValidationError([{ field: "output", message: "Animated output exceeds the renderer size limits." }]);
+  }
+  const frames = initialFrames.map(({ progress, scene }) => {
+    const sharedScene = { ...scene, viewBox, output, shapeRendering: "geometricPrecision" as const };
+    return { progress, scene: sharedScene, svg: sceneToSvg(sharedScene) };
+  });
+  return {
+    version: RENDERER_VERSION,
+    duration,
+    frameRate,
+    frames,
+    output,
+    viewBox,
+    svg: animationToSvg(frames, duration, frameRate, viewBox, output),
+  };
+}
+
 export function renderWordmark(input: WordmarkInput = {}): WordmarkRender {
   const scene = createWordmarkScene(input);
   return { scene, svg: sceneToSvg(scene) };
 }
 
-export function wordmarkFileName(text: string, extension: "svg" | "png") {
+export function wordmarkFileName(text: string, extension: "svg" | "png" | "gif" | "webm" | "mp4") {
   const safeName = text
     .replace(/\n/g, "-")
     .replace(/[^a-zA-Z0-9]+/g, "-")

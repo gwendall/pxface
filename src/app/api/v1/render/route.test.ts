@@ -10,8 +10,8 @@ describe("render API", () => {
     expect(response.status).toBe(200);
     expect(response.headers.get("content-type")).toContain("image/svg+xml");
     expect(response.headers.get("cache-control")).toContain("s-maxage");
-    expect(response.headers.get("x-pxface-renderer-version")).toBe("2.1.0");
-    expect(response.headers.get("x-pxword-renderer-version")).toBe("2.1.0");
+    expect(response.headers.get("x-pxface-renderer-version")).toBe("2.2.0");
+    expect(response.headers.get("x-pxword-renderer-version")).toBe("2.2.0");
     expect(await response.text()).toContain('id="type-line-1-char-1"');
   });
 
@@ -46,6 +46,20 @@ describe("render API", () => {
     expect(await overridden.text()).toContain('fill="#123456"');
   });
 
+  it("renders a cacheable self-contained animated SVG", async () => {
+    const response = await GET(new Request(
+      "https://pxface.com/api/v1/render?text=LOOP&effect=relay&format=svg-animation&duration=2&frameRate=6",
+    ));
+    expect(response.status).toBe(200);
+    expect(response.headers.get("content-type")).toContain("image/svg+xml");
+    expect(response.headers.get("x-pxface-duration")).toBe("2");
+    expect(response.headers.get("x-pxface-frame-rate")).toBe("6");
+    expect(response.headers.get("content-disposition")).toContain("loop.svg");
+    const svg = await response.text();
+    expect(svg).toContain('data-pxface-animation="loop"');
+    expect(svg).toContain('id="animation-frame-12"');
+  });
+
   it("returns useful field-level errors", async () => {
     const response = await GET(new Request("https://pxface.com/api/v1/render?pixelGap=2"));
     expect(response.status).toBe(400);
@@ -67,7 +81,7 @@ describe("render API", () => {
       expect(contract).toContain(`${key}:`);
     });
     expect(contract).toContain("/api/v1/render:");
-    expect(contract).toContain("version: 2.1.0");
+    expect(contract).toContain("version: 2.2.0");
     expect(contract).toContain("Legacy PXWORD alias retained for compatibility.");
   });
 

@@ -2,8 +2,8 @@ import assert from "node:assert/strict";
 import { createRequire } from "node:module";
 import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
-import { renderWordmark } from "pxface";
-import { Pxface } from "pxface/react";
+import { renderWordmark, renderWordmarkAnimation } from "pxface";
+import { AnimatedPxface, Pxface } from "pxface/react";
 
 const esmRender = renderWordmark({
   text: "NPM",
@@ -13,7 +13,7 @@ const esmRender = renderWordmark({
   pixelOverrides: { "l0-c0-r0-x0": { opacity: 0.5 } },
 });
 assert.equal(esmRender.scene.options.text, "NPM");
-assert.match(esmRender.svg, /data-pxface-renderer="2\.1\.0"/);
+assert.match(esmRender.svg, /data-pxface-renderer="2\.2\.0"/);
 assert.equal(esmRender.scene.pixels[0].opacity, 0.5);
 assert.doesNotThrow(() => JSON.stringify(esmRender.scene));
 
@@ -26,6 +26,22 @@ const html = renderToStaticMarkup(createElement(Pxface, {
   ariaLabel: "SSR pixel wordmark",
 }));
 assert.match(html, /aria-label="SSR pixel wordmark"/);
-assert.match(html, /<svg[^>]+data-pxface-renderer="2\.1\.0"/);
+assert.match(html, /<svg[^>]+data-pxface-renderer="2\.2\.0"/);
 
-console.log("Verified ESM, CommonJS, serializable scene, and React SSR exports.");
+const animation = renderWordmarkAnimation({ text: "LOOP", effect: "relay" }, {
+  duration: 2,
+  frameRate: 6,
+});
+assert.equal(animation.frames.length, 12);
+assert.match(animation.svg, /data-pxface-animation="loop"/);
+assert.equal(animation.frames[0].scene.viewBox.width, animation.frames[7].scene.viewBox.width);
+
+const animatedHtml = renderToStaticMarkup(createElement(AnimatedPxface, {
+  text: "SSR",
+  effect: "scan",
+  duration: 2,
+  frameRate: 6,
+}));
+assert.match(animatedHtml, /data-pxface-animation="loop"/);
+
+console.log("Verified ESM, CommonJS, static and animated scenes, and React SSR exports.");

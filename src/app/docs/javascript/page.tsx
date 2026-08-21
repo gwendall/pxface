@@ -1,12 +1,12 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { Pxface } from "pxface/react";
+import { AnimatedPxface } from "pxface/react";
 import SiteFooter from "../../components/site-footer";
 import { createPageMetadata } from "@/lib/site-metadata";
 
 export const metadata: Metadata = createPageMetadata({
   title: "JavaScript Library",
-  description: "Render editable PXFACE 3×5 pixel type in JavaScript, TypeScript, React, SSR, and React Server Components.",
+  description: "Render and animate editable PXFACE 3×5 pixel type in JavaScript, TypeScript, React, SSR, and React Server Components.",
   path: "/docs/javascript",
   keywords: ["pixel font JavaScript", "pixel text React", "SVG wordmark library", "3x5 type renderer", "React Server Component SVG"],
 });
@@ -45,6 +45,29 @@ export function Logo() {
   );
 }`;
 
+const animationExample = `import { renderWordmarkAnimation } from "pxface";
+
+const loop = renderWordmarkAnimation(
+  { text: "MOVE", effect: "assemble", seed: 42 },
+  { duration: 3, frameRate: 12 },
+);
+
+loop.svg;            // self-contained animated SVG
+loop.frames[0].svg;  // exact editable static frame`;
+
+const animatedReactExample = `import { AnimatedPxface } from "pxface/react";
+
+export function Loop() {
+  return (
+    <AnimatedPxface
+      text="MOVE"
+      effect="relay"
+      duration={3}
+      frameRate={12}
+    />
+  );
+}`;
+
 export default function JavaScriptDocsPage() {
   return (
     <main className="docs-page">
@@ -53,15 +76,18 @@ export default function JavaScriptDocsPage() {
           <div className="library-hero-copy">
             <p className="license-kicker">NPM / TYPESCRIPT / REACT</p>
             <h1>Pixels,<br />in your code.</h1>
-            <p>One dependency gives any frontend the exact renderer behind the studio, without a browser, canvas, or duplicated rules.</p>
+            <p>One dependency gives any frontend the exact static and animated renderer behind the studio, without a browser, canvas, or duplicated rules.</p>
             <div className="library-install" aria-label="Install pxface from npm">
               <code>npm install pxface</code>
               <a href="https://www.npmjs.com/package/pxface" target="_blank" rel="noreferrer">View on npm</a>
             </div>
           </div>
           <div className="library-hero-art" aria-hidden="true">
-            <Pxface
+            <AnimatedPxface
               text={"BUILD\nWITH\nPIXELS"}
+              effect="relay"
+              duration={3}
+              frameRate={12}
               align="center"
               foreground="#F1F0E9"
               background="#181816"
@@ -88,6 +114,21 @@ export default function JavaScriptDocsPage() {
           </article>
         </section>
 
+        <section className="docs-grid library-code-grid">
+          <article>
+            <p className="license-card-index">03 / LOOPS</p>
+            <h2>Sample exact time.</h2>
+            <p>Normalized time is an explicit renderer input. Fixed-step frames are deterministic, seamless, and share one stable viewBox.</p>
+            <pre><code>{animationExample}</code></pre>
+          </article>
+          <article>
+            <p className="license-card-index">04 / REACT MOTION</p>
+            <h2>Ship one SVG.</h2>
+            <p>The animated adapter emits a self-contained looping SVG with no client JavaScript and a static reduced-motion fallback.</p>
+            <pre><code>{animatedReactExample}</code></pre>
+          </article>
+        </section>
+
         <section className="library-contract" aria-labelledby="library-contract-title">
           <header>
             <p className="license-kicker">ONE RENDER CONTRACT</p>
@@ -108,7 +149,7 @@ export default function JavaScriptDocsPage() {
             </article>
             <article>
               <strong>Zero duplication</strong>
-              <p>The studio, npm package, React adapter, hosted SVG endpoint, and PNG output all cross the same renderer seam.</p>
+              <p>The studio, npm package, React adapter, hosted endpoint, static assets, and animation frames all cross the same renderer seam.</p>
             </article>
           </div>
         </section>
@@ -118,7 +159,7 @@ export default function JavaScriptDocsPage() {
             <h2>Choose the right surface.</h2>
           </div>
           <p>
-            Use <code>pxface</code> when rendering inside your own code. Use the <Link href="/docs/api">hosted API</Link> when an agent, automation, or non-JavaScript tool needs SVG or PNG. Use the <Link href="/font">font files</Link> for normal typing in design and desktop apps.
+            Use <code>pxface</code> when rendering or sampling animation inside your own code. Use the <Link href="/docs/api">hosted API</Link> when an agent, automation, or non-JavaScript tool needs static or animated SVG and PNG. Use the Studio for browser-exported GIF, WebM, and MP4. Use the <Link href="/font">font files</Link> for normal typing in design and desktop apps.
           </p>
         </section>
 

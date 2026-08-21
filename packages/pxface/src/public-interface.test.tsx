@@ -1,7 +1,7 @@
 import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, it } from "vitest";
 import { createWordmarkScene, renderWordmark } from "pxface";
-import { Pxface } from "pxface/react";
+import { AnimatedPxface, Pxface } from "pxface/react";
 
 describe("published pxface interface", () => {
   it("returns the same serializable scene through the public core export", () => {
@@ -17,6 +17,14 @@ describe("published pxface interface", () => {
     expect(html).toContain('class="logo"');
     expect(html).toContain('aria-label="SSR pixel wordmark"');
     expect(html).toContain('<svg xmlns="http://www.w3.org/2000/svg"');
-    expect(html).toContain('data-pxface-renderer="2.1.0"');
+    expect(html).toContain('data-pxface-renderer="2.2.0"');
+  });
+
+  it("renders a self-contained loop through React on the server", () => {
+    const html = renderToStaticMarkup(
+      <AnimatedPxface text="LOOP" effect="relay" duration={2} frameRate={6} />,
+    );
+    expect(html).toContain('data-pxface-animation="loop"');
+    expect(html).toContain("@keyframes pxface-frame");
   });
 });

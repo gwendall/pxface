@@ -1,8 +1,8 @@
 openapi: 3.1.0
 info:
   title: PXFACE Render API
-  version: 2.1.0
-  description: Deterministically render editable and remixable 3x5 pixel wordmarks as SVG or PNG.
+  version: 2.2.0
+  description: Deterministically render editable, remixable, and animated 3x5 pixel wordmarks as SVG or PNG.
   license:
     name: MIT and CC0-1.0
     url: https://pxface.com/license
@@ -16,6 +16,8 @@ paths:
       parameters:
         - { $ref: '#/components/parameters/format' }
         - { $ref: '#/components/parameters/download' }
+        - { $ref: '#/components/parameters/duration' }
+        - { $ref: '#/components/parameters/frameRate' }
         - { $ref: '#/components/parameters/text' }
         - { $ref: '#/components/parameters/foreground' }
         - { $ref: '#/components/parameters/background' }
@@ -36,6 +38,7 @@ paths:
         - { $ref: '#/components/parameters/scale' }
         - { $ref: '#/components/parameters/effect' }
         - { $ref: '#/components/parameters/effectAmount' }
+        - { $ref: '#/components/parameters/animationProgress' }
       responses:
         '200': { $ref: '#/components/responses/Asset' }
         '304': { description: The ETag still matches. }
@@ -53,6 +56,8 @@ paths:
               properties:
                 format: { $ref: '#/components/schemas/RenderFormat' }
                 download: { type: boolean, default: false }
+                duration: { type: number, minimum: 1, maximum: 10, default: 3 }
+                frameRate: { type: integer, minimum: 4, maximum: 30, default: 12 }
                 options: { $ref: '#/components/schemas/WordmarkOptions' }
             examples:
               remixedPixels:
@@ -80,7 +85,7 @@ components:
   schemas:
     RenderFormat:
       type: string
-      enum: [svg, png]
+      enum: [svg, png, svg-animation]
       default: svg
     WordmarkOptions:
       type: object
@@ -104,8 +109,9 @@ components:
         colorMode: { type: string, enum: [solid, random], default: solid }
         seed: { type: integer, minimum: 0, maximum: 4294967295, default: 1347962433 }
         scale: { type: number, minimum: 1, maximum: 256, default: 48, description: Output pixels per design unit. }
-        effect: { type: string, enum: [none, spectrum, explode, wave, glitch, weave], default: none }
+        effect: { type: string, enum: [none, spectrum, explode, wave, glitch, weave, assemble, relay, scan], default: none }
         effectAmount: { type: number, minimum: 0, maximum: 2, default: 1 }
+        animationProgress: { type: number, minimum: 0, maximum: 1, default: 0.5, description: Normalized loop phase. Values 0 and 1 resolve to the same frame. }
         pixelOverrides: { $ref: '#/components/schemas/PixelOverrides' }
     PixelOverride:
       type: object
@@ -138,6 +144,8 @@ components:
   parameters:
     format: { name: format, in: query, schema: { $ref: '#/components/schemas/RenderFormat' } }
     download: { name: download, in: query, schema: { type: boolean, default: false } }
+    duration: { name: duration, in: query, description: Loop seconds for svg-animation., schema: { type: number, minimum: 1, maximum: 10, default: 3 } }
+    frameRate: { name: frameRate, in: query, description: Fixed frames per second for svg-animation., schema: { type: integer, minimum: 4, maximum: 30, default: 12 } }
     text: { name: text, in: query, schema: { type: string, default: "HELLO\nTHERE", maxLength: 160 } }
     foreground: { name: foreground, in: query, schema: { type: string, default: '#F1F0E9' } }
     background: { name: background, in: query, schema: { type: string, default: '#181816' } }
@@ -156,8 +164,9 @@ components:
     colorMode: { name: colorMode, in: query, schema: { type: string, enum: [solid, random], default: solid } }
     seed: { name: seed, in: query, schema: { type: integer, minimum: 0, maximum: 4294967295, default: 1347962433 } }
     scale: { name: scale, in: query, schema: { type: number, minimum: 1, maximum: 256, default: 48 } }
-    effect: { name: effect, in: query, schema: { type: string, enum: [none, spectrum, explode, wave, glitch, weave], default: none } }
+    effect: { name: effect, in: query, schema: { type: string, enum: [none, spectrum, explode, wave, glitch, weave, assemble, relay, scan], default: none } }
     effectAmount: { name: effectAmount, in: query, schema: { type: number, minimum: 0, maximum: 2, default: 1 } }
+    animationProgress: { name: animationProgress, in: query, schema: { type: number, minimum: 0, maximum: 1, default: 0.5 } }
   responses:
     Asset:
       description: Rendered asset. Exact dimensions and renderer version are returned as X-PXFACE headers.
@@ -165,6 +174,8 @@ components:
         X-PXFACE-Width: { schema: { type: integer } }
         X-PXFACE-Height: { schema: { type: integer } }
         X-PXFACE-Renderer-Version: { schema: { type: string } }
+        X-PXFACE-Duration: { description: Present for svg-animation responses., schema: { type: number } }
+        X-PXFACE-Frame-Rate: { description: Present for svg-animation responses., schema: { type: integer } }
         X-PXWORD-Width: { deprecated: true, description: Legacy PXWORD alias retained for compatibility., schema: { type: integer } }
         X-PXWORD-Height: { deprecated: true, description: Legacy PXWORD alias retained for compatibility., schema: { type: integer } }
         X-PXWORD-Renderer-Version: { deprecated: true, description: Legacy PXWORD alias retained for compatibility., schema: { type: string } }
